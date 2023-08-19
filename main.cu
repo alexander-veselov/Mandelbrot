@@ -61,8 +61,12 @@ void MandelbrotSet(Image& image) {
   constexpr auto kThreadsPerBlock = 512;
   constexpr auto kBlocksPerGrid = (kSize - 1) / kThreadsPerBlock + 1;
 
+  constexpr static auto kDx = -0.87591;
+  constexpr static auto kDy = 0.20464;
+  constexpr static auto kZoom = 5.7854;
+
   MandelbrotSet<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-    device_data, kWindowWidth, kWindowHeight
+      device_data, kWindowWidth, kWindowHeight, kDx, kDy, kZoom
   );
 
   cudaMemcpy(image.data(), device_data, kSizeInBytes, cudaMemcpyDeviceToHost);

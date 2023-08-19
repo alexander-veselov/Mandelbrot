@@ -3,7 +3,9 @@
 #include <cmath>
 #include <cstdint>
 
-__global__ void MandelbrotSet(uint8_t* data, uint32_t width, uint32_t height) {
+__global__ void MandelbrotSet(uint8_t* data, uint32_t width, uint32_t height,
+                              double_t center_real, double_t center_imag,
+                              double_t zoom_factor) {
 
   const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -12,20 +14,20 @@ __global__ void MandelbrotSet(uint8_t* data, uint32_t width, uint32_t height) {
     constexpr static auto kMaxIterations = 256;
 
     // Mandelbrot set parameters
-    constexpr static auto kMinX = -2.;
-    constexpr static auto kMaxX = 1.;
-    constexpr static auto kMinY = -1.;
-    constexpr static auto kMaxY = 1.;
-    constexpr static auto kSizeX = kMaxX - kMinX;
-    constexpr static auto kSizeY = kMaxY - kMinY;
+    constexpr static auto kMandelbrotSetWidth  = 3.; // [-2, 1]
+    constexpr static auto kMandelbrotSetHeight = 2.; // [-1, 1]
 
-    const auto scale = 1. / fmin(width / kSizeX, height / kSizeY);
+    const auto scale =
+        1. / fmin(width / kMandelbrotSetWidth, height / kMandelbrotSetHeight);
 
-    const auto x = (pixel_index % width + width * kMinX / kSizeX) * scale;
-    const auto y = (pixel_index / width + height * kMinY / kSizeY) * scale;
+    const auto x = (pixel_index % width - width / 2.) * scale;
+    const auto y = (pixel_index / width - height / 2.) * scale;
 
-    auto real = x;
-    auto imag = y;
+    const auto real0 = center_real + x / zoom_factor;
+    const auto imag0 = center_imag + y / zoom_factor;
+
+    auto real = real0;
+    auto imag = imag0;
 
     for (auto i = 0; i < kMaxIterations; ++i) {
       const auto r2 = real * real;
@@ -36,8 +38,8 @@ __global__ void MandelbrotSet(uint8_t* data, uint32_t width, uint32_t height) {
         return;
       }
 
-      imag = 2. * real * imag + y;
-      real = r2 - i2 + x;
+      imag = 2. * real * imag + imag0;
+      real = r2 - i2 + real0;
     }
 
     data[pixel_index] = UINT8_MAX;
