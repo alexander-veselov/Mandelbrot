@@ -1,23 +1,19 @@
+#include <GLFW/glfw3.h>
+#include <cuda_runtime.h>
+
 #include <iostream>
 #include <vector>
 
-#include <GLFW/glfw3.h>
+#include "mandelbrot_set.cuh"
+
+using ImageType = uint8_t;
+using Image = std::vector<ImageType>;
 
 constexpr auto kEnableVSync = false;
 constexpr auto kWindowWidth = 1024;
 constexpr auto kWindowHeight = 768;
-
-void DrawImage(const std::vector<uint8_t>& image) {
-  glBegin(GL_POINTS);
-  for (auto y = 0; y < kWindowHeight; ++y) {
-    for (auto x = 0; x < kWindowWidth; ++x) {
-      const auto pixel = image[y * kWindowWidth + x];
-      glColor3ub(pixel, pixel, pixel);
-      glVertex2d(x, y);
-    }
-  }
-  glEnd();
-}
+constexpr auto kSize = kWindowWidth * kWindowHeight;
+constexpr auto kSizeInBytes = kSize * sizeof(ImageType);
 
 class FPSCounter {
  public:
@@ -45,6 +41,33 @@ class FPSCounter {
   double_t fps_;
 };
 
+void DrawImage(const Image& image) {
+  glBegin(GL_POINTS);
+  for (auto y = 0; y < kWindowHeight; ++y) {
+    for (auto x = 0; x < kWindowWidth; ++x) {
+      const auto pixel = image[y * kWindowWidth + x];
+      glColor3ub(pixel, pixel, pixel);
+      glVertex2d(x, y);
+    }
+  }
+  glEnd();
+}
+
+void MandelbrotSet(Image& image) {
+  auto device_data = static_cast<uint8_t*>(nullptr);
+  cudaMalloc(&device_data, kSizeInBytes);
+  cudaMemcpy(device_data, image.data(), kSizeInBytes, cudaMemcpyHostToDevice);
+
+  constexpr auto kThreadsPerBlock = 512;
+  constexpr auto kBlocksPerGrid = (kSize - 1) / kThreadsPerBlock + 1;
+
+  MandelbrotSet<<<kBlocksPerGrid, kThreadsPerBlock>>>(
+    device_data, kWindowWidth, kWindowHeight
+  );
+
+  cudaMemcpy(image.data(), device_data, kSizeInBytes, cudaMemcpyDeviceToHost);
+}
+
 int main() {
 
   if (glfwInit() != GLFW_TRUE) {
@@ -66,14 +89,13 @@ int main() {
   const auto current_time = glfwGetTime();
   auto fps_counter = FPSCounter{kFPSUpdateRate, current_time};
 
-  auto image = std::vector<uint8_t>(kWindowWidth * kWindowHeight);
-
-  for (auto i = 0; i < image.size(); ++i) {
-    image[i] = i * 255 / (kWindowWidth * kWindowHeight);
-  }
+  auto image = std::vector<uint8_t>(kSize);
 
   while (!glfwWindowShouldClose(window)) {
+
+    MandelbrotSet(image);
     DrawImage(image);
+
     glfwSwapBuffers(window);
     glfwPollEvents();
 
