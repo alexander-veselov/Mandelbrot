@@ -1,5 +1,5 @@
-#include <cmath>
 #include <iostream>
+#include <vector>
 
 #include <GLFW/glfw3.h>
 
@@ -7,14 +7,12 @@ constexpr auto kEnableVSync = false;
 constexpr auto kWindowWidth = 1024;
 constexpr auto kWindowHeight = 768;
 
-void DrawGradient() {
+void DrawImage(const std::vector<uint8_t>& image) {
   glBegin(GL_POINTS);
-  for (auto x = 0; x < kWindowWidth; ++x) {
-    for (auto y = 0; y < kWindowHeight; ++y) {
-      const auto r = float_t(x) / kWindowWidth;
-      const auto g = float_t(y) / kWindowHeight;
-      const auto b = (x * y) / (kWindowWidth * kWindowHeight);
-      glColor3f(r, g, b);
+  for (auto y = 0; y < kWindowHeight; ++y) {
+    for (auto x = 0; x < kWindowWidth; ++x) {
+      const auto pixel = image[y * kWindowWidth + x];
+      glColor3ub(pixel, pixel, pixel);
       glVertex2d(x, y);
     }
   }
@@ -68,8 +66,14 @@ int main() {
   const auto current_time = glfwGetTime();
   auto fps_counter = FPSCounter{kFPSUpdateRate, current_time};
 
+  auto image = std::vector<uint8_t>(kWindowWidth * kWindowHeight);
+
+  for (auto i = 0; i < image.size(); ++i) {
+    image[i] = i * 255 / (kWindowWidth * kWindowHeight);
+  }
+
   while (!glfwWindowShouldClose(window)) {
-    DrawGradient();
+    DrawImage(image);
     glfwSwapBuffers(window);
     glfwPollEvents();
 
