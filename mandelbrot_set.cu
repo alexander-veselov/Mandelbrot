@@ -58,7 +58,7 @@ __device__ void MandelbrotSetT(DataType* data, uint32_t width, uint32_t height,
   const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (pixel_index < width * height) {
-    constexpr static auto kMaxIterations = 256;
+    constexpr static auto kMaxIterations = 1024;
 
     // Mandelbrot set parameters
     constexpr static auto kMandelbrotSetWidth  = T{3};  // [-2, 1]
