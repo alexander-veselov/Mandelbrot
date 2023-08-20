@@ -82,7 +82,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="main.cu" />
+    <ClCompile Include="main.cpp">
+      <FileType>Document</FileType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="mandelbrot_set.cu" />

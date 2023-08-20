@@ -1,3 +1,4 @@
+#include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 
 #include <cmath>
@@ -52,8 +53,8 @@ __device__ void ColorPixel(DataType* data, uint32_t pixel_index,
 }
 
 template <typename DataType, typename T>
-__device__ void MandelbrotSetT(DataType* data, uint32_t width, uint32_t height,
-                               T center_real, T center_imag, T zoom_factor) {
+__global__ void MandelbrotSet(DataType* data, uint32_t width, uint32_t height,
+                              T center_real, T center_imag, T zoom_factor) {
 
   const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -93,16 +94,42 @@ __device__ void MandelbrotSetT(DataType* data, uint32_t width, uint32_t height,
   }
 }
 
-__global__ void MandelbrotSet(uint8_t* data, uint32_t width, uint32_t height,
-                              double_t center_real, double_t center_imag,
-                              double_t zoom_factor) {
-  MandelbrotSetT<uint8_t, double_t>(data, width, height, center_real, center_imag,
-                           zoom_factor);
+void MandelbrotSet(uint8_t* image, uint32_t image_width, uint32_t image_height,
+                   double_t center_real, double_t center_imag,
+                   double_t zoom_factor) {
+  const auto image_size = image_width * image_height;
+  const auto image_size_in_bytes = image_size * sizeof(uint8_t);
+
+  auto device_data = static_cast<uint8_t*>(nullptr);
+  cudaMalloc(&device_data, image_size_in_bytes);
+  cudaMemcpy(device_data, image, image_size_in_bytes, cudaMemcpyHostToDevice);
+
+  constexpr auto kThreadsPerBlock = 512;
+  const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;
+
+  MandelbrotSet<uint8_t, double_t><<<kBlocksPerGrid, kThreadsPerBlock>>>(
+      device_data, image_width, image_height, center_real, center_imag,
+      zoom_factor);
+
+  cudaMemcpy(image, device_data, image_size_in_bytes, cudaMemcpyDeviceToHost);
 }
 
-__global__ void MandelbrotSet(uint32_t* data, uint32_t width, uint32_t height,
-                              double_t center_real, double_t center_imag,
-                              double_t zoom_factor) {
-  MandelbrotSetT<uint32_t, double_t>(data, width, height, center_real,
-                                     center_imag, zoom_factor);
+void MandelbrotSet(uint32_t* image, uint32_t image_width, uint32_t image_height,
+                   double_t center_real, double_t center_imag,
+                   double_t zoom_factor) {
+  const auto image_size = image_width * image_height;
+  const auto image_size_in_bytes = image_size * sizeof(uint32_t);
+
+  auto device_data = static_cast<uint32_t*>(nullptr);
+  cudaMalloc(&device_data, image_size_in_bytes);
+  cudaMemcpy(device_data, image, image_size_in_bytes, cudaMemcpyHostToDevice);
+
+  constexpr auto kThreadsPerBlock = 512;
+  const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;
+
+  MandelbrotSet<uint32_t, double_t><<<kBlocksPerGrid, kThreadsPerBlock>>>(
+      device_data, image_width, image_height, center_real, center_imag,
+      zoom_factor);
+
+  cudaMemcpy(image, device_data, image_size_in_bytes, cudaMemcpyDeviceToHost);
 }

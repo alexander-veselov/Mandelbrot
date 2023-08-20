@@ -1,5 +1,4 @@
 #include <GLFW/glfw3.h>
-#include <cuda_runtime.h>
 
 #include <iostream>
 #include <vector>
@@ -80,21 +79,7 @@ void DrawImage(const Image& image) {
   glEnd();
 }
 
-void MandelbrotSet(Image& image, const Complex& center, double_t zoom_factor) {
-  auto device_data = static_cast<Image::value_type*>(nullptr);
-  cudaMalloc(&device_data, kSizeInBytes);
-  cudaMemcpy(device_data, image.data(), kSizeInBytes, cudaMemcpyHostToDevice);
 
-  constexpr auto kThreadsPerBlock = 512;
-  constexpr auto kBlocksPerGrid = (kSize - 1) / kThreadsPerBlock + 1;
-
-  MandelbrotSet<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-    device_data, kWindowWidth, kWindowHeight,
-    center.real,center.imag, zoom_factor
-  );
-
-  cudaMemcpy(image.data(), device_data, kSizeInBytes, cudaMemcpyDeviceToHost);
-}
 
 class Explorer
 {
@@ -249,7 +234,10 @@ int main() {
 
   while (!glfwWindowShouldClose(window)) {
 
-    MandelbrotSet(image, explorer.GetDisplayPosition(), explorer.GetZoom());
+    const auto center = explorer.GetDisplayPosition();
+    MandelbrotSet(image.data(), kWindowWidth, kWindowHeight, center.real,
+                  center.imag, explorer.GetZoom());
+
     DrawImage(image);
 
     glfwSwapBuffers(window);
