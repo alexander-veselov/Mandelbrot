@@ -3,11 +3,8 @@
 #include <cmath>
 #include <cstdint>
 
-__device__ uint32_t MakeRGB(uint8_t r, uint8_t g, uint8_t b) {
-  auto rgb = uint32_t{r};
-  rgb = (rgb << 8) + g;
-  rgb = (rgb << 8) + b;
-  return rgb;
+__device__ constexpr uint32_t MakeRGB(uint8_t r, uint8_t g, uint8_t b) {
+  return b + (g << 8) + (r << 16);
 }
 
 template <typename DataType>
