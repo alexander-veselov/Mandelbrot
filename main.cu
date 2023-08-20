@@ -54,7 +54,7 @@ void DrawImage(const Image& image) {
 }
 
 void MandelbrotSet(Image& image) {
-  auto device_data = static_cast<uint8_t*>(nullptr);
+  auto device_data = static_cast<ImageType*>(nullptr);
   cudaMalloc(&device_data, kSizeInBytes);
   cudaMemcpy(device_data, image.data(), kSizeInBytes, cudaMemcpyHostToDevice);
 
