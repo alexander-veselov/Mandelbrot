@@ -6,8 +6,6 @@
 
 #include "mandelbrot_set.cuh"
 
-
-// TODO: remove uint8_t support? Measure performance
 using Image = std::vector<uint32_t>;
 
 constexpr auto kEnableVSync = false;
@@ -17,6 +15,10 @@ constexpr auto kWindowWidth = 1024;
 constexpr auto kWindowHeight = 768;
 constexpr auto kSize = kWindowWidth * kWindowHeight;
 constexpr auto kSizeInBytes = kSize * sizeof(Image::value_type);
+
+constexpr auto kColoringMode = 1;
+constexpr auto kMaxIterations = 256;
+constexpr auto kFPSUpdateRate = 10;  // 10 times per second
 
 struct Complex {
   double_t real;
@@ -50,17 +52,9 @@ class FPSCounter {
 };
 
 void ToRGB(Image::value_type pixel, uint8_t& r, uint8_t& g, uint8_t& b) {
-  if constexpr (std::is_same_v<Image::value_type, uint8_t>) {
-    r = pixel;
-    g = pixel;
-    b = pixel;
-  }
-
-  if constexpr (std::is_same_v<Image::value_type, uint32_t>) {
-    r = (pixel >> 16) & 0xFF;
-    g = (pixel >>  8) & 0xFF;
-    b = (pixel >>  0) & 0xFF;
-  }
+  r = (pixel >> 16) & 0xFF;
+  g = (pixel >> 8) & 0xFF;
+  b = (pixel >> 0) & 0xFF;
 }
 
 void DrawImage(const Image& image) {
@@ -78,8 +72,6 @@ void DrawImage(const Image& image) {
   }
   glEnd();
 }
-
-
 
 class Explorer
 {
@@ -226,17 +218,29 @@ int main() {
   glfwSetCursorPosCallback(window, CursorPosCallback);
   glfwSetScrollCallback(window, ScrollCallback);
 
-  constexpr auto kFPSUpdateRate = 10; // 10 times per second
   const auto current_time = glfwGetTime();
   auto fps_counter = FPSCounter{kFPSUpdateRate, current_time};
 
   auto image = std::vector<Image::value_type>(kSize);
 
+  auto current_center = Complex{};
+  auto current_zoom = double_t{};
+
   while (!glfwWindowShouldClose(window)) {
 
     const auto center = explorer.GetDisplayPosition();
-    MandelbrotSet(image.data(), kWindowWidth, kWindowHeight, center.real,
-                  center.imag, explorer.GetZoom());
+    const auto zoom = explorer.GetZoom();
+
+    const auto dirty = current_center.real != center.real ||
+                       current_center.imag != center.imag || current_zoom != zoom;
+
+    if (dirty) {
+      MandelbrotSet::Visualize(image.data(), kWindowWidth, kWindowHeight,
+                               center.real, center.imag, zoom,
+                               kColoringMode, kMaxIterations);
+      current_center = center;
+      current_zoom = zoom;
+    }
 
     DrawImage(image);
 

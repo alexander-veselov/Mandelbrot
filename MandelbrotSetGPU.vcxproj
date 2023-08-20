@@ -87,9 +87,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="coloring.cu" />
     <CudaCompile Include="mandelbrot_set.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="coloring.cuh" />
+    <ClInclude Include="defines.cuh" />
     <ClInclude Include="mandelbrot_set.cuh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

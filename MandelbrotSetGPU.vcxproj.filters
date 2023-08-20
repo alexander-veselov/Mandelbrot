@@ -18,9 +18,18 @@
     <CudaCompile Include="mandelbrot_set.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
+    <CudaCompile Include="coloring.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mandelbrot_set.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="defines.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="coloring.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
