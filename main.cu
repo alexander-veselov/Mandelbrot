@@ -3,10 +3,12 @@
 
 #include <iostream>
 #include <vector>
+#include <type_traits>
 
 #include "mandelbrot_set.cuh"
 
-using ImageType = uint8_t;
+// TODO: remove uint8_t support?
+using ImageType = uint32_t;
 using Image = std::vector<ImageType>;
 
 constexpr auto kEnableVSync = false;
@@ -41,12 +43,30 @@ class FPSCounter {
   double_t fps_;
 };
 
+void ToRGB(ImageType pixel, uint8_t& r, uint8_t& g, uint8_t& b) {
+  if constexpr (std::is_same_v<ImageType, uint8_t>) {
+    r = pixel;
+    g = pixel;
+    b = pixel;
+  }
+
+  if constexpr (std::is_same_v<ImageType, uint32_t>) {
+    r = (pixel >> 16) & 0xFF;
+    g = (pixel >>  8) & 0xFF;
+    b = (pixel >>  0) & 0xFF;
+  }
+}
+
 void DrawImage(const Image& image) {
   glBegin(GL_POINTS);
+  auto r = uint8_t{};
+  auto g = uint8_t{};
+  auto b = uint8_t{};
   for (auto y = 0; y < kWindowHeight; ++y) {
     for (auto x = 0; x < kWindowWidth; ++x) {
       const auto pixel = image[y * kWindowWidth + x];
-      glColor3ub(pixel, pixel, pixel);
+      ToRGB(pixel, r, g, b);
+      glColor3ub(r, g, b);
       glVertex2d(x, y);
     }
   }
@@ -93,7 +113,7 @@ int main() {
   const auto current_time = glfwGetTime();
   auto fps_counter = FPSCounter{kFPSUpdateRate, current_time};
 
-  auto image = std::vector<uint8_t>(kSize);
+  auto image = std::vector<ImageType>(kSize);
 
   while (!glfwWindowShouldClose(window)) {
 
