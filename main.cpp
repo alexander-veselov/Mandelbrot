@@ -16,9 +16,11 @@ constexpr auto kWindowHeight = 768;
 constexpr auto kSize = kWindowWidth * kWindowHeight;
 constexpr auto kSizeInBytes = kSize * sizeof(Image::value_type);
 
-constexpr auto kColoringMode = 1;
+constexpr auto kColoringMode = 3;
 constexpr auto kMaxIterations = 256;
 constexpr auto kFPSUpdateRate = 10;  // 10 times per second
+constexpr auto kZoomFactor = 1.5;
+// TODO: make smoothing option
 
 struct Complex {
   double_t real;
@@ -109,7 +111,6 @@ class Explorer
   }
 
   void ZoomEvent(ZoomEvent event) {
-    constexpr static auto kZoomFactor = 1.2;
     if (event == ZoomEvent::kZoomIn) {
       zoom_ *= kZoomFactor;
     }

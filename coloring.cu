@@ -140,165 +140,198 @@ __device__ void HSVToRGB(double h, double s, double v, uint8_t& ROut,
 namespace MandelbrotSet {
 namespace Coloring {
 
-__global__ void KenrelDefaultMode(uint32_t* data, uint32_t image_width,
-                                  uint32_t image_height,
-                                  uint32_t max_iterations) {
+__device__ uint32_t DefaultMode(uint32_t iterations, uint32_t max_iterations) {
 
-  const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
-  if (pixel_index < image_width * image_height) {
-    const auto iterations = data[pixel_index];
+  const auto ratio = static_cast<double_t>(iterations) /
+                     static_cast<double_t>(max_iterations);
 
-    auto r = uint8_t{};
-    auto g = uint8_t{};
-    auto b = uint8_t{};
+  auto r = uint8_t{};
+  auto g = uint8_t{};
+  auto b = uint8_t{};
 
-    r = g = b = iterations * UINT8_MAX / max_iterations;
+  r = g = b = ratio * UINT8_MAX;
 
-    data[pixel_index] = MakeRGB(r, g, b);
-  }
+  return MakeRGB(r, g, b);
 }
 
-__global__ void KenrelMode1(uint32_t* data, uint32_t image_width,
-                            uint32_t image_height, uint32_t max_iterations) {
+__device__ uint32_t Mode1(uint32_t iterations, uint32_t max_iterations) {
+
+  const auto ratio = static_cast<double_t>(iterations) /
+                     static_cast<double_t>(max_iterations);
+
+  const auto v = 1.0 - pow(cos(CUDART_PI_F * ratio), 2.);
+  const auto a = 111.;
+  const auto L = a - (a * v);
+  const auto C = 28. + (a - (a * v));
+  const auto H = fmod(pow(360. * ratio, 1.5), 360.);
+
+  auto r = uint8_t{};
+  auto g = uint8_t{};
+  auto b = uint8_t{};
+
+  LchToRGB(L, C, H, r, g, b);
+
+  return MakeRGB(r, g, b);
+}
+
+__device__ uint32_t Mode2(uint32_t iterations, uint32_t max_iterations) {
+
+  const auto ratio = static_cast<double_t>(iterations) /
+                     static_cast<double_t>(max_iterations);
+
+  const auto h = fmod(pow(ratio * 360., 1.5), 360.);
+  const auto s = 100.;
+  const auto v = ratio * 100.;
+
+  auto r = uint8_t{};
+  auto g = uint8_t{};
+  auto b = uint8_t{};
+
+  HSVToRGB(h, s, v, r, g, b);
+
+  return MakeRGB(r, g, b);
+}
+
+__device__ uint32_t Mode3(uint32_t iterations, uint32_t max_iterations) {
+
+  const auto ratio = static_cast<double_t>(iterations) /
+                     static_cast<double_t>(max_iterations);
+
+  const auto t = ratio;
+  const auto r = static_cast<uint8_t>(9. * (1 - t) * t * t * t * UINT8_MAX);
+  const auto g = static_cast<uint8_t>(15. * (1 - t) * (1 - t) * t * t * UINT8_MAX);
+  const auto b = static_cast<uint8_t>(8.5 * (1 - t) * (1 - t) * (1 - t) * t * UINT8_MAX);
+
+  return MakeRGB(r, g, b);
+}
+
+__device__ uint32_t Mode4(uint32_t iterations, uint32_t max_iterations) {
+
+  const auto ratio = static_cast<double_t>(iterations) /
+                     static_cast<double_t>(max_iterations);
+
+  const auto hue = 240. * sqrt(ratio);
+
+  const auto c = 1.;
+  const auto x = c * (1. - fabs(fmod(hue / 60., 2.) - 1.));
+  const auto m = 0.;
+
+  auto r = double_t{};
+  auto g = double_t{};
+  auto b = double_t{};
+
+  if (hue < 60.) {
+    r = c;
+    g = x;
+    b = 0;
+  } else if (hue < 120.) {
+    r = x;
+    g = c;
+    b = 0;
+  } else if (hue < 180.) {
+    r = 0;
+    g = c;
+    b = x;
+  } else if (hue < 240.) {
+    r = 0;
+    g = x;
+    b = c;
+  } else if (hue < 300.) {
+    r = x;
+    g = 0;
+    b = c;
+  } else {
+    r = c;
+    g = 0;
+    b = x;
+  }
+
+  r = (r + m) * UINT8_MAX;
+  g = (g + m) * UINT8_MAX;
+  b = (b + m) * UINT8_MAX;
+
+  return MakeRGB(r, g, b);
+}
+
+__device__ uint32_t InterpolateColor(uint32_t color1, uint32_t color2,
+                                float_t fraction) {
+
+  const auto r1 = static_cast<uint8_t>((color1 >> 16) & 0xff);
+  const auto r2 = static_cast<uint8_t>((color2 >> 16) & 0xff);
+  const auto g1 = static_cast<uint8_t>((color1 >> 8) & 0xff);
+  const auto g2 = static_cast<uint8_t>((color2 >> 8) & 0xff);
+  const auto b1 = static_cast<uint8_t>(color1 & 0xff);
+  const auto b2 = static_cast<uint8_t>(color2 & 0xff);
+
+  return static_cast<uint32_t>((r2 - r1) * fraction + r1) << 16 |
+         static_cast<uint32_t>((g2 - g1) * fraction + g1) << 8 |
+         static_cast<uint32_t>((b2 - b1) * fraction + b1);
+}
+
+template <typename ColoringFunction>
+__device__ void SmoothColor(ColoringFunction coloring_function, uint32_t* data,
+                            uint32_t image_width, uint32_t image_height,
+                            uint32_t max_iterations) {
 
   const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
   if (pixel_index < image_width * image_height) {
-    const auto iterations = data[pixel_index];
-
-    const auto ratio = static_cast<double_t>(iterations) /
-                       static_cast<double_t>(max_iterations);
-
-    if (iterations == max_iterations) {
+    const auto iterations_f = reinterpret_cast<float_t*>(data)[pixel_index];
+    const auto iterations = static_cast<uint32_t>(floorf(iterations_f));
+    if (iterations >= max_iterations) {
       data[pixel_index] = MakeRGB(0, 0, 0);
       return;
     }
 
-    const auto v = 1.0 - pow(cos(CUDART_PI_F * ratio), 2.);
-    const auto a = 111.;
-    const auto L = a - (a * v);
-    const auto C = 28. + (a - (a * v));
-    const auto H = fmod(pow(360. * ratio, 1.5), 360.);
+    const auto color1 = coloring_function(iterations, max_iterations);
+    const auto color2 = coloring_function(iterations + 1, max_iterations);
+    const auto fraction = fmod(iterations_f, 1.f);
 
-    auto r = uint8_t{};
-    auto g = uint8_t{};
-    auto b = uint8_t{};
-
-    LchToRGB(L, C, H, r, g, b);
-
-    data[pixel_index] = MakeRGB(r, g, b);
+    data[pixel_index] = InterpolateColor(color1, color2, fraction);
   }
+}
+
+template <typename ColoringFunction>
+__device__ void NativeColor(ColoringFunction coloring_function, uint32_t* data,
+                            uint32_t image_width, uint32_t image_height,
+                            uint32_t max_iterations) {
+  const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
+  if (pixel_index < image_width * image_height) {
+    const auto iterations_f = reinterpret_cast<float_t*>(data)[pixel_index];
+    const auto iterations = static_cast<uint32_t>(floorf(iterations_f));
+    if (iterations >= max_iterations) {
+      data[pixel_index] = MakeRGB(0, 0, 0);
+      return;
+    }
+
+    data[pixel_index] = coloring_function(iterations, max_iterations);
+  }
+}
+
+__global__ void KenrelDefaultMode(uint32_t* data, uint32_t image_width,
+                                  uint32_t image_height,
+                                  uint32_t max_iterations) {
+  SmoothColor(DefaultMode, data, image_width, image_height, max_iterations);
+}
+
+__global__ void KenrelMode1(uint32_t* data, uint32_t image_width,
+                            uint32_t image_height, uint32_t max_iterations) {
+  SmoothColor(Mode1, data, image_width, image_height, max_iterations);
 }
 
 __global__ void KenrelMode2(uint32_t* data, uint32_t image_width,
                             uint32_t image_height, uint32_t max_iterations) {
 
-  const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
-  if (pixel_index < image_width * image_height) {
-    const auto iterations = data[pixel_index];
-
-    const auto ratio = static_cast<double_t>(iterations) /
-                       static_cast<double_t>(max_iterations);
-
-    if (iterations == max_iterations) {
-      data[pixel_index] = MakeRGB(0, 0, 0);
-      return;
-    }
-
-    const auto h = fmod(pow(ratio * 360., 1.5), 360.);
-    const auto s = 100.;
-    const auto v = ratio * 100.;
-
-    auto r = uint8_t{};
-    auto g = uint8_t{};
-    auto b = uint8_t{};
-
-    HSVToRGB(h, s, v, r, g, b);
-
-    data[pixel_index] = MakeRGB(r, g, b);
-  }
+  SmoothColor(Mode2, data, image_width, image_height, max_iterations);
 }
 
 __global__ void KenrelMode3(uint32_t* data, uint32_t image_width,
                             uint32_t image_height, uint32_t max_iterations) {
-
-  const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
-  if (pixel_index < image_width * image_height) {
-    const auto iterations = data[pixel_index];
-
-    const auto ratio = static_cast<double_t>(iterations) /
-                       static_cast<double_t>(max_iterations);
-
-    if (iterations == max_iterations) {
-      data[pixel_index] = MakeRGB(0, 0, 0);
-      return;
-    }
-
-    const auto t = ratio;
-    const auto r = static_cast<uint8_t>(9. * (1 - t) * t * t * t * UINT8_MAX);
-    const auto g = static_cast<uint8_t>(15. * (1 - t) * (1 - t) * t * t * UINT8_MAX);
-    const auto b = static_cast<uint8_t>(8.5 * (1 - t) * (1 - t) * (1 - t) * t * UINT8_MAX);
-
-    data[pixel_index] = MakeRGB(r, g, b);
-  }
+  SmoothColor(Mode3, data, image_width, image_height, max_iterations);
 }
 
 __global__ void KenrelMode4(uint32_t* data, uint32_t image_width,
                             uint32_t image_height, uint32_t max_iterations) {
-
-  const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
-  if (pixel_index < image_width * image_height) {
-    const auto iterations = data[pixel_index];
-
-    const auto ratio = static_cast<double_t>(iterations) /
-                       static_cast<double_t>(max_iterations);
-
-    if (iterations == max_iterations) {
-      data[pixel_index] = MakeRGB(0, 0, 0);
-      return;
-    }
-
-    const auto hue = 240. * sqrt(ratio);
-
-    const auto c = 1.;
-    const auto x = c * (1. - fabs(fmod(hue / 60., 2.) - 1.));
-    const auto m = 0.;
-
-    auto r = double_t{};
-    auto g = double_t{};
-    auto b = double_t{};
-
-    if (hue < 60.) {
-      r = c;
-      g = x;
-      b = 0;
-    } else if (hue < 120.) {
-      r = x;
-      g = c;
-      b = 0;
-    } else if (hue < 180.) {
-      r = 0;
-      g = c;
-      b = x;
-    } else if (hue < 240.) {
-      r = 0;
-      g = x;
-      b = c;
-    } else if (hue < 300.) {
-      r = x;
-      g = 0;
-      b = c;
-    } else {
-      r = c;
-      g = 0;
-      b = x;
-    }
-
-    r = (r + m) * UINT8_MAX;
-    g = (g + m) * UINT8_MAX;
-    b = (b + m) * UINT8_MAX;
-
-    data[pixel_index] = MakeRGB(r, g, b);
-  }
+  SmoothColor(Mode4, data, image_width, image_height, max_iterations);
 }
 
 }  // namespace Coloring

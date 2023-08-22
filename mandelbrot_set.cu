@@ -7,10 +7,11 @@
 #include "coloring.cuh"
 
 template <typename T>
-__global__ void KernelMandelbrotSet(uint32_t* data, uint32_t width,
+__global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
                                     uint32_t height, T center_real,
                                     T center_imag, T zoom_factor,
-                                    uint32_t max_iterations) {
+                                    uint32_t max_iterations,
+                                    bool smoothing_step = false) {
 
   const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -45,8 +46,13 @@ __global__ void KernelMandelbrotSet(uint32_t* data, uint32_t width,
       real = real_squared - imag_squared + real0;
     }
 
-    // TODO: add smoothing step?
-    data[pixel_index] = iterations;
+    if (smoothing_step && iterations < max_iterations) {
+      const auto log_zn = logf(real * real + imag * imag) / 2.;
+      const auto nu = static_cast<float_t>(logf(log_zn / logf(2)) / logf(2));
+      data[pixel_index] = static_cast<float_t>(iterations) + 1.f - nu;
+    } else {
+      data[pixel_index] = static_cast<float_t>(iterations);
+    }
   }
 }
 
@@ -66,9 +72,11 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
   constexpr auto kThreadsPerBlock = 512;
   const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;
 
+  const auto smoothing_step = true;
+
   KernelMandelbrotSet<double_t><<<kBlocksPerGrid, kThreadsPerBlock>>>(
-      device_data, image_width, image_height, center_real, center_imag,
-      zoom_factor, max_iterations);
+      reinterpret_cast<float_t*>(device_data), image_width, image_height,
+      center_real, center_imag, zoom_factor, max_iterations, smoothing_step);
 
   switch (coloring_mode) {
     case 1:
