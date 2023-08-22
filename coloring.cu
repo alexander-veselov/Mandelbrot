@@ -6,8 +6,8 @@ __device__ constexpr uint32_t MakeRGB(uint8_t r, uint8_t g, uint8_t b) {
   return b + (g << 8) + (r << 16);
 }
 
-__device__ uint32_t InterpolateColor(uint32_t color1, uint32_t color2,
-                                     double_t fraction) {
+__device__ constexpr uint32_t InterpolateColor(uint32_t color1, uint32_t color2,
+                                               double_t fraction) {
 
   const auto r1 = static_cast<uint8_t>((color1 >> 16) & 0xff);
   const auto r2 = static_cast<uint8_t>((color2 >> 16) & 0xff);
