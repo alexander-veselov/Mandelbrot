@@ -95,6 +95,10 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
       Coloring::KenrelMode4<<<kBlocksPerGrid, kThreadsPerBlock>>>(
           device_data, image_width, image_height, max_iterations);
       break;
+    case 5:
+      Coloring::KenrelMode5<<<kBlocksPerGrid, kThreadsPerBlock>>>(
+          device_data, image_width, image_height, max_iterations);
+      break;
     default:
       Coloring::KenrelDefaultMode<<<kBlocksPerGrid, kThreadsPerBlock>>>(
           device_data, image_width, image_height, max_iterations);

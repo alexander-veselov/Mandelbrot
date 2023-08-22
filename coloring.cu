@@ -6,6 +6,21 @@ __device__ constexpr uint32_t MakeRGB(uint8_t r, uint8_t g, uint8_t b) {
   return b + (g << 8) + (r << 16);
 }
 
+__device__ uint32_t InterpolateColor(uint32_t color1, uint32_t color2,
+                                     double_t fraction) {
+
+  const auto r1 = static_cast<uint8_t>((color1 >> 16) & 0xff);
+  const auto r2 = static_cast<uint8_t>((color2 >> 16) & 0xff);
+  const auto g1 = static_cast<uint8_t>((color1 >> 8) & 0xff);
+  const auto g2 = static_cast<uint8_t>((color2 >> 8) & 0xff);
+  const auto b1 = static_cast<uint8_t>(color1 & 0xff);
+  const auto b2 = static_cast<uint8_t>(color2 & 0xff);
+
+  return static_cast<uint32_t>((r2 - r1) * fraction + r1) << 16 |
+         static_cast<uint32_t>((g2 - g1) * fraction + g1) << 8 |
+         static_cast<uint32_t>((b2 - b1) * fraction + b1);
+}
+
 __device__ void LchToRGB(double L, double C, double H, uint8_t& ROut, uint8_t& GOut,
                          uint8_t& BOut) {
 
@@ -253,19 +268,27 @@ __device__ uint32_t Mode4(uint32_t iterations, uint32_t max_iterations) {
   return MakeRGB(r, g, b);
 }
 
-__device__ uint32_t InterpolateColor(uint32_t color1, uint32_t color2,
-                                float_t fraction) {
+__device__ uint32_t Mode5(uint32_t iterations, uint32_t max_iterations) {
 
-  const auto r1 = static_cast<uint8_t>((color1 >> 16) & 0xff);
-  const auto r2 = static_cast<uint8_t>((color2 >> 16) & 0xff);
-  const auto g1 = static_cast<uint8_t>((color1 >> 8) & 0xff);
-  const auto g2 = static_cast<uint8_t>((color2 >> 8) & 0xff);
-  const auto b1 = static_cast<uint8_t>(color1 & 0xff);
-  const auto b2 = static_cast<uint8_t>(color2 & 0xff);
+  static uint32_t palette[] = {
+      MakeRGB( 30,  16,  48), MakeRGB( 15,  12,  94), MakeRGB(  3,  28, 150),
+      MakeRGB(  6,  50, 188), MakeRGB( 20,  80, 195), MakeRGB( 57, 125, 209),
+      MakeRGB( 73, 155, 216), MakeRGB(134, 181, 229), MakeRGB(170, 210, 235),
+      MakeRGB(240, 249, 250), MakeRGB(246, 231, 161), MakeRGB(252, 212,  70),
+      MakeRGB(251, 175,  42), MakeRGB(215, 126,  41), MakeRGB(187,  79,  39),
+      MakeRGB(110,  50,  53)
+  };
 
-  return static_cast<uint32_t>((r2 - r1) * fraction + r1) << 16 |
-         static_cast<uint32_t>((g2 - g1) * fraction + g1) << 8 |
-         static_cast<uint32_t>((b2 - b1) * fraction + b1);
+  constexpr auto kPaletteSize = sizeof(palette) / sizeof(uint32_t);
+  
+  if (0 < iterations && iterations < max_iterations) {
+    constexpr auto kStep = 64;
+    constexpr auto kInterval = 1. / kPaletteSize;
+    const auto hue = static_cast<double_t>(iterations % kStep) / kStep;
+    const auto n = static_cast<uint32_t>(hue / kInterval);
+    const auto fraction = fmod(hue, kInterval) / kInterval;
+    return InterpolateColor(palette[n], palette[(n + 1) % kPaletteSize], fraction);
+  }
 }
 
 template <typename ColoringFunction>
@@ -332,6 +355,11 @@ __global__ void KenrelMode3(uint32_t* data, uint32_t image_width,
 __global__ void KenrelMode4(uint32_t* data, uint32_t image_width,
                             uint32_t image_height, uint32_t max_iterations) {
   SmoothColor(Mode4, data, image_width, image_height, max_iterations);
+}
+
+__global__ void KenrelMode5(uint32_t* data, uint32_t image_width,
+                            uint32_t image_height, uint32_t max_iterations) {
+  SmoothColor(Mode5, data, image_width, image_height, max_iterations);
 }
 
 }  // namespace Coloring
