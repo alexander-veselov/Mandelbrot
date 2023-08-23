@@ -2,23 +2,27 @@
 
 #include "coloring.cuh"
 
-__device__ constexpr uint32_t MakeRGB(uint8_t r, uint8_t g, uint8_t b) {
-  return b + (g << 8) + (r << 16);
+__device__ constexpr uint32_t MakeRGB(uint8_t r, uint8_t g, uint8_t b,
+                                      uint8_t a = 255) {
+  return r + (g << 8) + (b << 16) + (a << 24);
 }
 
 __device__ constexpr uint32_t InterpolateColor(uint32_t color1, uint32_t color2,
                                                double_t fraction) {
 
-  const auto r1 = static_cast<uint8_t>((color1 >> 16) & 0xff);
-  const auto r2 = static_cast<uint8_t>((color2 >> 16) & 0xff);
+  const auto b1 = static_cast<uint8_t>((color1 >> 16) & 0xff);
+  const auto b2 = static_cast<uint8_t>((color2 >> 16) & 0xff);
   const auto g1 = static_cast<uint8_t>((color1 >> 8) & 0xff);
   const auto g2 = static_cast<uint8_t>((color2 >> 8) & 0xff);
-  const auto b1 = static_cast<uint8_t>(color1 & 0xff);
-  const auto b2 = static_cast<uint8_t>(color2 & 0xff);
+  const auto r1 = static_cast<uint8_t>(color1 & 0xff);
+  const auto r2 = static_cast<uint8_t>(color2 & 0xff);
 
-  return static_cast<uint32_t>((r2 - r1) * fraction + r1) << 16 |
-         static_cast<uint32_t>((g2 - g1) * fraction + g1) << 8 |
-         static_cast<uint32_t>((b2 - b1) * fraction + b1);
+  const auto r = static_cast<uint32_t>((r2 - r1) * fraction + r1);
+  const auto g = static_cast<uint32_t>((g2 - g1) * fraction + g1) << 8;
+  const auto b = static_cast<uint32_t>((b2 - b1) * fraction + b1) << 16;
+  constexpr auto kAlpha = static_cast<uint32_t>(uint8_t{255} << 24);
+
+  return r + g + b + kAlpha;
 }
 
 __device__ void LchToRGB(double L, double C, double H, uint8_t& ROut, uint8_t& GOut,
@@ -288,6 +292,8 @@ __device__ uint32_t Mode5(uint32_t iterations, uint32_t max_iterations) {
     const auto n = static_cast<uint32_t>(hue / kInterval);
     const auto fraction = fmod(hue, kInterval) / kInterval;
     return InterpolateColor(palette[n], palette[(n + 1) % kPaletteSize], fraction);
+  } else {
+    return MakeRGB(0, 0, 0);
   }
 }
 

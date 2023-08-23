@@ -17,7 +17,7 @@ constexpr auto kSize = kWindowWidth * kWindowHeight;
 constexpr auto kSizeInBytes = kSize * sizeof(Image::value_type);
 
 constexpr auto kColoringMode = 5;
-constexpr auto kMaxIterations = 256;
+constexpr auto kMaxIterations = 512;
 constexpr auto kFPSUpdateRate = 10;  // 10 times per second
 constexpr auto kZoomFactor = 1.5;
 // TODO: make smoothing option
@@ -60,19 +60,8 @@ void ToRGB(Image::value_type pixel, uint8_t& r, uint8_t& g, uint8_t& b) {
 }
 
 void DrawImage(const Image& image) {
-  glBegin(GL_POINTS);
-  auto r = uint8_t{};
-  auto g = uint8_t{};
-  auto b = uint8_t{};
-  for (auto y = 0; y < kWindowHeight; ++y) {
-    for (auto x = 0; x < kWindowWidth; ++x) {
-      const auto pixel = image[y * kWindowWidth + x];
-      ToRGB(pixel, r, g, b);
-      glColor3ub(r, g, b);
-      glVertex2d(x, y);
-    }
-  }
-  glEnd();
+  glDrawPixels(kWindowWidth, kWindowHeight, GL_RGBA, GL_UNSIGNED_BYTE,
+               image.data());
 }
 
 class Explorer
