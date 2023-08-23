@@ -8,11 +8,14 @@
 
 using Image = std::vector<uint32_t>;
 
-constexpr auto kEnableVSync = false;
-
 // TODO: make not global
-constexpr auto kWindowWidth = 1024;
-constexpr auto kWindowHeight = 768;
+
+constexpr auto kEnableVSync = false;
+constexpr auto kFullscreen = false;
+constexpr auto kWindowWidth = kFullscreen ? (16 * 80) : 1024;
+constexpr auto kWindowHeight = kFullscreen ? (9 * 80) : 768;
+
+constexpr auto kWinwowName = "Mandelbrot set";
 constexpr auto kSize = kWindowWidth * kWindowHeight;
 constexpr auto kSizeInBytes = kSize * sizeof(Image::value_type);
 
@@ -193,7 +196,13 @@ int main() {
     glfwTerminate();
   }
 
-  const auto window = glfwCreateWindow(kWindowWidth, kWindowHeight, "Mandelbrot set", nullptr, nullptr);
+  auto monitor = static_cast<GLFWmonitor*>(nullptr);
+  if (kFullscreen) {
+    monitor = glfwGetPrimaryMonitor();
+  }
+
+  const auto window = glfwCreateWindow(kWindowWidth, kWindowHeight, kWinwowName,
+                                       monitor, nullptr);
 
   glfwMakeContextCurrent(window);
   glfwSwapInterval(kEnableVSync);
