@@ -17,7 +17,7 @@ constexpr auto kSize = kWindowWidth * kWindowHeight;
 constexpr auto kSizeInBytes = kSize * sizeof(Image::value_type);
 
 constexpr auto kColoringMode = 5;
-constexpr auto kMaxIterations = 512;
+constexpr auto kMaxIterations = 1024;
 constexpr auto kFPSUpdateRate = 10;  // 10 times per second
 constexpr auto kZoomFactor = 1.5;
 // TODO: make smoothing option

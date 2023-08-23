@@ -33,11 +33,16 @@ __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
     auto imag = imag0;
     auto iterations = max_iterations;
 
+    auto limit = T{4};
+    if (smoothing_step) {
+      limit = T{16};
+    }
+
     for (auto i = uint32_t{0}; i < max_iterations; ++i) {
       const auto real_squared = real * real;
       const auto imag_squared = imag * imag;
 
-      if (real_squared + imag_squared > T{4}) {
+      if (real_squared + imag_squared > limit) {
         iterations = i;
         break;
       }
