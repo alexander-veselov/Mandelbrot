@@ -1,11 +1,13 @@
 #include "application_glfw.h"
-#include "mandelbrot_set.cuh"
-#include "fps_counter.h"
-#include "explorer.h"
-#include "image.h"
 
 #include <GLFW/glfw3.h>
-#include <iostream> // TODO: make logger
+
+#include <iostream>  // TODO: make logger
+
+#include "explorer.h"
+#include "fps_counter.h"
+#include "image.h"
+#include "mandelbrot_set.cuh"
 
 namespace MandelbrotSet {
 
@@ -42,46 +44,45 @@ Complex GetCurrentCursorComplex(GLFWwindow* window, double_t screen_width,
                          zoom_factor);
 }
 
-// TODO: make not global
-auto explorer = Explorer{{-0.5, 0.0}, 1.0};
-
-// TODO: Figure out how to pass non-global objects to callbacks
-void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+void ApplicationGLFW::MouseButtonCallback(GLFWwindow* window, int button,
+                                          int action, int mods) {
   if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
     const auto mouse_position = GetCurrentCursorComplex(
-        window, kWindowWidth, kWindowHeight, explorer.GetCenterPosition(),
-        explorer.GetZoom());
+        window, kWindowWidth, kWindowHeight, explorer_.GetCenterPosition(),
+        explorer_.GetZoom());
 
-    explorer.MouseClickedEvent(mouse_position);
+    explorer_.MouseClickedEvent(mouse_position);
   }
 
   if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
     const auto mouse_position = GetCurrentCursorComplex(
-        window, kWindowWidth, kWindowHeight, explorer.GetCenterPosition(),
-        explorer.GetZoom());
+        window, kWindowWidth, kWindowHeight, explorer_.GetCenterPosition(),
+        explorer_.GetZoom());
 
-    explorer.MouseReleasedEvent(mouse_position);
+    explorer_.MouseReleasedEvent(mouse_position);
   }
 }
 
-void CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
+void ApplicationGLFW::CursorPosCallback(GLFWwindow* window, double xpos,
+                                        double ypos) {
   const auto mouse_position =
       ScreenToComplex(xpos, ypos, kWindowWidth, kWindowHeight,
-                      explorer.GetCenterPosition(), explorer.GetZoom());
+                      explorer_.GetCenterPosition(), explorer_.GetZoom());
 
-  explorer.MouseMovedEvent(mouse_position);
+  explorer_.MouseMovedEvent(mouse_position);
 }
 
-void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+void ApplicationGLFW::ScrollCallback(GLFWwindow* window, double xoffset,
+                                     double yoffset) {
   if (yoffset > 0.) {
-    explorer.MouseScrollEvent(Explorer::ScrollEvent::kScrollUp);
+    explorer_.MouseScrollEvent(Explorer::ScrollEvent::kScrollUp);
   }
   if (yoffset < 0.) {
-    explorer.MouseScrollEvent(Explorer::ScrollEvent::kScrollDown);
+    explorer_.MouseScrollEvent(Explorer::ScrollEvent::kScrollDown);
   }
 }
 
-ApplicationGLFW::ApplicationGLFW() {
+ApplicationGLFW::ApplicationGLFW() : explorer_{{-0.5, 0.0}, 1.0} {
   if (glfwInit() != GLFW_TRUE) {
     glfwTerminate();
   }
@@ -94,6 +95,7 @@ ApplicationGLFW::ApplicationGLFW() {
   window_ = glfwCreateWindow(kWindowWidth, kWindowHeight, kWinwowName, monitor,
                              nullptr);
 
+  glfwSetWindowUserPointer(window_, this);
   glfwMakeContextCurrent(window_);
   glfwSwapInterval(kEnableVSync);
 
@@ -102,6 +104,22 @@ ApplicationGLFW::ApplicationGLFW() {
   glLoadIdentity();
 
   glOrtho(0.0, kWindowWidth, 0.0, kWindowHeight, 0.0, 1.0);
+
+  auto MouseButtonCallback = [](GLFWwindow* window, int button, int action,
+                                int mods) {
+    static_cast<ApplicationGLFW*>(glfwGetWindowUserPointer(window))
+        ->MouseButtonCallback(window, button, action, mods);
+  };
+
+  auto CursorPosCallback = [](GLFWwindow* window, double xpos, double ypos) {
+    static_cast<ApplicationGLFW*>(glfwGetWindowUserPointer(window))
+        ->CursorPosCallback(window, xpos, ypos);
+  };
+
+  auto ScrollCallback = [](GLFWwindow* window, double xoffset, double yoffset) {
+    static_cast<ApplicationGLFW*>(glfwGetWindowUserPointer(window))
+        ->ScrollCallback(window, xoffset, yoffset);
+  };
 
   glfwSetMouseButtonCallback(window_, MouseButtonCallback);
   glfwSetCursorPosCallback(window_, CursorPosCallback);
@@ -114,7 +132,6 @@ ApplicationGLFW::~ApplicationGLFW() {
 }
 
 int ApplicationGLFW::Run() {
-  
   const auto current_time = glfwGetTime();
   auto fps_counter = FPSCounter{kFPSUpdateRate, current_time};
 
@@ -124,17 +141,17 @@ int ApplicationGLFW::Run() {
   auto current_zoom = double_t{};
 
   while (!glfwWindowShouldClose(window_)) {
-    const auto center = explorer.GetDisplayPosition();
-    const auto zoom = explorer.GetZoom();
+    const auto center = explorer_.GetDisplayPosition();
+    const auto zoom = explorer_.GetZoom();
 
     const auto dirty = current_center.real != center.real ||
                        current_center.imag != center.imag ||
                        current_zoom != zoom;
 
     if (dirty) {
-      MandelbrotSet::Visualize(image.GetData(), kWindowWidth,
-                               kWindowHeight, center.real, center.imag, zoom,
-                               kMaxIterations, kColoringMode, kSmoothing);
+      MandelbrotSet::Visualize(image.GetData(), kWindowWidth, kWindowHeight,
+                               center.real, center.imag, zoom, kMaxIterations,
+                               kColoringMode, kSmoothing);
       current_center = center;
       current_zoom = zoom;
     }

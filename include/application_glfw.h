@@ -1,6 +1,7 @@
 #pragma once
 
 #include "application.h"
+#include "explorer.h"
 
 #include <vector>
 
@@ -8,8 +9,6 @@
 struct GLFWwindow;
 
 namespace MandelbrotSet {
-
-
 
 constexpr auto kEnableVSync = false;
 constexpr auto kFullscreen = false;
@@ -30,7 +29,13 @@ class ApplicationGLFW : public Application {
   int Run() override;
 
  private:
+  void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+  void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
+  void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+
+ private:
   GLFWwindow* window_;
+  Explorer explorer_;
 };
 
 }  // namespace MandelbrotSet
