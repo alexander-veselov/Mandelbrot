@@ -17,12 +17,14 @@
     <ClInclude Include="include\defines.cuh" />
     <ClInclude Include="include\explorer.h" />
     <ClInclude Include="include\fps_counter.h" />
+    <ClInclude Include="include\image.h" />
     <ClInclude Include="include\mandelbrot_set.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\application_glfw.cpp" />
     <ClCompile Include="src\explorer.cpp" />
     <ClCompile Include="src\fps_counter.cpp" />
+    <ClCompile Include="src\image.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>

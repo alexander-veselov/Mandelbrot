@@ -2,22 +2,18 @@
 #include "mandelbrot_set.cuh"
 #include "fps_counter.h"
 #include "explorer.h"
+#include "image.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream> // TODO: make logger
 
 namespace MandelbrotSet {
 
-
-void ToRGB(Image::value_type pixel, uint8_t& r, uint8_t& g, uint8_t& b) {
-  r = (pixel >> 16) & 0xFF;
-  g = (pixel >> 8) & 0xFF;
-  b = (pixel >> 0) & 0xFF;
-}
-
 void DrawImage(const Image& image) {
-  glDrawPixels(kWindowWidth, kWindowHeight, GL_RGBA, GL_UNSIGNED_BYTE,
-               image.data());
+  static_assert(std::is_same_v<Image::Type, uint32_t>,
+                "Image::Type must be uint32_t");
+  glDrawPixels(image.GetWidth(), image.GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE,
+               image.GetData());
 }
 
 Complex ScreenToComplex(double_t screen_x, double_t screen_y,
@@ -122,7 +118,7 @@ int ApplicationGLFW::Run() {
   const auto current_time = glfwGetTime();
   auto fps_counter = FPSCounter{kFPSUpdateRate, current_time};
 
-  auto image = std::vector<Image::value_type>(kSize);
+  auto image = Image(kWindowWidth, kWindowHeight);
 
   auto current_center = Complex{};
   auto current_zoom = double_t{};
@@ -136,9 +132,9 @@ int ApplicationGLFW::Run() {
                        current_zoom != zoom;
 
     if (dirty) {
-      MandelbrotSet::Visualize(image.data(), kWindowWidth, kWindowHeight,
-                               center.real, center.imag, zoom, kMaxIterations,
-                               kColoringMode, kSmoothing);
+      MandelbrotSet::Visualize(image.GetData(), kWindowWidth,
+                               kWindowHeight, center.real, center.imag, zoom,
+                               kMaxIterations, kColoringMode, kSmoothing);
       current_center = center;
       current_zoom = zoom;
     }
