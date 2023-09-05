@@ -10,6 +10,25 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\application.h" />
+    <ClInclude Include="include\application_glfw.h" />
+    <ClInclude Include="include\coloring.cuh" />
+    <ClInclude Include="include\defines.cuh" />
+    <ClInclude Include="include\explorer.h" />
+    <ClInclude Include="include\fps_counter.h" />
+    <ClInclude Include="include\mandelbrot_set.cuh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\application_glfw.cpp" />
+    <ClCompile Include="src\explorer.cpp" />
+    <ClCompile Include="src\fps_counter.cpp" />
+    <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\coloring.cu" />
+    <CudaCompile Include="src\mandelbrot_set.cu" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -87,26 +106,6 @@
       <CodeGeneration>compute_89,sm_89</CodeGeneration>
     </CudaCompile>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\main.cpp">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="src\coloring.cu" />
-    <CudaCompile Include="src\mandelbrot_set.cu" />
-    <CudaCompile Include="src\coloring.cu" />
-    <CudaCompile Include="src\mandelbrot_set.cu" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\coloring.cuh" />
-    <ClInclude Include="include\defines.cuh" />
-    <ClInclude Include="include\mandelbrot_set.cuh" />
-    <ClInclude Include="source\coloring.cuh" />
-    <ClInclude Include="source\defines.cuh" />
-    <ClInclude Include="source\mandelbrot_set.cuh" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(CUDAPropsPath)\CUDA 12.2.targets" />
