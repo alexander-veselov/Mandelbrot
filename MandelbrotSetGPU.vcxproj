@@ -53,7 +53,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)3rd-party\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)3rd-party\glfw\include;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -73,7 +73,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)3rd-party\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)3rd-party\glfw\include;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -88,18 +88,24 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\main.cpp">
       <FileType>Document</FileType>
     </ClCompile>
+    <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="coloring.cu" />
-    <CudaCompile Include="mandelbrot_set.cu" />
+    <CudaCompile Include="src\coloring.cu" />
+    <CudaCompile Include="src\mandelbrot_set.cu" />
+    <CudaCompile Include="src\coloring.cu" />
+    <CudaCompile Include="src\mandelbrot_set.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="coloring.cuh" />
-    <ClInclude Include="defines.cuh" />
-    <ClInclude Include="mandelbrot_set.cuh" />
+    <ClInclude Include="include\coloring.cuh" />
+    <ClInclude Include="include\defines.cuh" />
+    <ClInclude Include="include\mandelbrot_set.cuh" />
+    <ClInclude Include="source\coloring.cuh" />
+    <ClInclude Include="source\defines.cuh" />
+    <ClInclude Include="source\mandelbrot_set.cuh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

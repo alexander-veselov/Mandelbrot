@@ -15,26 +15,34 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="mandelbrot_set.cu">
+    <CudaCompile Include="src\mandelbrot_set.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
-    <CudaCompile Include="coloring.cu">
+    <CudaCompile Include="src\coloring.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
+    <CudaCompile Include="src\coloring.cu" />
+    <CudaCompile Include="src\mandelbrot_set.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mandelbrot_set.cuh">
+    <ClInclude Include="source\mandelbrot_set.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="defines.cuh">
+    <ClInclude Include="source\defines.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="coloring.cuh">
+    <ClInclude Include="source\coloring.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\coloring.cuh" />
+    <ClInclude Include="include\defines.cuh" />
+    <ClInclude Include="include\mandelbrot_set.cuh" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
