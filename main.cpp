@@ -23,7 +23,7 @@ constexpr auto kColoringMode = 5;
 constexpr auto kMaxIterations = 1024;
 constexpr auto kFPSUpdateRate = 10;  // 10 times per second
 constexpr auto kZoomFactor = 1.5;
-// TODO: make smoothing option
+constexpr auto kSmoothing = true;
 
 struct Complex {
   double_t real;
@@ -235,8 +235,8 @@ int main() {
 
     if (dirty) {
       MandelbrotSet::Visualize(image.data(), kWindowWidth, kWindowHeight,
-                               center.real, center.imag, zoom,
-                               kColoringMode, kMaxIterations);
+                               center.real, center.imag, zoom, kMaxIterations,
+                               kColoringMode, kSmoothing);
       current_center = center;
       current_zoom = zoom;
     }

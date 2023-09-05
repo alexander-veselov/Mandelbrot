@@ -65,7 +65,8 @@ namespace MandelbrotSet {
 
 void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
                double_t center_real, double_t center_imag, double_t zoom_factor,
-               uint32_t coloring_mode, uint32_t max_iterations) {
+               uint32_t max_iterations, uint32_t coloring_mode,
+               bool smoothing) {
 
   const auto image_size = image_width * image_height;
   const auto image_size_in_bytes = image_size * sizeof(uint32_t);
@@ -77,11 +78,9 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
   constexpr auto kThreadsPerBlock = 512;
   const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;
 
-  const auto smoothing_step = true;
-
   KernelMandelbrotSet<double_t><<<kBlocksPerGrid, kThreadsPerBlock>>>(
       reinterpret_cast<float_t*>(device_data), image_width, image_height,
-      center_real, center_imag, zoom_factor, max_iterations, smoothing_step);
+      center_real, center_imag, zoom_factor, max_iterations, smoothing);
 
   switch (coloring_mode) {
     case 1:
