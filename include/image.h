@@ -5,10 +5,10 @@
 namespace MandelbrotSet {
 
 using RGBA = uint32_t;
-using ImageBuffer = std::vector<RGBA>;
 
 class Image {
  public:
+  using ImageBuffer = std::vector<RGBA>;
   using Type = ImageBuffer::value_type;
 
   Image(uint32_t width, uint32_t height);
