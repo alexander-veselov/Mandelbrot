@@ -13,7 +13,7 @@ namespace MandelbrotSet {
 class MandelbrotRendererGLFW {
  public:
   struct RenderOptions {
-    uint32_t coloring_mode = 5;
+    uint32_t coloring_mode = 5; // TODO: Create ColoringMode enum
     uint32_t max_iterations = 1024;
     bool smoothing = true;
   };
