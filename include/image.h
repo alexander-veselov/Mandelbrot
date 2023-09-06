@@ -4,8 +4,8 @@
 
 namespace MandelbrotSet {
 
-using Pixel = uint32_t;
-using ImageBuffer = std::vector<Pixel>;
+using RGBA = uint32_t;
+using ImageBuffer = std::vector<RGBA>;
 
 class Image {
  public:
@@ -14,8 +14,8 @@ class Image {
   Image(uint32_t width, uint32_t height);
   uint32_t GetWidth() const noexcept;
   uint32_t GetHeight() const noexcept;
-  const Pixel* GetData() const noexcept;
-  Pixel* GetData() noexcept;
+  const RGBA* GetData() const noexcept;
+  RGBA* GetData() noexcept;
 
  private:
   uint32_t width_;
