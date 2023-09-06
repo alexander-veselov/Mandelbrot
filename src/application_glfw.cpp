@@ -6,7 +6,6 @@
 
 #include "explorer.h"
 #include "fps_counter.h"
-#include "image.h"
 
 namespace MandelbrotSet {
 
@@ -14,7 +13,7 @@ Complex ScreenToComplex(double_t screen_x, double_t screen_y,
                         double_t screen_width, double_t screen_height,
                         const Complex& center, double_t zoom_factor) {
   // Mandelbrot set parameters
-  constexpr static auto kMandelbrotSetWidth = 3.;   // [-2, 1]
+  constexpr static auto kMandelbrotSetWidth  = 3.;   // [-2, 1]
   constexpr static auto kMandelbrotSetHeight = 2.;  // [-1, 1]
 
   const auto scale = 1. / std::min(screen_width / kMandelbrotSetWidth,
@@ -132,6 +131,8 @@ int ApplicationGLFW::Run() {
   auto fps_counter = FPSCounter{kFPSUpdateRate, glfwGetTime()};
 
   while (!glfwWindowShouldClose(window_)) {
+
+    // TODO: pass RenderOptions explicitly
     renderer_.Render(explorer_.GetDisplayPosition(), explorer_.GetZoom());
 
     glfwSwapBuffers(window_);
