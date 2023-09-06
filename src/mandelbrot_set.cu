@@ -6,6 +6,8 @@
 #include "mandelbrot_set.cuh"
 #include "coloring.cuh"
 
+namespace MandelbrotSet {
+
 template <typename T>
 __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
                                     uint32_t height, T center_real,
@@ -60,8 +62,6 @@ __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
     }
   }
 }
-
-namespace MandelbrotSet {
 
 void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
                double_t center_real, double_t center_imag, double_t zoom_factor,
