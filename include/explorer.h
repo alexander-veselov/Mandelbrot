@@ -1,13 +1,8 @@
 #pragma once
 
-#include <type_traits>
+#include "complex.h"
 
 namespace MandelbrotSet {
-
-struct Complex {
-  double_t real;
-  double_t imag;
-};
 
 class Explorer {
  public:

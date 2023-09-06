@@ -14,11 +14,13 @@
     <ClInclude Include="include\application.h" />
     <ClInclude Include="include\application_glfw.h" />
     <ClInclude Include="include\coloring.cuh" />
+    <ClInclude Include="include\complex.h" />
     <ClInclude Include="include\defines.cuh" />
     <ClInclude Include="include\explorer.h" />
     <ClInclude Include="include\fps_counter.h" />
     <ClInclude Include="include\image.h" />
     <ClInclude Include="include\mandelbrot_set.cuh" />
+    <ClInclude Include="include\mandelbrot_renderer_glfw.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\application_glfw.cpp" />
@@ -26,6 +28,7 @@
     <ClCompile Include="src\fps_counter.cpp" />
     <ClCompile Include="src\image.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\mandelbrot_renderer_glfw.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\coloring.cu" />
