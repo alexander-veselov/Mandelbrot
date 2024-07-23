@@ -109,6 +109,7 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
   }
 
   cudaMemcpy(image, device_data, image_size_in_bytes, cudaMemcpyDeviceToHost);
+  cudaFree(device_data);
 }
 
 }  // namespace MandelbrotSet

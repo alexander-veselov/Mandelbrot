@@ -7,7 +7,6 @@ constexpr auto kWindowWidth = 1024;
 constexpr auto kWindowHeight = 768;
 
 int main() {
-  auto application = std::shared_ptr<MandelbrotSet::Application>(
-      new MandelbrotSet::ApplicationGLFW(kWindowWidth, kWindowHeight));
+  auto application = std::make_unique<MandelbrotSet::ApplicationGLFW>(kWindowWidth, kWindowHeight);
   return application->Run();
 }
