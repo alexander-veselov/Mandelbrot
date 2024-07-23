@@ -16,8 +16,7 @@ void Explorer::MouseClickedEvent(const Complex& position) {
 
 void Explorer::MouseReleasedEvent(const Complex& position) {
   moving_ = false;
-  center_position_.real += click_position_.real - position.real;
-  center_position_.imag -= click_position_.imag - position.imag;
+  center_position_ = display_position_;
 }
 
 void Explorer::MouseMovedEvent(const Complex& position) {
@@ -25,21 +24,32 @@ void Explorer::MouseMovedEvent(const Complex& position) {
     display_position_.real =
         center_position_.real + (click_position_.real - position.real);
     display_position_.imag =
-        center_position_.imag - (click_position_.imag - position.imag);
+        center_position_.imag + (click_position_.imag - position.imag);
   }
 }
 
-void Explorer::MouseScrollEvent(ScrollEvent event) {
+void Explorer::MouseScrollEvent(const Complex& position, ScrollEvent event) {
 
   // TODO: make kZoomFactor as constructor parameter
   constexpr static auto kZoomFactor = 1.5;
 
+  auto zoom_change = zoom_;
+
   if (event == ScrollEvent::kScrollUp) {
-    zoom_ *= kZoomFactor;
+    zoom_change = kZoomFactor;
   }
 
   if (event == ScrollEvent::kScrollDown) {
-    zoom_ /= kZoomFactor;
+    zoom_change = 1. / kZoomFactor;
+  }
+
+  zoom_ *= zoom_change;
+
+  constexpr auto kDirectionalZoom = true;
+  if constexpr (kDirectionalZoom) {
+    center_position_.real = position.real + (center_position_.real - position.real) / zoom_change;
+    center_position_.imag = position.imag + (center_position_.imag - position.imag) / zoom_change;
+    display_position_ = center_position_;
   }
 }
 
@@ -51,6 +61,8 @@ Complex Explorer::GetDisplayPosition() const noexcept {
   return display_position_;
 }
 
-double_t Explorer::GetZoom() const noexcept { return zoom_; }
+double_t Explorer::GetZoom() const noexcept {
+  return zoom_;
+}
 
 }  // namespace MandelbrotSet

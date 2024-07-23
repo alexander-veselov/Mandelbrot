@@ -2,6 +2,8 @@
 
 #include "complex.h"
 
+#include <atomic>
+
 namespace MandelbrotSet {
 
 class Explorer {
@@ -13,7 +15,7 @@ class Explorer {
   void MouseClickedEvent(const Complex& position);
   void MouseReleasedEvent(const Complex& position);
   void MouseMovedEvent(const Complex& position);
-  void MouseScrollEvent(ScrollEvent event);
+  void MouseScrollEvent(const Complex& position, ScrollEvent event);
 
   Complex GetCenterPosition() const noexcept;
   Complex GetDisplayPosition() const noexcept;
@@ -24,7 +26,7 @@ class Explorer {
   Complex display_position_;
   Complex click_position_;
   double_t zoom_;
-  bool moving_;
+  std::atomic<bool> moving_;
 };
 
 }

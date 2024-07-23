@@ -22,7 +22,7 @@ Complex ScreenToComplex(double_t screen_x, double_t screen_y,
   const auto real = (screen_x - screen_width / 2.) * scale;
   const auto imag = (screen_y - screen_height / 2.) * scale;
 
-  return {center.real + real / zoom_factor, center.imag + imag / zoom_factor};
+  return {center.real + real / zoom_factor, center.imag - imag / zoom_factor};
 }
 
 Complex GetCurrentCursorComplex(GLFWwindow* window, double_t screen_width,
@@ -36,21 +36,17 @@ Complex GetCurrentCursorComplex(GLFWwindow* window, double_t screen_width,
 }
 
 void ApplicationGLFW::MouseButtonCallback(GLFWwindow* window, int button,
-                                          int action, int mods) {
-  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+  int action, int mods) {
+  if (button == GLFW_MOUSE_BUTTON_LEFT) {
     const auto mouse_position = GetCurrentCursorComplex(
-        window, window_width_, window_height_, explorer_.GetCenterPosition(),
-        explorer_.GetZoom());
-
-    explorer_.MouseClickedEvent(mouse_position);
-  }
-
-  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-    const auto mouse_position = GetCurrentCursorComplex(
-        window, window_width_, window_height_, explorer_.GetCenterPosition(),
-        explorer_.GetZoom());
-
-    explorer_.MouseReleasedEvent(mouse_position);
+      window, window_width_, window_height_, explorer_.GetCenterPosition(),
+      explorer_.GetZoom());
+    if (action == GLFW_PRESS) {
+      explorer_.MouseClickedEvent(mouse_position);
+    }
+    else if (action == GLFW_RELEASE) {
+      explorer_.MouseReleasedEvent(mouse_position);
+    }
   }
 }
 
@@ -64,12 +60,15 @@ void ApplicationGLFW::CursorPosCallback(GLFWwindow* window, double xpos,
 }
 
 void ApplicationGLFW::ScrollCallback(GLFWwindow* window, double xoffset,
-                                     double yoffset) {
+  double yoffset) {
+  const auto mouse_position = GetCurrentCursorComplex(
+    window, window_width_, window_height_, explorer_.GetCenterPosition(),
+    explorer_.GetZoom());
   if (yoffset > 0.) {
-    explorer_.MouseScrollEvent(Explorer::ScrollEvent::kScrollUp);
+    explorer_.MouseScrollEvent(mouse_position, Explorer::ScrollEvent::kScrollUp);
   }
   if (yoffset < 0.) {
-    explorer_.MouseScrollEvent(Explorer::ScrollEvent::kScrollDown);
+    explorer_.MouseScrollEvent(mouse_position, Explorer::ScrollEvent::kScrollDown);
   }
 }
 
