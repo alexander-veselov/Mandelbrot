@@ -15,6 +15,8 @@ __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
                                     uint32_t max_iterations,
                                     bool smoothing_step = false) {
 
+  // TODO: Minimize the global memory access by creating shared variables
+
   const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (pixel_index < width * height) {
