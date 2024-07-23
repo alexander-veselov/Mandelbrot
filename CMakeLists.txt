@@ -55,4 +55,5 @@ add_executable(MandelbrotSetGPU ${APP_HEADERS} ${APP_SOURCES})
 target_include_directories(MandelbrotSetGPU PUBLIC ${APP_INCLUDE_FOLDER})
 target_link_libraries(MandelbrotSetGPU MandelbrotSetCore GLFW)
 
+# Set starup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MandelbrotSetGPU)
