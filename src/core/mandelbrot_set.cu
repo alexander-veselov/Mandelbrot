@@ -5,6 +5,7 @@
 
 #include "mandelbrot_set.cuh"
 #include "coloring.cuh"
+#include "gpu_memory_pool.h"
 
 namespace MandelbrotSet {
 
@@ -14,8 +15,6 @@ __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
                                     T center_imag, T zoom_factor,
                                     uint32_t max_iterations,
                                     bool smoothing_step = false) {
-
-  // TODO: Minimize the global memory access by creating shared variables
 
   const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -70,11 +69,12 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
                uint32_t max_iterations, uint32_t coloring_mode,
                bool smoothing) {
 
+  static auto memory_pool = GPUMemoryPool{ 128 << 20 }; // 128 MB
+
   const auto image_size = image_width * image_height;
   const auto image_size_in_bytes = image_size * sizeof(uint32_t);
 
-  auto device_data = static_cast<uint32_t*>(nullptr);
-  cudaMalloc(&device_data, image_size_in_bytes);
+  auto device_data = memory_pool.Alloc(image_size_in_bytes);
   cudaMemcpy(device_data, image, image_size_in_bytes, cudaMemcpyHostToDevice);
 
   constexpr auto kThreadsPerBlock = 512;
@@ -87,31 +87,37 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
   switch (coloring_mode) {
     case 1:
       Coloring::KenrelMode1<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-          device_data, image_width, image_height, max_iterations);
+        reinterpret_cast<uint32_t*>(device_data), image_width,
+        image_height, max_iterations);
       break;
     case 2:
       Coloring::KenrelMode2<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-          device_data, image_width, image_height, max_iterations);
+        reinterpret_cast<uint32_t*>(device_data), image_width,
+        image_height, max_iterations);
       break;
     case 3:
       Coloring::KenrelMode3<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-          device_data, image_width, image_height, max_iterations);
+        reinterpret_cast<uint32_t*>(device_data), image_width,
+        image_height, max_iterations);
       break;
     case 4:
       Coloring::KenrelMode4<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-          device_data, image_width, image_height, max_iterations);
+        reinterpret_cast<uint32_t*>(device_data), image_width,
+        image_height, max_iterations);
       break;
     case 5:
       Coloring::KenrelMode5<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-          device_data, image_width, image_height, max_iterations);
+        reinterpret_cast<uint32_t*>(device_data), image_width,
+        image_height, max_iterations);
       break;
     default:
       Coloring::KenrelDefaultMode<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-          device_data, image_width, image_height, max_iterations);
+        reinterpret_cast<uint32_t*>(device_data), image_width,
+        image_height, max_iterations);
   }
 
   cudaMemcpy(image, device_data, image_size_in_bytes, cudaMemcpyDeviceToHost);
-  cudaFree(device_data);
+  memory_pool.Free(device_data);
 }
 
 }  // namespace MandelbrotSet
