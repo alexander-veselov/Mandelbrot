@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cmath>
+#include "typedefs.h"
 
 namespace MandelbrotSet {
 

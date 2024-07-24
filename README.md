@@ -15,3 +15,4 @@ TODO list:
 - Write documentation?
 - Make pretty README.md
 - Restructure code into modules
+- Make install script
