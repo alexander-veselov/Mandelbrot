@@ -33,8 +33,8 @@ set_target_properties(GLFW PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}/GLFW/include
 )
 
-# MandelbrotSetGPU
-project(MandelbrotSetGPU LANGUAGES CUDA CXX)
+# MandelbrotSetExplorer
+project(MandelbrotSetExplorer LANGUAGES CUDA CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 # Core library
@@ -51,9 +51,9 @@ set(APP_INCLUDE_FOLDER "include/application")
 set(APP_SOURCE_FOLDER "src/application")
 file(GLOB APP_HEADERS ${APP_INCLUDE_FOLDER}/*.h ${APP_INCLUDE_FOLDER}/*.cuh)
 file(GLOB APP_SOURCES ${APP_SOURCE_FOLDER}/*.cpp ${APP_SOURCE_FOLDER}/*.cu)
-add_executable(MandelbrotSetGPU ${APP_HEADERS} ${APP_SOURCES})
-target_include_directories(MandelbrotSetGPU PUBLIC ${APP_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotSetGPU MandelbrotSetCore GLFW)
+add_executable(MandelbrotSetExplorer ${APP_HEADERS} ${APP_SOURCES})
+target_include_directories(MandelbrotSetExplorer PUBLIC ${APP_INCLUDE_FOLDER})
+target_link_libraries(MandelbrotSetExplorer MandelbrotSetCore GLFW)
 
 # Set starup project
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MandelbrotSetGPU)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MandelbrotSetExplorer)

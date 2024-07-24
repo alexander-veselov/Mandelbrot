@@ -1,4 +1,3 @@
-#include "application.h"
 #include "application_glfw.h"
 
 #include <memory>
