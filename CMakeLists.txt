@@ -64,6 +64,9 @@ file(GLOB CORE_SOURCES ${CORE_SOURCE_FOLDER}/*.cpp ${CORE_SOURCE_FOLDER}/*.cu)
 add_library(MandelbrotSetCore STATIC ${CORE_HEADERS} ${CORE_SOURCES})
 target_include_directories(MandelbrotSetCore PUBLIC ${CORE_INCLUDE_FOLDER})
 target_link_libraries(MandelbrotSetCore CUDA::cudart_static)
+set_property(TARGET MandelbrotSetCore PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+set_property(TARGET MandelbrotSetCore PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+
 
 # Benchmarks
 set(BENCHMARKS_SOURCE_FOLDER "src/benchmarks")

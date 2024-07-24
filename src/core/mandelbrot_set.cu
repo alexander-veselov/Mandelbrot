@@ -5,6 +5,7 @@
 
 #include "mandelbrot_set.cuh"
 #include "coloring.cuh"
+#include "long_float.cuh"
 #include "gpu_memory_pool.h"
 
 namespace MandelbrotSet {
@@ -20,14 +21,13 @@ __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
 
   if (pixel_index < width * height) {
     // Mandelbrot set parameters
-    constexpr static auto kMandelbrotSetWidth  = T{3};  // [-2, 1]
-    constexpr static auto kMandelbrotSetHeight = T{2};  // [-1, 1]
+    constexpr static auto kMandelbrotSetWidth  = 3.; // [-2, 1]
+    constexpr static auto kMandelbrotSetHeight = 2.; // [-1, 1]
 
-    const auto scale =
-        T{1} / fmin(width / kMandelbrotSetWidth, height / kMandelbrotSetHeight);
+    const auto scale = fmin(width / kMandelbrotSetWidth, height / kMandelbrotSetHeight);
 
-    const auto x = (pixel_index % width - width  / T{2}) * scale;
-    const auto y = (pixel_index / width - height / T{2}) * scale;
+    const auto x = T{ (pixel_index % width - width  / 2.) / scale };
+    const auto y = T{ (pixel_index / width - height / 2.) / scale };
 
     const auto real0 = center_real + x / zoom_factor;
     const auto imag0 = center_imag + y / zoom_factor;
@@ -36,9 +36,9 @@ __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
     auto imag = imag0;
     auto iterations = max_iterations;
 
-    auto limit = T{4};
+    auto limit = 4.;
     if (smoothing_step) {
-      limit = T{16};
+      limit = 16.;
     }
 
     for (auto i = uint32_t{0}; i < max_iterations; ++i) {
@@ -50,13 +50,13 @@ __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
         break;
       }
 
-      imag = T{2} * real * imag + imag0;
+      imag = T{2.} * real * imag + imag0;
       real = real_squared - imag_squared + real0;
     }
 
     if (smoothing_step && iterations < max_iterations) {
-      const auto log_zn = logf(real * real + imag * imag) / 2.;
-      const auto nu = static_cast<float_t>(logf(log_zn / logf(2)) / logf(2));
+      const auto log_zn = log(static_cast<double_t>(real * real + imag * imag)) / 2.;
+      const auto nu = static_cast<float_t>(log(log_zn / log(2.)) / log(2.));
       data[pixel_index] = static_cast<float_t>(iterations) + 1.f - nu;
     } else {
       data[pixel_index] = static_cast<float_t>(iterations);
@@ -80,9 +80,12 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
   constexpr auto kThreadsPerBlock = 512;
   const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;
 
-  KernelMandelbrotSet<double_t><<<kBlocksPerGrid, kThreadsPerBlock>>>(
-      reinterpret_cast<float_t*>(device_data), image_width, image_height,
-      center_real, center_imag, zoom_factor, max_iterations, smoothing);
+  using DataType = double_t;
+
+  KernelMandelbrotSet<DataType><<<kBlocksPerGrid, kThreadsPerBlock>>>(
+    reinterpret_cast<float_t*>(device_data), image_width, image_height,
+    DataType{ center_real }, DataType{ center_imag }, DataType{ zoom_factor },
+    max_iterations, smoothing);
 
   switch (coloring_mode) {
     case 1:
