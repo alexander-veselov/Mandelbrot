@@ -2,10 +2,9 @@
 
 #include <GLFW/glfw3.h>
 
-#include <iostream> // TODO: make logger
-
 #include "explorer.h"
 #include "fps_counter.h"
+#include "logger.h"
 
 namespace MandelbrotSet {
 
@@ -128,17 +127,25 @@ ApplicationGLFW::~ApplicationGLFW() {
 
 int ApplicationGLFW::Run() {
   auto fps_counter = FPSCounter{kFPSUpdateRate, glfwGetTime()};
+  auto& logger = Logger::Instance();
 
   while (!glfwWindowShouldClose(window_)) {
+    const auto position = explorer_.GetDisplayPosition();
+    const auto zoom = explorer_.GetZoom();
 
     // TODO: pass RenderOptions explicitly
-    renderer_.Render(explorer_.GetDisplayPosition(), explorer_.GetZoom());
+    renderer_.Render(position, zoom);
 
     glfwSwapBuffers(window_);
     glfwPollEvents();
 
     fps_counter.Update(glfwGetTime());
-    std::cout << "FPS: " << fps_counter.GetFPS() << std::endl; // TODO: make logger
+
+    logger.ResetCursor();
+    logger <<
+      "Center: " << position.real << logger.ShowSign(true) << position.imag << logger.ShowSign(false) << "i" << logger.NewLine() <<
+      "Zoom: " << zoom << logger.NewLine() <<
+      "FPS: " << static_cast<int32_t>(fps_counter.GetFPS()) << logger.NewLine();
   }
 
   return 0;

@@ -17,3 +17,4 @@ TODO list:
 - Restructure code into modules
 - Make install script
 - Tread warnings as errors
+- Smooth zoom

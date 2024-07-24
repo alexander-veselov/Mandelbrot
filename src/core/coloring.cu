@@ -170,7 +170,7 @@ __device__ uint32_t DefaultMode(uint32_t iterations, uint32_t max_iterations) {
 
   r = g = b = ratio * UINT8_MAX;
 
-  return MakeRGB(r, g, b);
+  return MakeRGB(UINT8_MAX - r, UINT8_MAX - g, UINT8_MAX - b);
 }
 
 __device__ uint32_t Mode1(uint32_t iterations, uint32_t max_iterations) {
