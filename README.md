@@ -18,3 +18,7 @@ TODO list:
 - Make install script
 - Tread warnings as errors
 - Smooth zoom
+- Bookmarks with interesting places
+- CI
+- WASM???
+- Fullscreen mode

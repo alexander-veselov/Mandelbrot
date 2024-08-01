@@ -143,6 +143,7 @@ int ApplicationGLFW::Run() {
 
     logger.ResetCursor();
     logger <<
+      logger.SetPrecision(15) <<
       "Center: " << position.real << logger.ShowSign(true) << position.imag << logger.ShowSign(false) << "i" << logger.NewLine() <<
       "Zoom: " << zoom << logger.NewLine() <<
       "FPS: " << static_cast<int32_t>(fps_counter.GetFPS()) << logger.NewLine();

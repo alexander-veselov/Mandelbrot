@@ -1,5 +1,6 @@
 #include "logger.h"
 #include <iostream>
+#include <iomanip>
 
 #ifdef WIN32
 #include <windows.h>
@@ -55,6 +56,11 @@ const Logger& Logger::ShowSign(bool show) const {
   else {
     std::cout << std::noshowpos;
   }
+  return *this;
+}
+
+const Logger& Logger::SetPrecision(int64_t precision) const {
+  std::cout << std::setprecision(precision);
   return *this;
 }
 

@@ -13,6 +13,7 @@ class Logger {
    void ResetCursor() const;
    std::string NewLine() const;
    const Logger& ShowSign(bool show) const;
+   const Logger& SetPrecision(int64_t precision) const;
 
    const Logger& operator<<(const Logger&) const;
    const Logger& operator<<(const std::string&) const;
