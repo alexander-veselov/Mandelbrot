@@ -1,81 +1,37 @@
 #include "application_glfw.h"
+#include "mandelbrot_renderer_glfw.h"
 
 #include <GLFW/glfw3.h>
-
-#include "explorer.h"
-#include "fps_counter.h"
-#include "logger.h"
+#include <stdexcept>
 
 namespace MandelbrotSet {
 
-Complex ScreenToComplex(double_t screen_x, double_t screen_y,
-                        double_t screen_width, double_t screen_height,
-                        const Complex& center, double_t zoom_factor) {
-  // Mandelbrot set parameters
-  constexpr static auto kMandelbrotSetWidth  = 3.;   // [-2, 1]
-  constexpr static auto kMandelbrotSetHeight = 2.;  // [-1, 1]
-
-  const auto scale = 1. / std::min(screen_width / kMandelbrotSetWidth,
-                                   screen_height / kMandelbrotSetHeight);
-
-  const auto real = (screen_x - screen_width / 2.) * scale;
-  const auto imag = (screen_y - screen_height / 2.) * scale;
-
-  return {center.real + real / zoom_factor, center.imag - imag / zoom_factor};
-}
-
-Complex GetCurrentCursorComplex(GLFWwindow* window, double_t screen_width,
-                                double_t screen_height, const Complex& center,
-                                double_t zoom_factor) {
-  auto xpos = double_t{};
-  auto ypos = double_t{};
-  glfwGetCursorPos(window, &xpos, &ypos);
-  return ScreenToComplex(xpos, ypos, screen_width, screen_height, center,
-                         zoom_factor);
-}
-
-void ApplicationGLFW::MouseButtonCallback(GLFWwindow* window, int button,
-  int action, int mods) {
-  if (button == GLFW_MOUSE_BUTTON_LEFT) {
-    const auto mouse_position = GetCurrentCursorComplex(
-      window, window_width_, window_height_, explorer_.GetCenterPosition(),
-      explorer_.GetZoom());
-    if (action == GLFW_PRESS) {
-      explorer_.MouseClickedEvent(mouse_position);
-    }
-    else if (action == GLFW_RELEASE) {
-      explorer_.MouseReleasedEvent(mouse_position);
-    }
+static MouseButton ConvertMouseButton(int32_t button) {
+  switch (button) {
+    case GLFW_MOUSE_BUTTON_LEFT:
+      return MouseButton::kLeft;
+    case GLFW_MOUSE_BUTTON_RIGHT:
+      return MouseButton::kRight;
+    default:
+      throw std::runtime_error{"Unexpected button code"};
   }
 }
 
-void ApplicationGLFW::CursorPosCallback(GLFWwindow* window, double xpos,
-                                        double ypos) {
-  const auto mouse_position =
-      ScreenToComplex(xpos, ypos, window_width_, window_height_,
-                      explorer_.GetCenterPosition(), explorer_.GetZoom());
-
-  explorer_.MouseMovedEvent(mouse_position);
-}
-
-void ApplicationGLFW::ScrollCallback(GLFWwindow* window, double xoffset,
-  double yoffset) {
-  const auto mouse_position = GetCurrentCursorComplex(
-    window, window_width_, window_height_, explorer_.GetCenterPosition(),
-    explorer_.GetZoom());
-  if (yoffset > 0.) {
-    explorer_.MouseScrollEvent(mouse_position, Explorer::ScrollEvent::kScrollUp);
-  }
-  if (yoffset < 0.) {
-    explorer_.MouseScrollEvent(mouse_position, Explorer::ScrollEvent::kScrollDown);
+static MouseAction ConvertMouseAction(int32_t action) {
+  switch (action) {
+    case GLFW_PRESS:
+      return MouseAction::kPress;
+    case GLFW_RELEASE:
+      return MouseAction::kRelease;
+    default:
+      throw std::runtime_error{"Unexpected action code"};
   }
 }
 
 ApplicationGLFW::ApplicationGLFW(uint32_t window_width, uint32_t window_height)
-    : window_width_{window_width},
-      window_height_{window_height},
-      explorer_{kDefaultPosition, kDefaultZoom},
-      renderer_{window_width, window_height} {
+    : Application{window_width, window_height,
+                  std::make_unique<MandelbrotRendererGLFW>(window_width,
+                                                           window_height)} {
 
   if (glfwInit() != GLFW_TRUE) {
     glfwTerminate();
@@ -99,20 +55,21 @@ ApplicationGLFW::ApplicationGLFW(uint32_t window_width, uint32_t window_height)
 
   glOrtho(0.0, window_width_, 0.0, window_height_, 0.0, 1.0);
 
-  auto MouseButtonCallback = [](GLFWwindow* window, int button, int action,
-                                int mods) {
-    static_cast<ApplicationGLFW*>(glfwGetWindowUserPointer(window))
-        ->MouseButtonCallback(window, button, action, mods);
+  auto MouseButtonCallback = [](GLFWwindow* window, int32_t button, int32_t action, int32_t mods) {
+    const auto app_button = ConvertMouseButton(button);
+    const auto app_action = ConvertMouseAction(action);
+    const auto application = static_cast<Application*>(glfwGetWindowUserPointer(window));
+    application->MouseButtonCallback(app_button, app_action);
   };
 
-  auto CursorPosCallback = [](GLFWwindow* window, double xpos, double ypos) {
-    static_cast<ApplicationGLFW*>(glfwGetWindowUserPointer(window))
-        ->CursorPosCallback(window, xpos, ypos);
+  auto CursorPosCallback = [](GLFWwindow* window, double_t x_pos, double_t y_pos) {
+    const auto application = static_cast<Application*>(glfwGetWindowUserPointer(window));
+    application->CursorPositionCallback(x_pos, y_pos);
   };
 
-  auto ScrollCallback = [](GLFWwindow* window, double xoffset, double yoffset) {
-    static_cast<ApplicationGLFW*>(glfwGetWindowUserPointer(window))
-        ->ScrollCallback(window, xoffset, yoffset);
+  auto ScrollCallback = [](GLFWwindow* window, double_t x_offset, double_t y_offset) {
+    const auto application = static_cast<Application*>(glfwGetWindowUserPointer(window));
+    application->ScrollCallback(x_offset, y_offset);
   };
 
   glfwSetMouseButtonCallback(window_, MouseButtonCallback);
@@ -125,31 +82,25 @@ ApplicationGLFW::~ApplicationGLFW() {
   glfwTerminate();
 }
 
-int ApplicationGLFW::Run() {
-  auto fps_counter = FPSCounter{kFPSUpdateRate, glfwGetTime()};
-  auto& logger = Logger::Instance();
+bool ApplicationGLFW::ShouldClose() const {
+  return glfwWindowShouldClose(window_);
+}
 
-  while (!glfwWindowShouldClose(window_)) {
-    const auto position = explorer_.GetDisplayPosition();
-    const auto zoom = explorer_.GetZoom();
+void ApplicationGLFW::SwapBuffers() {
+  glfwSwapBuffers(window_);
+}
 
-    // TODO: pass RenderOptions explicitly
-    renderer_.Render(position, zoom);
+void ApplicationGLFW::PollEvents() {
+  glfwPollEvents();
+}
 
-    glfwSwapBuffers(window_);
-    glfwPollEvents();
+void ApplicationGLFW::GetCursorPosition(double_t& x_pos,
+                                        double_t& y_pos) const {
+  glfwGetCursorPos(window_, &x_pos, &y_pos);
+}
 
-    fps_counter.Update(glfwGetTime());
-
-    logger.ResetCursor();
-    logger <<
-      logger.SetPrecision(15) <<
-      "Center: " << position.real << logger.ShowSign(true) << position.imag << logger.ShowSign(false) << "i" << logger.NewLine() <<
-      "Zoom: " << zoom << logger.NewLine() <<
-      "FPS: " << static_cast<int32_t>(fps_counter.GetFPS()) << logger.NewLine();
-  }
-
-  return 0;
+double_t ApplicationGLFW::GetTime() const {
+  return glfwGetTime();
 }
 
 }  // namespace MandelbrotSet

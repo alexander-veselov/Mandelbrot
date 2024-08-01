@@ -23,9 +23,9 @@ void MandelbrotRendererGLFW::Render(const Complex& center, double_t zoom,
 
   if (dirty) {
     MandelbrotSet::Visualize(
-        image_.GetData(), image_.GetWidth(), image_.GetHeight(), center.real,
-        center.imag, zoom, render_options.max_iterations,
-        render_options.coloring_mode, render_options.smoothing);
+      image_.GetData(), image_.GetWidth(), image_.GetHeight(), center.real,
+      center.imag, zoom, render_options.max_iterations,
+      static_cast<int32_t>(render_options.coloring_mode), render_options.smoothing);
 
     center_ = center;
     zoom_ = zoom;

@@ -175,22 +175,28 @@ __device__ uint32_t DefaultMode(uint32_t iterations, uint32_t max_iterations) {
 
 __device__ uint32_t Mode1(uint32_t iterations, uint32_t max_iterations) {
 
-  const auto ratio = static_cast<double_t>(iterations) /
-                     static_cast<double_t>(max_iterations);
+  static uint32_t palette[] = {
+      MakeRGB(30,  16,  48), MakeRGB(15,  12,  94), MakeRGB(3,  28, 150),
+      MakeRGB(6,  50, 188), MakeRGB(20,  80, 195), MakeRGB(57, 125, 209),
+      MakeRGB(73, 155, 216), MakeRGB(134, 181, 229), MakeRGB(170, 210, 235),
+      MakeRGB(240, 249, 250), MakeRGB(246, 231, 161), MakeRGB(252, 212,  70),
+      MakeRGB(251, 175,  42), MakeRGB(215, 126,  41), MakeRGB(187,  79,  39),
+      MakeRGB(110,  50,  53)
+  };
 
-  const auto v = 1.0 - pow(cos(CUDART_PI_F * ratio), 2.);
-  const auto a = 111.;
-  const auto L = a - (a * v);
-  const auto C = 28. + (a - (a * v));
-  const auto H = fmod(pow(360. * ratio, 1.5), 360.);
+  constexpr auto kPaletteSize = sizeof(palette) / sizeof(uint32_t);
 
-  auto r = uint8_t{};
-  auto g = uint8_t{};
-  auto b = uint8_t{};
-
-  LchToRGB(L, C, H, r, g, b);
-
-  return MakeRGB(r, g, b);
+  if (0 < iterations && iterations < max_iterations) {
+    constexpr auto kStep = 64;
+    constexpr auto kInterval = 1. / kPaletteSize;
+    const auto hue = static_cast<double_t>(iterations % kStep) / kStep;
+    const auto n = static_cast<uint32_t>(hue / kInterval);
+    const auto fraction = fmod(hue, kInterval) / kInterval;
+    return InterpolateColor(palette[n], palette[(n + 1) % kPaletteSize], fraction);
+  }
+  else {
+    return MakeRGB(0, 0, 0);
+  }
 }
 
 __device__ uint32_t Mode2(uint32_t iterations, uint32_t max_iterations) {
@@ -274,27 +280,22 @@ __device__ uint32_t Mode4(uint32_t iterations, uint32_t max_iterations) {
 
 __device__ uint32_t Mode5(uint32_t iterations, uint32_t max_iterations) {
 
-  static uint32_t palette[] = {
-      MakeRGB( 30,  16,  48), MakeRGB( 15,  12,  94), MakeRGB(  3,  28, 150),
-      MakeRGB(  6,  50, 188), MakeRGB( 20,  80, 195), MakeRGB( 57, 125, 209),
-      MakeRGB( 73, 155, 216), MakeRGB(134, 181, 229), MakeRGB(170, 210, 235),
-      MakeRGB(240, 249, 250), MakeRGB(246, 231, 161), MakeRGB(252, 212,  70),
-      MakeRGB(251, 175,  42), MakeRGB(215, 126,  41), MakeRGB(187,  79,  39),
-      MakeRGB(110,  50,  53)
-  };
+  const auto ratio = static_cast<double_t>(iterations) /
+    static_cast<double_t>(max_iterations);
 
-  constexpr auto kPaletteSize = sizeof(palette) / sizeof(uint32_t);
-  
-  if (0 < iterations && iterations < max_iterations) {
-    constexpr auto kStep = 64;
-    constexpr auto kInterval = 1. / kPaletteSize;
-    const auto hue = static_cast<double_t>(iterations % kStep) / kStep;
-    const auto n = static_cast<uint32_t>(hue / kInterval);
-    const auto fraction = fmod(hue, kInterval) / kInterval;
-    return InterpolateColor(palette[n], palette[(n + 1) % kPaletteSize], fraction);
-  } else {
-    return MakeRGB(0, 0, 0);
-  }
+  const auto v = 1.0 - pow(cos(CUDART_PI_F * ratio), 2.);
+  const auto a = 111.;
+  const auto L = a - (a * v);
+  const auto C = 28. + (a - (a * v));
+  const auto H = fmod(pow(360. * ratio, 1.5), 360.);
+
+  auto r = uint8_t{};
+  auto g = uint8_t{};
+  auto b = uint8_t{};
+
+  LchToRGB(L, C, H, r, g, b);
+
+  return MakeRGB(r, g, b);
 }
 
 template <typename ColoringFunction>

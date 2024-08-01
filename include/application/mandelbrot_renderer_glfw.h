@@ -1,7 +1,7 @@
 #pragma once
 
+#include "mandelbrot_renderer.h"
 #include "image.h"
-#include "complex.h"
 
 namespace MandelbrotSet {
 
@@ -10,16 +10,11 @@ namespace MandelbrotSet {
 // 1. Mandelbrot set calculation
 // 2. Storing image data
 // 3. Rendering using specific GLFW implementation
-class MandelbrotRendererGLFW {
+class MandelbrotRendererGLFW : public MandelbrotRenderer {
  public:
-  struct RenderOptions {
-    uint32_t coloring_mode = 5; // TODO: Create ColoringMode enum
-    uint32_t max_iterations = 1024;
-    bool smoothing = true;
-  };
   MandelbrotRendererGLFW(uint32_t width, uint32_t height);
   void Render(const Complex& center, double_t zoom,
-              const RenderOptions& render_options = {});
+              const RenderOptions& render_options = {}) override;
 
  private:
   Image image_;

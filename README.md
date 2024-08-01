@@ -22,3 +22,4 @@ TODO list:
 - CI
 - WASM???
 - Fullscreen mode
+- custom clang-format
