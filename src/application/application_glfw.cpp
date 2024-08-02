@@ -28,6 +28,22 @@ static MouseAction ConvertMouseAction(int32_t action) {
   }
 }
 
+static KeyAction ConvertKeyAction(int32_t action) {
+  static_assert(std::is_same_v<MouseAction, KeyAction>,
+                "Implement ConvertKeyAction properly in case if KeyAction and "
+                "MouseAction are not the same");
+  return ConvertMouseAction(action);
+}
+
+static KeyButton ConvertKeyButton(int32_t button) {
+  switch (button) {
+    case GLFW_KEY_PRINT_SCREEN:
+      return KeyButton::kPrintScreen;
+    default:
+      return KeyButton::kOther;
+  }
+}
+
 ApplicationGLFW::ApplicationGLFW(const Size& window_size)
     : Application{window_size,
                   std::make_unique<MandelbrotRendererGLFW>(window_size)} {
@@ -78,9 +94,17 @@ ApplicationGLFW::ApplicationGLFW(const Size& window_size)
     application->ScrollCallback(x_offset, y_offset);
   };
 
+  auto KeyCallback = [](GLFWwindow* window, int32_t key, int32_t scancode, int32_t action, int32_t mods) {
+    const auto app_button = ConvertKeyButton(key);
+    const auto app_action = ConvertKeyAction(action);
+    const auto application = static_cast<Application*>(glfwGetWindowUserPointer(window));
+    application->KeyCallback(app_button, app_action);
+  };
+
   glfwSetMouseButtonCallback(window_, MouseButtonCallback);
   glfwSetCursorPosCallback(window_, CursorPosCallback);
   glfwSetScrollCallback(window_, ScrollCallback);
+  glfwSetKeyCallback(window_, KeyCallback);
 }
 
 ApplicationGLFW::~ApplicationGLFW() {

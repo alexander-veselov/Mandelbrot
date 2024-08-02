@@ -34,6 +34,13 @@ enum class MouseAction {
   kRelease
 };
 
+enum class KeyButton {
+  kOther,
+  kPrintScreen
+};
+
+using KeyAction = MouseAction;
+
 class Application {
  public:
   Application(const Size& window_size,
@@ -48,6 +55,7 @@ class Application {
   void MouseButtonCallback(MouseButton button, MouseAction action);
   void CursorPositionCallback(const Point& cursor_position);
   void ScrollCallback(double_t x_offset, double_t y_offset);
+  void KeyCallback(KeyButton key_button, KeyAction action);
 
   int Run();
 

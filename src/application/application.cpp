@@ -38,10 +38,6 @@ void Application::MouseButtonCallback(MouseButton button, MouseAction action) {
     } else if (action == MouseAction::kRelease) {
       explorer_.MouseReleasedEvent(mouse_position);
     }
-  } else if (button == MouseButton::kRight) {
-    // TODO: create keyboard click event
-    screenshot_renderer_->Render(explorer_.GetDisplayPosition(),
-                                 explorer_.GetZoom(), render_options_);
   }
 }
 
@@ -59,6 +55,13 @@ void Application::ScrollCallback(double_t x_offset, double_t y_offset) {
     explorer_.MouseScrollEvent(mouse_position, Explorer::ScrollEvent::kScrollUp);
   } else if (y_offset < 0.) {
     explorer_.MouseScrollEvent(mouse_position, Explorer::ScrollEvent::kScrollDown);
+  }
+}
+
+void Application::KeyCallback(KeyButton key_button, KeyAction action) {
+  if (key_button == KeyButton::kPrintScreen) {
+    screenshot_renderer_->Render(explorer_.GetDisplayPosition(),
+                                 explorer_.GetZoom(), render_options_);
   }
 }
 
