@@ -7,15 +7,14 @@
 namespace MandelbrotSet {
 
 static void Default(benchmark::State& state) {
-  constexpr auto kWidth = 1024;
-  constexpr auto kHeight = 768;
-  constexpr auto kCenter = Complex{ -0.5, 0.0 };
+  constexpr auto kSize = Size{1024, 768};
+  constexpr auto kCenter = Complex{-0.5, 0.0};
   constexpr auto kZoom = 1.0;
   constexpr auto kMaxIterations = 1024;
   constexpr auto kColoringMode = 5;
   constexpr auto kSmoothing = true;
 
-  auto image = Image{ kWidth, kHeight };
+  auto image = Image{kSize};
   for (auto _ : state) {
     MandelbrotSet::Visualize(
       image.GetData(), image.GetWidth(), image.GetHeight(), kCenter.real,
@@ -30,13 +29,14 @@ BENCHMARK(Default)
 static void DifferentResolution(benchmark::State& state) {
   const auto width = static_cast<uint32_t>(state.range(0));
   const auto height = static_cast<uint32_t>(state.range(1));
+  const auto size = Size{width, height};
   constexpr auto kCenter = Complex{ -0.5, 0.0 };
   constexpr auto kZoom = 1.0;
   constexpr auto kMaxIterations = 1024;
   constexpr auto kColoringMode = 5;
   constexpr auto kSmoothing = true;
 
-  auto image = Image{ width, height };
+  auto image = Image{size};
   for (auto _ : state) {
     MandelbrotSet::Visualize(
       image.GetData(), image.GetWidth(), image.GetHeight(), kCenter.real,
@@ -62,15 +62,14 @@ BENCHMARK(DifferentResolution)
   ->Unit(benchmark::kMillisecond);
 
 static void DifferentMaxIterations(benchmark::State& state) {
-  constexpr auto kWidth = 1024;
-  constexpr auto kHeight = 768;
+  constexpr auto kSize = Size{1024, 768};
   constexpr auto kCenter = Complex{ -0.5, 0.0 };
   constexpr auto kZoom = 1.0;
   const auto max_iterations = static_cast<int32_t>(state.range(0));
   constexpr auto kColoringMode = 5;
   constexpr auto kSmoothing = true;
 
-  auto image = Image{ kWidth, kHeight };
+  auto image = Image{kSize};
   for (auto _ : state) {
     MandelbrotSet::Visualize(
       image.GetData(), image.GetWidth(), image.GetHeight(), kCenter.real,

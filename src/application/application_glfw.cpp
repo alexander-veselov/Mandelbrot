@@ -28,10 +28,9 @@ static MouseAction ConvertMouseAction(int32_t action) {
   }
 }
 
-ApplicationGLFW::ApplicationGLFW(uint32_t window_width, uint32_t window_height)
-    : Application{window_width, window_height,
-                  std::make_unique<MandelbrotRendererGLFW>(window_width,
-                                                           window_height)} {
+ApplicationGLFW::ApplicationGLFW(const Size& window_size)
+    : Application{window_size,
+                  std::make_unique<MandelbrotRendererGLFW>(window_size)} {
 
   if (glfwInit() != GLFW_TRUE) {
     glfwTerminate();
@@ -42,18 +41,18 @@ ApplicationGLFW::ApplicationGLFW(uint32_t window_width, uint32_t window_height)
     monitor = glfwGetPrimaryMonitor();
   }
 
-  window_ = glfwCreateWindow(window_width_, window_height_, kWinwowName,
-                             monitor, nullptr);
+  window_ = glfwCreateWindow(window_size_.width, window_size_.height,
+                             kWinwowName, monitor, nullptr);
 
   glfwSetWindowUserPointer(window_, this);
   glfwMakeContextCurrent(window_);
   glfwSwapInterval(kEnableVSync);
 
-  glViewport(0, 0, window_width_, window_height_);
+  glViewport(0, 0, window_size_.width, window_size_.height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  glOrtho(0.0, window_width_, 0.0, window_height_, 0.0, 1.0);
+  glOrtho(0.0, window_size_.width, 0.0, window_size_.height, 0.0, 1.0);
 
   auto MouseButtonCallback = [](GLFWwindow* window, int32_t button, int32_t action, int32_t mods) {
     const auto app_button = ConvertMouseButton(button);
@@ -64,7 +63,7 @@ ApplicationGLFW::ApplicationGLFW(uint32_t window_width, uint32_t window_height)
 
   auto CursorPosCallback = [](GLFWwindow* window, double_t x_pos, double_t y_pos) {
     const auto application = static_cast<Application*>(glfwGetWindowUserPointer(window));
-    application->CursorPositionCallback(x_pos, y_pos);
+    application->CursorPositionCallback(Point{x_pos, y_pos});
   };
 
   auto ScrollCallback = [](GLFWwindow* window, double_t x_offset, double_t y_offset) {
@@ -94,9 +93,11 @@ void ApplicationGLFW::PollEvents() {
   glfwPollEvents();
 }
 
-void ApplicationGLFW::GetCursorPosition(double_t& x_pos,
-                                        double_t& y_pos) const {
-  glfwGetCursorPos(window_, &x_pos, &y_pos);
+Point ApplicationGLFW::GetCursorPosition() const {
+  auto x = double_t{};
+  auto y = double_t{};
+  glfwGetCursorPos(window_, &x, &y);
+  return Point{x, y};
 }
 
 double_t ApplicationGLFW::GetTime() const {

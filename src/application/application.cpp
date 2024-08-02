@@ -1,41 +1,38 @@
 #include "application.h"
+#include "screenshot_renderer.h"
 #include "fps_counter.h"
 #include "logger.h"
 
 namespace MandelbrotSet {
 
-static Complex ScreenToComplex(double_t screen_x, double_t screen_y,
-                               double_t screen_width, double_t screen_height,
-                               const Complex& center, double_t zoom_factor) {
+static Complex ScreenToComplex(const Point& cursor_position,
+                               const Size& screen_size,
+                               const Complex& center,
+                               double_t zoom_factor) {
   // Mandelbrot set parameters
   constexpr static auto kMandelbrotSetWidth = 3.;   // [-2, 1]
   constexpr static auto kMandelbrotSetHeight = 2.;  // [-1, 1]
 
-  const auto scale = 1. / std::min(screen_width / kMandelbrotSetWidth,
-                                   screen_height / kMandelbrotSetHeight);
+  const auto scale = 1. / std::min(screen_size.width / kMandelbrotSetWidth,
+                                   screen_size.height / kMandelbrotSetHeight);
 
-  const auto real = (screen_x - screen_width / 2.) * scale;
-  const auto imag = (screen_y - screen_height / 2.) * scale;
+  const auto real = (cursor_position.x - screen_size.width / 2.) * scale;
+  const auto imag = (cursor_position.y - screen_size.height / 2.) * scale;
 
   return {center.real + real / zoom_factor, center.imag - imag / zoom_factor};
 }
 
-Complex Application::GetCurrentCursorComplex(double_t screen_width,
-                                             double_t screen_height,
+Complex Application::GetCurrentCursorComplex(const Size& screen_size,
                                              const Complex& center,
                                              double_t zoom_factor) {
-  auto xpos = double_t{};
-  auto ypos = double_t{};
-  GetCursorPosition(xpos, ypos);
-  return ScreenToComplex(xpos, ypos, screen_width, screen_height, center,
-                         zoom_factor);
+  const auto& cursor_position = GetCursorPosition();
+  return ScreenToComplex(cursor_position, screen_size, center, zoom_factor);
 }
 
 void Application::MouseButtonCallback(MouseButton button, MouseAction action) {
   if (button == MouseButton::kLeft) {
     const auto mouse_position = GetCurrentCursorComplex(
-        window_width_, window_height_, explorer_.GetCenterPosition(),
-        explorer_.GetZoom());
+        window_size_, explorer_.GetCenterPosition(), explorer_.GetZoom());
     if (action == MouseAction::kPress) {
       explorer_.MouseClickedEvent(mouse_position);
     } else if (action == MouseAction::kRelease) {
@@ -43,26 +40,24 @@ void Application::MouseButtonCallback(MouseButton button, MouseAction action) {
     }
   } else if (button == MouseButton::kRight) {
     // TODO: create keyboard click event
-    screenshot_renderer_.Render(explorer_.GetDisplayPosition(),
-                                explorer_.GetZoom(), render_options_);
+    screenshot_renderer_->Render(explorer_.GetDisplayPosition(),
+                                 explorer_.GetZoom(), render_options_);
   }
 }
 
-void Application::CursorPositionCallback(double_t x_pos, double_t y_pos) {
+void Application::CursorPositionCallback(const Point& cursor_position) {
   const auto mouse_position =
-      ScreenToComplex(x_pos, y_pos, window_width_, window_height_,
+      ScreenToComplex(cursor_position, window_size_,
                       explorer_.GetCenterPosition(), explorer_.GetZoom());
   explorer_.MouseMovedEvent(mouse_position);
 }
 
 void Application::ScrollCallback(double_t x_offset, double_t y_offset) {
   const auto mouse_position = GetCurrentCursorComplex(
-    window_width_, window_height_, explorer_.GetCenterPosition(),
-    explorer_.GetZoom());
+      window_size_, explorer_.GetCenterPosition(), explorer_.GetZoom());
   if (y_offset > 0.) {
     explorer_.MouseScrollEvent(mouse_position, Explorer::ScrollEvent::kScrollUp);
-  }
-  if (y_offset < 0.) {
+  } else if (y_offset < 0.) {
     explorer_.MouseScrollEvent(mouse_position, Explorer::ScrollEvent::kScrollDown);
   }
 }
@@ -76,12 +71,11 @@ static void LogInformation(const Logger& logger, const Complex& position,
          << "FPS: " << static_cast<int32_t>(fps) << logger.NewLine();
 }
 
-Application::Application(uint32_t window_width, uint32_t window_height,
+Application::Application(const Size& window_size,
                          std::unique_ptr<MandelbrotRenderer> renderer)
-    : window_width_{window_width},
-      window_height_{window_height},
+    : window_size_{window_size},
       explorer_{kDefaultPosition, kDefaultZoom},
-      screenshot_renderer_{},
+      screenshot_renderer_{std::make_unique<ScreenshotRenderer>()},
       renderer_{std::move(renderer)},
       render_options_{} {}
 

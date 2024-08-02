@@ -14,12 +14,12 @@ constexpr auto kWinwowName = "Mandelbrot set";
 
 class ApplicationGLFW : public Application {
  public:
-  ApplicationGLFW(uint32_t window_width, uint32_t window_height);
+  ApplicationGLFW(const Size& window_size);
   ~ApplicationGLFW() override;
   bool ShouldClose() const override;
   void SwapBuffers() override;
   void PollEvents() override;
-  void GetCursorPosition(double_t& x_pos, double_t& y_pos) const override;
+  Point GetCursorPosition() const override;
   double_t GetTime() const override;
 
  private:

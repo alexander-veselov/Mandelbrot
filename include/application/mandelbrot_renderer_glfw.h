@@ -2,6 +2,7 @@
 
 #include "mandelbrot_renderer.h"
 #include "image.h"
+#include "size.h"
 
 namespace MandelbrotSet {
 
@@ -12,7 +13,7 @@ namespace MandelbrotSet {
 // 3. Rendering using specific GLFW implementation
 class MandelbrotRendererGLFW : public MandelbrotRenderer {
  public:
-  MandelbrotRendererGLFW(uint32_t width, uint32_t height);
+  MandelbrotRendererGLFW(const Size& window_size);
   void Render(const Complex& center, double_t zoom,
               const RenderOptions& render_options = {}) override;
 

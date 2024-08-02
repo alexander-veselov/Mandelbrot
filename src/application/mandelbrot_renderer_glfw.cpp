@@ -13,8 +13,8 @@ void DrawImage(const Image& image) {
                image.GetData());
 }
 
-MandelbrotRendererGLFW::MandelbrotRendererGLFW(uint32_t width, uint32_t height)
-    : image_{width, height}, center_{}, zoom_{} {}
+MandelbrotRendererGLFW::MandelbrotRendererGLFW(const Size& window_size)
+    : image_{window_size}, center_{}, zoom_{} {}
 
 void MandelbrotRendererGLFW::Render(const Complex& center, double_t zoom,
                                     const RenderOptions& render_options) {

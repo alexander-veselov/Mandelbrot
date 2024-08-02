@@ -2,7 +2,8 @@
 
 #include "complex.h"
 #include "explorer.h"
-#include "screenshot_renderer.h"
+#include "size.h"
+#include "point.h"
 #include "mandelbrot_renderer.h"
 
 #include <memory>
@@ -26,31 +27,30 @@ enum class MouseAction {
 
 class Application {
  public:
-  Application(uint32_t window_width, uint32_t window_height,
+  Application(const Size& window_size,
               std::unique_ptr<MandelbrotRenderer> renderer);
   virtual ~Application() = default;
   virtual bool ShouldClose() const = 0;
   virtual void SwapBuffers() = 0;
   virtual void PollEvents() = 0;
-  virtual void GetCursorPosition(double_t& x_pos, double_t& y_pos) const = 0;
+  virtual Point GetCursorPosition() const = 0;
   virtual double_t GetTime() const = 0;
 
   void MouseButtonCallback(MouseButton button, MouseAction action);
-  void CursorPositionCallback(double_t x_pos, double_t y_pos);
+  void CursorPositionCallback(const Point& cursor_position);
   void ScrollCallback(double_t x_offset, double_t y_offset);
 
   int Run();
 
  protected:
-  Complex GetCurrentCursorComplex(double_t screen_width, double_t screen_height,
+  Complex GetCurrentCursorComplex(const Size& screen_size,
                                   const Complex& center, double_t zoom_factor);
 
  protected:
-  uint32_t window_width_;
-  uint32_t window_height_;
+  Size window_size_;
   Explorer explorer_;
-  ScreenshotRenderer screenshot_renderer_;
   std::unique_ptr<MandelbrotRenderer> renderer_;
+  std::unique_ptr<MandelbrotRenderer> screenshot_renderer_;
   MandelbrotRenderer::RenderOptions render_options_;
 };
 

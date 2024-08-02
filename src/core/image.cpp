@@ -4,13 +4,12 @@
 
 namespace MandelbrotSet {
 
-Image::Image(uint32_t width, uint32_t height)
-    : width_{width},
-      height_{height},
-      data_(static_cast<size_t>(width * height), RGBA{0}) {}
+Image::Image(const Size& size)
+    : size_{size},
+      data_(static_cast<size_t>(size.width * size.height), RGBA{0u}) {}
 
-uint32_t Image::GetWidth() const noexcept { return width_; }
-uint32_t Image::GetHeight() const noexcept { return height_; }
+uint32_t Image::GetWidth() const noexcept { return size_.width; }
+uint32_t Image::GetHeight() const noexcept { return size_.height; }
 const RGBA* Image::GetData() const noexcept { return data_.data(); }
 RGBA* Image::GetData() noexcept { return data_.data(); }
 

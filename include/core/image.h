@@ -1,5 +1,7 @@
 #pragma once
 
+#include "size.h"
+
 #include <vector>
 #include <filesystem>
 
@@ -12,16 +14,15 @@ class Image {
   using ImageBuffer = std::vector<RGBA>;
   using Type = ImageBuffer::value_type;
 
-  Image(uint32_t width, uint32_t height);
+  Image(const Size& size);
   uint32_t GetWidth() const noexcept;
   uint32_t GetHeight() const noexcept;
   const RGBA* GetData() const noexcept;
   RGBA* GetData() noexcept;
 
  private:
-  uint32_t width_;
-  uint32_t height_;
   ImageBuffer data_;
+  Size size_;
 };
 
 }  // namespace MandelbrotSet

@@ -5,14 +5,12 @@
 
 namespace MandelbrotSet {
 
-ScreenshotRenderer::ScreenshotRenderer(uint32_t screenshot_width,
-                                       uint32_t screenshot_height)
-    : screenshot_width_{screenshot_width},
-      screenshot_height_{screenshot_height} {}
+ScreenshotRenderer::ScreenshotRenderer(const Size& screenshot_size)
+    : screenshot_size_{screenshot_size} {}
 
 void ScreenshotRenderer::Render(const Complex& center, double_t zoom,
                                 const RenderOptions& render_options) {
-  auto screenshot = Image{screenshot_width_, screenshot_height_};
+  auto screenshot = Image{screenshot_size_};
   MandelbrotSet::Visualize(screenshot.GetData(), screenshot.GetWidth(),
                            screenshot.GetHeight(), center.real, center.imag,
                            zoom, render_options.max_iterations,
