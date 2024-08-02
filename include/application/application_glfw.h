@@ -7,11 +7,6 @@ struct GLFWwindow;
 
 namespace MandelbrotSet {
 
-// TODO: make not global
-constexpr auto kEnableVSync = false;
-constexpr auto kFullscreen = false; // TODO: fix fullscreen mode, add borderless fullscreen option
-constexpr auto kWinwowName = "Mandelbrot set";
-
 class ApplicationGLFW : public Application {
  public:
   ApplicationGLFW(const Size& window_size);

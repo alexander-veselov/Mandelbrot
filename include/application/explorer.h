@@ -6,6 +6,10 @@
 
 namespace MandelbrotSet {
 
+// TODO: make not global
+constexpr auto kZoomFactor = 1.5;
+constexpr auto kDirectionalZoom = true;
+
 class Explorer {
  public:
   enum class ScrollEvent { kScrollUp, kScrollDown };

@@ -10,8 +10,6 @@ namespace MandelbrotSet {
 // TODO: make not global
 constexpr auto kScreenshotWidth = 1920u;
 constexpr auto kScreenshotHeight = 1080u;
-
-// TODO: save images into folder relative to project sources
 constexpr auto kScreenshotsFolder = "images";
 
 class ScreenshotRenderer : public MandelbrotRenderer {

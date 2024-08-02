@@ -29,23 +29,15 @@ void Explorer::MouseMovedEvent(const Complex& position) {
 }
 
 void Explorer::MouseScrollEvent(const Complex& position, ScrollEvent event) {
-
-  // TODO: make kZoomFactor as constructor parameter
-  constexpr static auto kZoomFactor = 1.5;
-
   auto zoom_change = zoom_;
-
   if (event == ScrollEvent::kScrollUp) {
     zoom_change = kZoomFactor;
-  }
-
-  if (event == ScrollEvent::kScrollDown) {
+  } else if (event == ScrollEvent::kScrollDown) {
     zoom_change = 1. / kZoomFactor;
   }
 
   zoom_ *= zoom_change;
 
-  constexpr auto kDirectionalZoom = true;
   if constexpr (kDirectionalZoom) {
     center_position_.real = position.real + (center_position_.real - position.real) / zoom_change;
     center_position_.imag = position.imag + (center_position_.imag - position.imag) / zoom_change;

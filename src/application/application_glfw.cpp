@@ -37,8 +37,15 @@ ApplicationGLFW::ApplicationGLFW(const Size& window_size)
   }
 
   auto monitor = static_cast<GLFWmonitor*>(nullptr);
-  if (kFullscreen) {
-    monitor = glfwGetPrimaryMonitor();
+  switch (kWindowMode) {
+    case WindowMode::kWindowed:
+      break;
+    case WindowMode::kFullscreen:
+      monitor = glfwGetPrimaryMonitor();
+      break;
+    case WindowMode::kBorderless:
+      glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+      break;
   }
 
   window_ = glfwCreateWindow(window_size_.width, window_size_.height,
