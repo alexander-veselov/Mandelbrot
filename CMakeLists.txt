@@ -79,6 +79,7 @@ file(GLOB APP_SOURCES ${APP_SOURCE_FOLDER}/*.cpp ${APP_SOURCE_FOLDER}/*.cu)
 add_executable(MandelbrotSetExplorer ${APP_HEADERS} ${APP_SOURCES})
 target_include_directories(MandelbrotSetExplorer PUBLIC ${APP_INCLUDE_FOLDER})
 target_link_libraries(MandelbrotSetExplorer MandelbrotSetCore GLFW)
+set_property(TARGET MandelbrotSetExplorer PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 # Set starup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MandelbrotSetExplorer)
