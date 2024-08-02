@@ -74,6 +74,7 @@ ApplicationGLFW::ApplicationGLFW(const Size& window_size)
       break;
   }
 
+  constexpr auto kWinwowName = "Mandelbrot Set";
   window_ = glfwCreateWindow(window_size_.width, window_size_.height,
                              kWinwowName, monitor, nullptr);
 

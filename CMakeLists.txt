@@ -4,6 +4,7 @@ include(FindCUDAToolkit)
 include(FetchContent)
 
 set(CMAKE_SUPPRESS_REGENERATION true)
+set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 set_property( GLOBAL PROPERTY USE_FOLDERS ON)
 
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
@@ -18,7 +19,19 @@ FetchContent_Declare(glfw-external
   DOWNLOAD_EXTRACT_TIMESTAMP true
 )
 
+# rapidjson-external
+set(RAPIDJSON_BUILD_DOC OFF)
+set(RAPIDJSON_BUILD_TESTS OFF)
+set(RAPIDJSON_BUILD_EXAMPLES OFF)
+FetchContent_Declare(rapidjson-external
+  GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
+  GIT_TAG v1.1.0
+  BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/rapidjson
+  DOWNLOAD_EXTRACT_TIMESTAMP true
+)
+
 # googlebenchmark-external
+set(BENCHMARK_INSTALL_DOCS OFF)
 set(BENCHMARK_ENABLE_TESTING OFF)
 FetchContent_Declare(googlebenchmark-external
   GIT_REPOSITORY https://github.com/google/benchmark.git
@@ -30,6 +43,11 @@ FetchContent_Declare(googlebenchmark-external
 FetchContent_MakeAvailable(
   glfw-external
   googlebenchmark-external
+  rapidjson-external
+)
+
+FetchContent_GetProperties(
+  rapidjson-external
 )
 
 # Google benchmark
@@ -52,6 +70,11 @@ set_target_properties(GLFW PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}/GLFW/include
 )
 
+# RapidJSON
+add_library(rapidjson INTERFACE)
+target_include_directories(rapidjson INTERFACE "$<BUILD_INTERFACE:${rapidjson-external_SOURCE_DIR}/include>")
+set_target_properties(travis_doc PROPERTIES FOLDER "External")
+
 # MandelbrotSetExplorer
 project(MandelbrotSetExplorer LANGUAGES CUDA CXX)
 set(CMAKE_CXX_STANDARD 17)
@@ -63,7 +86,7 @@ file(GLOB CORE_HEADERS ${CORE_INCLUDE_FOLDER}/*.h ${CORE_INCLUDE_FOLDER}/*.cuh)
 file(GLOB CORE_SOURCES ${CORE_SOURCE_FOLDER}/*.cpp ${CORE_SOURCE_FOLDER}/*.cu)
 add_library(MandelbrotSetCore STATIC ${CORE_HEADERS} ${CORE_SOURCES})
 target_include_directories(MandelbrotSetCore PUBLIC ${CORE_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotSetCore CUDA::cudart_static)
+target_link_libraries(MandelbrotSetCore CUDA::cudart_static rapidjson)
 
 # Benchmarks
 set(BENCHMARKS_SOURCE_FOLDER "src/benchmarks")

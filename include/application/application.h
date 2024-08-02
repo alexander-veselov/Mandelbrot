@@ -24,7 +24,6 @@ constexpr auto kDefaultPosition = Complex{-0.5, 0.0};
 constexpr auto kDefaultZoom = 1.0;
 constexpr auto kEnableVSync = false;
 constexpr auto kWindowMode = WindowMode::kWindowed;
-constexpr auto kWinwowName = "Mandelbrot set";
 
 class Application {
  public:

@@ -1,0 +1,11 @@
+{
+  "default_position": {"x": -0.5, "y": 0.0},
+  "default_zoom": 1.0,
+  "directional_zoom": true,
+  "enable_vsync": false,
+  "fps_update_rate": 10,
+  "screenshot_size": {"width": 1920, "height": 1920},
+  "screenshots_folder": "images",
+  "window_mode": "windowed",
+  "zoom_factor": 1.5
+}
