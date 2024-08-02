@@ -4,9 +4,9 @@
 
 namespace MandelbrotSet {
 
-Complex ScreenToComplex(double_t screen_x, double_t screen_y,
-                        double_t screen_width, double_t screen_height,
-                        const Complex& center, double_t zoom_factor) {
+static Complex ScreenToComplex(double_t screen_x, double_t screen_y,
+                               double_t screen_width, double_t screen_height,
+                               const Complex& center, double_t zoom_factor) {
   // Mandelbrot set parameters
   constexpr static auto kMandelbrotSetWidth = 3.;   // [-2, 1]
   constexpr static auto kMandelbrotSetHeight = 2.;  // [-1, 1]
@@ -41,6 +41,10 @@ void Application::MouseButtonCallback(MouseButton button, MouseAction action) {
     } else if (action == MouseAction::kRelease) {
       explorer_.MouseReleasedEvent(mouse_position);
     }
+  } else if (button == MouseButton::kRight) {
+    // TODO: create keyboard click event
+    screenshot_renderer_.Render(explorer_.GetDisplayPosition(),
+                                explorer_.GetZoom(), render_options_);
   }
 }
 
@@ -63,11 +67,21 @@ void Application::ScrollCallback(double_t x_offset, double_t y_offset) {
   }
 }
 
+static void LogInformation(const Logger& logger, const Complex& position,
+                           double_t zoom, double_t fps) {
+  logger.ResetCursor();
+  logger << logger.SetPrecision(15) << "Center: " << position.real
+         << logger.ShowSign(true) << position.imag << logger.ShowSign(false)
+         << "i" << logger.NewLine() << "Zoom: " << zoom << logger.NewLine()
+         << "FPS: " << static_cast<int32_t>(fps) << logger.NewLine();
+}
+
 Application::Application(uint32_t window_width, uint32_t window_height,
                          std::unique_ptr<MandelbrotRenderer> renderer)
     : window_width_{window_width},
       window_height_{window_height},
       explorer_{kDefaultPosition, kDefaultZoom},
+      screenshot_renderer_{},
       renderer_{std::move(renderer)},
       render_options_{} {}
 
@@ -86,12 +100,7 @@ int Application::Run() {
 
     fps_counter.Update(GetTime());
 
-    logger.ResetCursor();
-    logger <<
-      logger.SetPrecision(15) <<
-      "Center: " << position.real << logger.ShowSign(true) << position.imag << logger.ShowSign(false) << "i" << logger.NewLine() <<
-      "Zoom: " << zoom << logger.NewLine() <<
-      "FPS: " << static_cast<int32_t>(fps_counter.GetFPS()) << logger.NewLine();
+    LogInformation(logger, position, zoom, fps_counter.GetFPS());
   }
 
   return 0;

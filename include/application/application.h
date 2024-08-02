@@ -2,6 +2,7 @@
 
 #include "complex.h"
 #include "explorer.h"
+#include "screenshot_renderer.h"
 #include "mandelbrot_renderer.h"
 
 #include <memory>
@@ -48,6 +49,7 @@ class Application {
   uint32_t window_width_;
   uint32_t window_height_;
   Explorer explorer_;
+  ScreenshotRenderer screenshot_renderer_;
   std::unique_ptr<MandelbrotRenderer> renderer_;
   MandelbrotRenderer::RenderOptions render_options_;
 };
