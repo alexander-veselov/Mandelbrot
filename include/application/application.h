@@ -1,10 +1,12 @@
 #pragma once
 
+#include "actions.h"
+#include "buttons.h"
 #include "complex.h"
 #include "explorer.h"
-#include "size.h"
-#include "point.h"
 #include "mandelbrot_renderer.h"
+#include "point.h"
+#include "size.h"
 
 #include <memory>
 
@@ -24,23 +26,6 @@ constexpr auto kEnableVSync = false;
 constexpr auto kWindowMode = WindowMode::kWindowed;
 constexpr auto kWinwowName = "Mandelbrot set";
 
-enum class MouseButton {
-  kLeft,
-  kRight
-};
-
-enum class MouseAction {
-  kPress,
-  kRelease
-};
-
-enum class KeyButton {
-  kOther,
-  kPrintScreen
-};
-
-using KeyAction = MouseAction;
-
 class Application {
  public:
   Application(const Size& window_size,
@@ -54,7 +39,7 @@ class Application {
 
   void MouseButtonCallback(MouseButton button, MouseAction action);
   void CursorPositionCallback(const Point& cursor_position);
-  void ScrollCallback(double_t x_offset, double_t y_offset);
+  void ScrollCallback(ScrollAction action);
   void KeyCallback(KeyButton key_button, KeyAction action);
 
   int Run();

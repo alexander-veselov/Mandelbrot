@@ -28,11 +28,14 @@ static MouseAction ConvertMouseAction(int32_t action) {
   }
 }
 
-static KeyAction ConvertKeyAction(int32_t action) {
-  static_assert(std::is_same_v<MouseAction, KeyAction>,
-                "Implement ConvertKeyAction properly in case if KeyAction and "
-                "MouseAction are not the same");
-  return ConvertMouseAction(action);
+static ScrollAction ConvertScrollAction(double_t y_offset) {
+  if (y_offset > 0.) {
+    return ScrollAction::kScrollUp;
+  } else if (y_offset < 0.) {
+    return ScrollAction::kScrollDown;
+  } else {
+    throw std::runtime_error{"Unexpected y offset"};
+  }
 }
 
 static KeyButton ConvertKeyButton(int32_t button) {
@@ -42,6 +45,13 @@ static KeyButton ConvertKeyButton(int32_t button) {
     default:
       return KeyButton::kOther;
   }
+}
+
+static KeyAction ConvertKeyAction(int32_t action) {
+  static_assert(std::is_same_v<MouseAction, KeyAction>,
+                "Implement ConvertKeyAction properly in case if KeyAction and "
+                "MouseAction are not the same");
+  return ConvertMouseAction(action);
 }
 
 ApplicationGLFW::ApplicationGLFW(const Size& window_size)
@@ -90,8 +100,9 @@ ApplicationGLFW::ApplicationGLFW(const Size& window_size)
   };
 
   auto ScrollCallback = [](GLFWwindow* window, double_t x_offset, double_t y_offset) {
+    const auto app_action = ConvertScrollAction(y_offset);
     const auto application = static_cast<Application*>(glfwGetWindowUserPointer(window));
-    application->ScrollCallback(x_offset, y_offset);
+    application->ScrollCallback(app_action);
   };
 
   auto KeyCallback = [](GLFWwindow* window, int32_t key, int32_t scancode, int32_t action, int32_t mods) {

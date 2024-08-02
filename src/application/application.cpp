@@ -48,14 +48,10 @@ void Application::CursorPositionCallback(const Point& cursor_position) {
   explorer_.MouseMovedEvent(mouse_position);
 }
 
-void Application::ScrollCallback(double_t x_offset, double_t y_offset) {
+void Application::ScrollCallback(ScrollAction action) {
   const auto mouse_position = GetCurrentCursorComplex(
       window_size_, explorer_.GetCenterPosition(), explorer_.GetZoom());
-  if (y_offset > 0.) {
-    explorer_.MouseScrollEvent(mouse_position, Explorer::ScrollEvent::kScrollUp);
-  } else if (y_offset < 0.) {
-    explorer_.MouseScrollEvent(mouse_position, Explorer::ScrollEvent::kScrollDown);
-  }
+  explorer_.MouseScrollEvent(mouse_position, action);
 }
 
 void Application::KeyCallback(KeyButton key_button, KeyAction action) {

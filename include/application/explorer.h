@@ -1,6 +1,7 @@
 #pragma once
 
 #include "complex.h"
+#include "actions.h"
 
 #include <atomic>
 
@@ -12,14 +13,12 @@ constexpr auto kDirectionalZoom = true;
 
 class Explorer {
  public:
-  enum class ScrollEvent { kScrollUp, kScrollDown };
-
   Explorer(const Complex& position, double_t zoom);
 
   void MouseClickedEvent(const Complex& position);
   void MouseReleasedEvent(const Complex& position);
   void MouseMovedEvent(const Complex& position);
-  void MouseScrollEvent(const Complex& position, ScrollEvent event);
+  void MouseScrollEvent(const Complex& position, ScrollAction action);
 
   Complex GetCenterPosition() const noexcept;
   Complex GetDisplayPosition() const noexcept;

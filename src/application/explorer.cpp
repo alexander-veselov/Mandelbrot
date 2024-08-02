@@ -28,11 +28,11 @@ void Explorer::MouseMovedEvent(const Complex& position) {
   }
 }
 
-void Explorer::MouseScrollEvent(const Complex& position, ScrollEvent event) {
+void Explorer::MouseScrollEvent(const Complex& position, ScrollAction action) {
   auto zoom_change = zoom_;
-  if (event == ScrollEvent::kScrollUp) {
+  if (action == ScrollAction::kScrollUp) {
     zoom_change = kZoomFactor;
-  } else if (event == ScrollEvent::kScrollDown) {
+  } else if (action == ScrollAction::kScrollDown) {
     zoom_change = 1. / kZoomFactor;
   }
 
