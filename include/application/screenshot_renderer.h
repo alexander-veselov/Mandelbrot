@@ -16,13 +16,11 @@ constexpr auto kScreenshotsFolder = "images";
 
 class ScreenshotRenderer : public MandelbrotRenderer {
  public:
-  ScreenshotRenderer(const Size& screenshot_size = {kScreenshotWidth,
-                                                    kScreenshotHeight});
-  void Render(const Complex& center, double_t zoom,
-              const RenderOptions& render_options) override;
+  ScreenshotRenderer(const Size& size = {kScreenshotWidth, kScreenshotHeight});
 
- private:
-  Size screenshot_size_;
+ protected:
+  bool IsDirty(const Complex& center, double_t zoom) const override;
+  void RenderImage(const Image& image) const override;
 };
 
 }
