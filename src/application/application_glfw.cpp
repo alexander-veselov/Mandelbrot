@@ -41,6 +41,8 @@ static ScrollAction ConvertScrollAction(double_t y_offset) {
 
 static KeyButton ConvertKeyButton(int32_t button) {
   switch (button) {
+    case GLFW_KEY_ESCAPE:
+      return KeyButton::kEscape;
     case GLFW_KEY_PRINT_SCREEN:
       return KeyButton::kPrintScreen;
     default:
@@ -123,6 +125,10 @@ ApplicationGLFW::ApplicationGLFW(const Size& window_size)
 ApplicationGLFW::~ApplicationGLFW() {
   glfwDestroyWindow(window_);
   glfwTerminate();
+}
+
+void ApplicationGLFW::Close() {
+  glfwSetWindowShouldClose(window_, GL_TRUE);
 }
 
 bool ApplicationGLFW::ShouldClose() const {

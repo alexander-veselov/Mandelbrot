@@ -9,6 +9,7 @@ enum class MouseButton {
 
 enum class KeyButton {
   kOther,
+  kEscape,
   kPrintScreen
 };
 

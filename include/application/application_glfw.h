@@ -11,6 +11,7 @@ class ApplicationGLFW : public Application {
  public:
   ApplicationGLFW(const Size& window_size);
   ~ApplicationGLFW() override;
+  void Close() override;
   bool ShouldClose() const override;
   void SwapBuffers() override;
   void PollEvents() override;

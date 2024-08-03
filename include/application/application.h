@@ -18,6 +18,7 @@ class Application {
   Application(const Size& window_size,
               std::unique_ptr<MandelbrotRenderer> renderer);
   virtual ~Application() = default;
+  virtual void Close() = 0;
   virtual bool ShouldClose() const = 0;
   virtual void SwapBuffers() = 0;
   virtual void PollEvents() = 0;

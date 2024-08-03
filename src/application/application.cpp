@@ -59,6 +59,8 @@ void Application::KeyCallback(KeyButton key_button, KeyAction action) {
   if (key_button == KeyButton::kPrintScreen) {
     screenshot_renderer_->Render(explorer_.GetDisplayPosition(),
                                  explorer_.GetZoom(), render_options_);
+  } else if (key_button == KeyButton::kEscape) {
+    Close();
   }
 }
 
