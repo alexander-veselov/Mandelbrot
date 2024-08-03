@@ -6,7 +6,7 @@
   "enable_vsync": true,
   "fps_update_rate": 10,
   "max_iterations": 1024,
-  "screenshot_size": {"width": 1920, "height": 1920},
+  "screenshot_size": {"width": 1920, "height": 1080},
   "screenshots_folder": "images",
   "smoothing": true,
   "window_mode": "windowed",
