@@ -1,7 +1,8 @@
 #include "application.h"
-#include "screenshot_renderer.h"
+#include "config.h"
 #include "fps_counter.h"
 #include "logger.h"
+#include "screenshot_renderer.h"
 
 namespace MandelbrotSet {
 
@@ -73,14 +74,17 @@ static void LogInformation(const Logger& logger, const Complex& position,
 Application::Application(const Size& window_size,
                          std::unique_ptr<MandelbrotRenderer> renderer)
     : window_size_{window_size},
-      explorer_{kDefaultPosition, kDefaultZoom},
-      screenshot_renderer_{std::make_unique<ScreenshotRenderer>()},
+      explorer_{GetConfig().default_position, GetConfig().default_zoom},
+      screenshot_renderer_{
+          std::make_unique<ScreenshotRenderer>(GetConfig().screenshot_size)},
       renderer_{std::move(renderer)},
-      render_options_{} {}
+      render_options_{MandelbrotRenderer::RenderOptions{
+          GetConfig().coloring_mode, GetConfig().max_iterations,
+          GetConfig().smoothing}} {}
 
 int Application::Run() {
   const auto& logger = Logger::Instance();
-  auto fps_counter = FPSCounter{kFPSUpdateRate, GetTime()};
+  auto fps_counter = FPSCounter{GetConfig().fps_update_rate, GetTime()};
 
   while (!ShouldClose()) {
     const auto position = explorer_.GetDisplayPosition();

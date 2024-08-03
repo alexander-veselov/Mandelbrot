@@ -1,15 +1,11 @@
 #pragma once
 
-#include "complex.h"
 #include "actions.h"
+#include "complex.h"
 
 #include <atomic>
 
 namespace MandelbrotSet {
-
-// TODO: make not global
-constexpr auto kZoomFactor = 1.5;
-constexpr auto kDirectionalZoom = true;
 
 class Explorer {
  public:

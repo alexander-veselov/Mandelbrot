@@ -2,7 +2,7 @@
 
 namespace MandelbrotSet {
 
-FPSCounter::FPSCounter(int32_t update_rate, double_t current_time)
+FPSCounter::FPSCounter(uint32_t update_rate, double_t current_time)
     : update_rate_{update_rate},
       frame_count_{0},
       last_capture_time_{current_time},

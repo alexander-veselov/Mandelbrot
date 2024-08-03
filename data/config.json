@@ -1,11 +1,15 @@
 {
-  "default_position": {"x": -0.5, "y": 0.0},
+  "coloring_mode": "blue",
+  "default_position": {"real": -0.5, "imag": 0.0},
   "default_zoom": 1.0,
   "directional_zoom": true,
-  "enable_vsync": false,
+  "enable_vsync": true,
   "fps_update_rate": 10,
+  "max_iterations": 1024,
   "screenshot_size": {"width": 1920, "height": 1920},
   "screenshots_folder": "images",
+  "smoothing": true,
   "window_mode": "windowed",
+  "window_size": {"width": 1024, "height": 768},
   "zoom_factor": 1.5
 }

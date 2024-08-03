@@ -1,5 +1,6 @@
 #include "application_glfw.h"
 #include "mandelbrot_renderer_glfw.h"
+#include "config.h"
 
 #include <GLFW/glfw3.h>
 #include <stdexcept>
@@ -63,7 +64,7 @@ ApplicationGLFW::ApplicationGLFW(const Size& window_size)
   }
 
   auto monitor = static_cast<GLFWmonitor*>(nullptr);
-  switch (kWindowMode) {
+  switch (GetConfig().window_mode) {
     case WindowMode::kWindowed:
       break;
     case WindowMode::kFullscreen:
@@ -80,7 +81,7 @@ ApplicationGLFW::ApplicationGLFW(const Size& window_size)
 
   glfwSetWindowUserPointer(window_, this);
   glfwMakeContextCurrent(window_);
-  glfwSwapInterval(kEnableVSync);
+  glfwSwapInterval(GetConfig().enable_vsync);
 
   glViewport(0, 0, window_size_.width, window_size_.height);
   glMatrixMode(GL_PROJECTION);

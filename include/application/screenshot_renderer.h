@@ -7,14 +7,9 @@
 
 namespace MandelbrotSet {
 
-// TODO: make not global
-constexpr auto kScreenshotWidth = 1920u;
-constexpr auto kScreenshotHeight = 1080u;
-constexpr auto kScreenshotsFolder = "images";
-
 class ScreenshotRenderer : public MandelbrotRenderer {
  public:
-  ScreenshotRenderer(const Size& size = {kScreenshotWidth, kScreenshotHeight});
+  ScreenshotRenderer(const Size& size);
 
  protected:
   bool IsDirty(const Complex& center, double_t zoom) const override;

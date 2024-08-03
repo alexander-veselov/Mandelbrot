@@ -7,23 +7,11 @@
 #include "mandelbrot_renderer.h"
 #include "point.h"
 #include "size.h"
+#include "window_mode.h"
 
 #include <memory>
 
 namespace MandelbrotSet {
-
-enum class WindowMode {
-  kWindowed,
-  kFullscreen,
-  kBorderless
-};
-
-// TODO: make not global
-constexpr auto kFPSUpdateRate = 10;  // 10 times per second
-constexpr auto kDefaultPosition = Complex{-0.5, 0.0};
-constexpr auto kDefaultZoom = 1.0;
-constexpr auto kEnableVSync = false;
-constexpr auto kWindowMode = WindowMode::kWindowed;
 
 class Application {
  public:

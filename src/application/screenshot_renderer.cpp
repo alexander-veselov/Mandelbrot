@@ -2,6 +2,7 @@
 
 #include "mandelbrot_set.cuh"
 #include "utils.h"
+#include "config.h"
 
 #include <sstream>
 #include <iomanip>
@@ -33,7 +34,7 @@ std::filesystem::path NameScreenshot(const Complex& center, double_t zoom) {
   filename += kSeparator;
   filename += ToString(zoom);
   filename += kExtension;
-  return std::filesystem::path{kScreenshotsFolder} / filename;
+  return std::filesystem::path{GetConfig().screenshots_folder} / filename;
 }
 
 ScreenshotRenderer::ScreenshotRenderer(const Size& size)

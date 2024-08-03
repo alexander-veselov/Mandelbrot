@@ -86,13 +86,13 @@ file(GLOB CORE_HEADERS ${CORE_INCLUDE_FOLDER}/*.h ${CORE_INCLUDE_FOLDER}/*.cuh)
 file(GLOB CORE_SOURCES ${CORE_SOURCE_FOLDER}/*.cpp ${CORE_SOURCE_FOLDER}/*.cu)
 add_library(MandelbrotSetCore STATIC ${CORE_HEADERS} ${CORE_SOURCES})
 target_include_directories(MandelbrotSetCore PUBLIC ${CORE_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotSetCore CUDA::cudart_static rapidjson)
+target_link_libraries(MandelbrotSetCore PRIVATE CUDA::cudart_static)
 
 # Benchmarks
 set(BENCHMARKS_SOURCE_FOLDER "src/benchmarks")
 file(GLOB BENCHMARKS_SOURCES ${BENCHMARKS_SOURCE_FOLDER}/*.cpp)
 add_executable(Benchmarks ${BENCHMARKS_SOURCES})
-target_link_libraries(Benchmarks benchmark benchmark_main MandelbrotSetCore)
+target_link_libraries(Benchmarks PRIVATE benchmark benchmark_main MandelbrotSetCore)
 
 # Application executable
 set(APP_INCLUDE_FOLDER "include/application")
@@ -101,8 +101,16 @@ file(GLOB APP_HEADERS ${APP_INCLUDE_FOLDER}/*.h ${APP_INCLUDE_FOLDER}/*.cuh)
 file(GLOB APP_SOURCES ${APP_SOURCE_FOLDER}/*.cpp ${APP_SOURCE_FOLDER}/*.cu)
 add_executable(MandelbrotSetExplorer ${APP_HEADERS} ${APP_SOURCES})
 target_include_directories(MandelbrotSetExplorer PUBLIC ${APP_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotSetExplorer MandelbrotSetCore GLFW)
+target_link_libraries(MandelbrotSetExplorer PUBLIC MandelbrotSetCore)
+target_link_libraries(MandelbrotSetExplorer PRIVATE GLFW rapidjson)
 set_property(TARGET MandelbrotSetExplorer PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+
+add_custom_command(
+    TARGET MandelbrotSetExplorer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_SOURCE_DIR}/data/config.json
+    $<TARGET_FILE_DIR:MandelbrotSetExplorer>/config.json
+)
 
 # Set starup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MandelbrotSetExplorer)

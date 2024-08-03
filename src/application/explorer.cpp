@@ -1,4 +1,5 @@
 #include "explorer.h"
+#include "config.h"
 
 namespace MandelbrotSet {
 
@@ -30,15 +31,16 @@ void Explorer::MouseMovedEvent(const Complex& position) {
 
 void Explorer::MouseScrollEvent(const Complex& position, ScrollAction action) {
   auto zoom_change = zoom_;
+  const auto zoom_factor = GetConfig().zoom_factor;
   if (action == ScrollAction::kScrollUp) {
-    zoom_change = kZoomFactor;
+    zoom_change = zoom_factor;
   } else if (action == ScrollAction::kScrollDown) {
-    zoom_change = 1. / kZoomFactor;
+    zoom_change = 1. / zoom_factor;
   }
 
   zoom_ *= zoom_change;
 
-  if constexpr (kDirectionalZoom) {
+  if (GetConfig().directional_zoom) {
     center_position_.real = position.real + (center_position_.real - position.real) / zoom_change;
     center_position_.imag = position.imag + (center_position_.imag - position.imag) / zoom_change;
     display_position_ = center_position_;
