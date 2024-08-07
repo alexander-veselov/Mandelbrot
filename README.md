@@ -18,3 +18,5 @@ TODO list:
 - custom clang-format
 - Option to build application without console
 - Create icon
+- Use precompiled 3rd-party
+- Disable warnings in 3rd-party
