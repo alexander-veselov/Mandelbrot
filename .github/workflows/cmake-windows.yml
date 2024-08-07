@@ -8,10 +8,15 @@ on:
 
 env:
   BUILD_TYPE: Release
+  RAPIDJSON_BUILD_DOC: OFF
+  RAPIDJSON_BUILD_TESTS: OFF
+  RAPIDJSON_BUILD_EXAMPLES: OFF
+  BENCHMARK_INSTALL_DOCS: OFF
+  BENCHMARK_ENABLE_TESTING: OFF
 
 jobs:
   build:
-    runs-on: 	windows-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -28,6 +33,3 @@ jobs:
     - name: Benchmark
       working-directory: ${{github.workspace}}/build/${{env.BUILD_TYPE}}
       run: Benchmarks.exe
-
-
-            

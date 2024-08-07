@@ -40,10 +40,18 @@ FetchContent_Declare(googlebenchmark-external
   DOWNLOAD_EXTRACT_TIMESTAMP true
 )
 
+# lodepng-external
+FetchContent_Declare(lodepng-external
+  GIT_REPOSITORY https://github.com/lvandeve/lodepng.git
+  GIT_TAG ed3c5f14b136c936d615ee3b38aaa7e7e642f12c
+  DOWNLOAD_EXTRACT_TIMESTAMP true
+)
+
 FetchContent_MakeAvailable(
   glfw-external
   googlebenchmark-external
   rapidjson-external
+  lodepng-external
 )
 
 FetchContent_GetProperties(
@@ -71,9 +79,19 @@ set_target_properties(GLFW PROPERTIES
 )
 
 # RapidJSON
-add_library(rapidjson INTERFACE)
-target_include_directories(rapidjson INTERFACE "$<BUILD_INTERFACE:${rapidjson-external_SOURCE_DIR}/include>")
+add_library(RapidJSON INTERFACE)
+target_include_directories(RapidJSON INTERFACE "$<BUILD_INTERFACE:${rapidjson-external_SOURCE_DIR}/include>")
 set_target_properties(travis_doc PROPERTIES FOLDER "External")
+
+# LodePNG
+add_library(LodePNG STATIC
+  "${lodepng-external_SOURCE_DIR}/lodepng.cpp"
+  "${lodepng-external_SOURCE_DIR}/lodepng.h"
+)
+target_include_directories(LodePNG PUBLIC
+  "${lodepng-external_SOURCE_DIR}"
+)
+set_target_properties(LodePNG PROPERTIES FOLDER "External")
 
 # MandelbrotSetExplorer
 project(MandelbrotSetExplorer LANGUAGES CUDA CXX)
@@ -86,7 +104,7 @@ file(GLOB CORE_HEADERS ${CORE_INCLUDE_FOLDER}/*.h ${CORE_INCLUDE_FOLDER}/*.cuh)
 file(GLOB CORE_SOURCES ${CORE_SOURCE_FOLDER}/*.cpp ${CORE_SOURCE_FOLDER}/*.cu)
 add_library(MandelbrotSetCore STATIC ${CORE_HEADERS} ${CORE_SOURCES})
 target_include_directories(MandelbrotSetCore PUBLIC ${CORE_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotSetCore PRIVATE CUDA::cudart_static)
+target_link_libraries(MandelbrotSetCore PRIVATE CUDA::cudart_static LodePNG)
 
 # Benchmarks
 set(BENCHMARKS_SOURCE_FOLDER "src/benchmarks")
@@ -102,7 +120,7 @@ file(GLOB APP_SOURCES ${APP_SOURCE_FOLDER}/*.cpp ${APP_SOURCE_FOLDER}/*.cu)
 add_executable(MandelbrotSetExplorer ${APP_HEADERS} ${APP_SOURCES})
 target_include_directories(MandelbrotSetExplorer PUBLIC ${APP_INCLUDE_FOLDER})
 target_link_libraries(MandelbrotSetExplorer PUBLIC MandelbrotSetCore)
-target_link_libraries(MandelbrotSetExplorer PRIVATE GLFW rapidjson)
+target_link_libraries(MandelbrotSetExplorer PRIVATE GLFW RapidJSON)
 set_property(TARGET MandelbrotSetExplorer PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 add_custom_command(
