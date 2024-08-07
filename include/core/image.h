@@ -15,6 +15,7 @@ class Image {
   using Type = ImageBuffer::value_type;
 
   Image(const Size& size);
+  Image(const RGBA* data, const Size& size);
   uint32_t GetWidth() const noexcept;
   uint32_t GetHeight() const noexcept;
   const RGBA* GetData() const noexcept;
