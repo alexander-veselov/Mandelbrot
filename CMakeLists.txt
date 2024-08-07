@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.17)
 include(FindCUDAToolkit)
 include(FetchContent)
 
-set(CMAKE_SUPPRESS_REGENERATION true)
-set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
-set_property( GLOBAL PROPERTY USE_FOLDERS ON)
+set(CMAKE_SUPPRESS_REGENERATION   ON CACHE BOOL "" FORCE)
+set(CMAKE_WARN_DEPRECATED        OFF CACHE BOOL "" FORCE)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
   set(CMAKE_CUDA_ARCHITECTURES 75)
@@ -20,9 +20,9 @@ FetchContent_Declare(glfw-external
 )
 
 # rapidjson-external
-set(RAPIDJSON_BUILD_DOC OFF)
-set(RAPIDJSON_BUILD_TESTS OFF)
-set(RAPIDJSON_BUILD_EXAMPLES OFF)
+set(RAPIDJSON_BUILD_DOC          OFF CACHE BOOL "" FORCE)
+set(RAPIDJSON_BUILD_EXAMPLES     OFF CACHE BOOL "" FORCE)
+set(RAPIDJSON_BUILD_TESTS        OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(rapidjson-external
   GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
   GIT_TAG v1.1.0
@@ -31,8 +31,11 @@ FetchContent_Declare(rapidjson-external
 )
 
 # googlebenchmark-external
-set(BENCHMARK_INSTALL_DOCS OFF)
-set(BENCHMARK_ENABLE_TESTING OFF)
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "" FORCE)
+set(BENCHMARK_ENABLE_INSTALL     OFF CACHE BOOL "" FORCE)
+set(BENCHMARK_ENABLE_TESTING     OFF CACHE BOOL "" FORCE)
+set(BENCHMARK_INSTALL_DOCS       OFF CACHE BOOL "" FORCE)
+set(BENCHMARK_USE_BUNDLED_GTEST  OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(googlebenchmark-external
   GIT_REPOSITORY https://github.com/google/benchmark.git
   GIT_TAG v1.8.5
