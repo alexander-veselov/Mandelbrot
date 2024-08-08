@@ -34,7 +34,7 @@ jobs:
       run: .\Benchmarks.exe > benchmarks.txt
 
     - name: Upload Benchmark Results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Benchmarks
         path: ${{github.workspace}}/build/${{env.BUILD_TYPE}}/benchmarks.txt
