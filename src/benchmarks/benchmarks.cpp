@@ -1,8 +1,8 @@
 #include <benchmark/benchmark.h>
 
-#include "mandelbrot_set.cuh"
-#include "complex.h"
-#include "image.h"
+#include "mandelbrot/core/complex.h"
+#include "mandelbrot/core/image.h"
+#include "mandelbrot/core/cuda/mandelbrot_set.h"
 
 namespace MandelbrotSet {
 

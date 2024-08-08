@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include <filesystem>
 
-#include "image.h"
-#include "complex.h"
-#include "coloring_mode.h"
-#include "utils.h"
-#include "mandelbrot_set.cuh"
+#include "mandelbrot/core/coloring_mode.h"
+#include "mandelbrot/core/complex.h"
+#include "mandelbrot/core/image.h"
+#include "mandelbrot/core/utils.h"
+#include "mandelbrot/core/cuda/mandelbrot_set.h"
 
 namespace MandelbrotSet {
 

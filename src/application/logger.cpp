@@ -1,4 +1,5 @@
-#include "logger.h"
+#include "mandelbrot/application/logger.h"
+
 #include <iostream>
 #include <iomanip>
 

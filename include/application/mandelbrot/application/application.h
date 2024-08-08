@@ -1,13 +1,14 @@
 #pragma once
 
-#include "actions.h"
-#include "buttons.h"
-#include "complex.h"
-#include "explorer.h"
-#include "mandelbrot_renderer.h"
-#include "point.h"
-#include "size.h"
-#include "window_mode.h"
+#include "mandelbrot/core/complex.h"
+#include "mandelbrot/core/point.h"
+#include "mandelbrot/core/size.h"
+
+#include "mandelbrot/application/actions.h"
+#include "mandelbrot/application/buttons.h"
+#include "mandelbrot/application/explorer.h"
+#include "mandelbrot/application/mandelbrot_renderer.h"
+#include "mandelbrot/application/window_mode.h"
 
 #include <memory>
 

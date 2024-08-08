@@ -1,8 +1,9 @@
-#include "application.h"
-#include "config.h"
-#include "fps_counter.h"
-#include "logger.h"
-#include "screenshot_renderer.h"
+#include "mandelbrot/application/application.h"
+
+#include "mandelbrot/application/config.h"
+#include "mandelbrot/application/fps_counter.h"
+#include "mandelbrot/application/logger.h"
+#include "mandelbrot/application/screenshot_renderer.h"
 
 namespace MandelbrotSet {
 

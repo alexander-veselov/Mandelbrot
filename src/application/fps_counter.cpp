@@ -1,4 +1,4 @@
-#include "fps_counter.h"
+#include "mandelbrot/application/fps_counter.h"
 
 namespace MandelbrotSet {
 

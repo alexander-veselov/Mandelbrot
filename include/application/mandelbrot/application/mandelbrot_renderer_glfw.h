@@ -1,8 +1,9 @@
 #pragma once
 
-#include "mandelbrot_renderer.h"
-#include "image.h"
-#include "size.h"
+#include "mandelbrot/core/image.h"
+#include "mandelbrot/core/size.h"
+
+#include "mandelbrot/application/mandelbrot_renderer.h"
 
 namespace MandelbrotSet {
 

@@ -1,6 +1,6 @@
-#include "mandelbrot_renderer.h"
+#include "mandelbrot/application/mandelbrot_renderer.h"
 
-#include "mandelbrot_set.cuh"
+#include "mandelbrot/core/cuda/mandelbrot_set.h"
 
 namespace MandelbrotSet {
 

@@ -1,4 +1,4 @@
-#include "gpu_memory_pool.h"
+#include "mandelbrot/core/gpu_memory_pool.h"
 
 #include <cuda_runtime.h>
 #include <stdexcept>

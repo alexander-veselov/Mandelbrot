@@ -1,8 +1,8 @@
-#include "mandelbrot_renderer_glfw.h"
+#include "mandelbrot/application/mandelbrot_renderer_glfw.h"
+
+#include "mandelbrot/core/cuda/mandelbrot_set.h"
 
 #include <GLFW/glfw3.h>
-
-#include "mandelbrot_set.cuh"
 
 namespace MandelbrotSet {
 

@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "mandelbrot/core/utils.h"
 
 #include <lodepng.h>
 

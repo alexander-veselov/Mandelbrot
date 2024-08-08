@@ -1,5 +1,6 @@
-#include "explorer.h"
-#include "config.h"
+#include "mandelbrot/application/explorer.h"
+
+#include "mandelbrot/application/config.h"
 
 namespace MandelbrotSet {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "typedefs.h"
+#include "mandelbrot/core/typedefs.h"
 
 namespace MandelbrotSet {
 

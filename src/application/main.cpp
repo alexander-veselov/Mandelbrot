@@ -1,5 +1,5 @@
-#include "config.h"
-#include "application_glfw.h"
+#include "mandelbrot/application/application_glfw.h"
+#include "mandelbrot/application/config.h"
 
 #include <memory>
 

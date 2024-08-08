@@ -1,6 +1,6 @@
 #pragma once
 
-#include "defines.cuh"
+#include "mandelbrot/core/cuda/defines.h"
 
 namespace MandelbrotSet {
 namespace Coloring {

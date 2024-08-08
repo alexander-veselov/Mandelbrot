@@ -1,11 +1,11 @@
+#include "mandelbrot/core/cuda/mandelbrot_set.h"
+
+#include "mandelbrot/core/gpu_memory_pool.h"
+#include "mandelbrot/core/cuda/coloring.h"
+
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
-
 #include <stdexcept>
-
-#include "mandelbrot_set.cuh"
-#include "coloring.cuh"
-#include "gpu_memory_pool.h"
 
 namespace MandelbrotSet {
 

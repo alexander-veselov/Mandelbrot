@@ -1,9 +1,9 @@
 #pragma once
 
-#include "image.h"
-#include "complex.h"
-#include "coloring_mode.h"
-#include "size.h"
+#include "mandelbrot/core/coloring_mode.h"
+#include "mandelbrot/core/complex.h"
+#include "mandelbrot/core/image.h"
+#include "mandelbrot/core/size.h"
 
 namespace MandelbrotSet {
 

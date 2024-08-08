@@ -1,6 +1,6 @@
 #pragma once
 
-#include "application.h"
+#include "mandelbrot/application/application.h"
 
 // Forward declarations
 struct GLFWwindow;

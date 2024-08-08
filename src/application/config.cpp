@@ -1,4 +1,4 @@
-#include "config.h"
+#include "mandelbrot/application/config.h"
 
 #include <filesystem>
 #include <fstream>

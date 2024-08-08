@@ -1,6 +1,7 @@
-#include "application_glfw.h"
-#include "mandelbrot_renderer_glfw.h"
-#include "config.h"
+#include "mandelbrot/application/application_glfw.h"
+
+#include "mandelbrot/application/config.h"
+#include "mandelbrot/application/mandelbrot_renderer_glfw.h"
 
 #include <GLFW/glfw3.h>
 #include <stdexcept>

@@ -1,6 +1,6 @@
-#include <cuda_runtime.h>
+#include "mandelbrot/core/cuda/coloring.h"
 
-#include "coloring.cuh"
+#include <cuda_runtime.h>
 
 __device__ constexpr uint32_t MakeRGB(uint8_t r, uint8_t g, uint8_t b,
                                       uint8_t a = 255) {

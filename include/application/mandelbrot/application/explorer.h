@@ -1,7 +1,8 @@
 #pragma once
 
-#include "actions.h"
-#include "complex.h"
+#include "mandelbrot/core/complex.h"
+
+#include "mandelbrot/application/actions.h"
 
 #include <atomic>
 

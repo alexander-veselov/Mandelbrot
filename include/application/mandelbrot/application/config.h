@@ -1,9 +1,10 @@
 #pragma once
 
-#include "coloring_mode.h"
-#include "complex.h"
-#include "size.h"
-#include "window_mode.h"
+#include "mandelbrot/core/coloring_mode.h"
+#include "mandelbrot/core/complex.h"
+#include "mandelbrot/core/size.h"
+
+#include "mandelbrot/application/window_mode.h"
 
 #include <string>
 

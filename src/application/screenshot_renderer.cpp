@@ -1,8 +1,9 @@
-#include "screenshot_renderer.h"
+#include "mandelbrot/application/screenshot_renderer.h"
 
-#include "mandelbrot_set.cuh"
-#include "utils.h"
-#include "config.h"
+#include "mandelbrot/core/utils.h"
+#include "mandelbrot/core/cuda/mandelbrot_set.h"
+
+#include "mandelbrot/application/config.h"
 
 #include <sstream>
 #include <iomanip>

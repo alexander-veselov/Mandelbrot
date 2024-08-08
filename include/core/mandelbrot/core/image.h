@@ -1,9 +1,9 @@
 #pragma once
 
-#include "size.h"
+#include "mandelbrot/core/size.h"
 
-#include <vector>
 #include <filesystem>
+#include <vector>
 
 namespace MandelbrotSet {
 

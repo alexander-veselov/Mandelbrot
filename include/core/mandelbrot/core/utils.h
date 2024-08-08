@@ -1,6 +1,6 @@
 #pragma once
 
-#include "image.h"
+#include "mandelbrot/core/image.h"
 
 #include <filesystem>
 
