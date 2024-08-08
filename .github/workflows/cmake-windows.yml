@@ -25,6 +25,12 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Benchmark
+    - name: Run Benchmarks
       working-directory: ${{github.workspace}}/build/${{env.BUILD_TYPE}}
-      run: .\Benchmarks.exe
+      run: .\Benchmarks.exe > benchmarks.txt
+
+    - name: Upload Benchmark Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: Benchmarks
+        path: ${{github.workspace}}/benchmarks.txt
