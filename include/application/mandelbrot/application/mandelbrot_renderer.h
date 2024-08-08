@@ -5,7 +5,7 @@
 #include "mandelbrot/core/image.h"
 #include "mandelbrot/core/size.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 class MandelbrotRenderer {
  public:
@@ -30,4 +30,4 @@ class MandelbrotRenderer {
   double_t zoom_;
 };
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

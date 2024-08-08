@@ -1,6 +1,6 @@
 #pragma once
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 enum class MouseAction {
   kPress,
@@ -14,4 +14,4 @@ enum class ScrollAction {
 
 using KeyAction = MouseAction;
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

@@ -2,7 +2,7 @@
 
 #include "mandelbrot/application/config.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 Explorer::Explorer(const Complex& position, double_t zoom)
     : center_position_{position},
@@ -60,4 +60,4 @@ double_t Explorer::GetZoom() const noexcept {
   return zoom_;
 }
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

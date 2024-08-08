@@ -2,11 +2,11 @@
 
 #include "mandelbrot/core/typedefs.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 struct Point {
   double_t x;
   double_t y;
 };
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

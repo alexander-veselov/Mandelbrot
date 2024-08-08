@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 class Logger {
  public:

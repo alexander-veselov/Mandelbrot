@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <vector>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 using RGBA = uint32_t;
 
@@ -27,4 +27,4 @@ class Image {
   Size size_;
 };
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

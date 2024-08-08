@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <string>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 std::string ToString(double_t value) {
   auto stream = std::ostringstream{};

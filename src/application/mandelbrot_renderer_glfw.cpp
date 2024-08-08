@@ -4,7 +4,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 MandelbrotRendererGLFW::MandelbrotRendererGLFW(const Size& size)
     : MandelbrotRenderer{size} {}
@@ -22,4 +22,4 @@ void MandelbrotRendererGLFW::RenderImage(const Image& image) const {
                image.GetData());
 }
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

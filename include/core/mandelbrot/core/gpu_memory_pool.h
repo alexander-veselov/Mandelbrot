@@ -1,6 +1,6 @@
 #pragma once
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 // Note: GPUMemoryPool isn't properly implemented.
 // Alloc/Free functions doesn't do anything.

@@ -7,7 +7,7 @@
 #include <windows.h>
 #endif
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 void HideCursor() {
 #ifdef WIN32

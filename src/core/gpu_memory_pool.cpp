@@ -3,7 +3,7 @@
 #include <cuda_runtime.h>
 #include <stdexcept>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 GPUMemoryPool::GPUMemoryPool(size_t pool_size)
   : pool_size_{pool_size},

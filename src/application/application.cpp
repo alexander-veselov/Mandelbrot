@@ -5,7 +5,7 @@
 #include "mandelbrot/application/logger.h"
 #include "mandelbrot/application/screenshot_renderer.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 static Complex ScreenToComplex(const Point& cursor_position,
                                const Size& screen_size,
@@ -106,4 +106,4 @@ int Application::Run() {
   return 0;
 }
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

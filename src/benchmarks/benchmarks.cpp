@@ -4,7 +4,7 @@
 #include "mandelbrot/core/image.h"
 #include "mandelbrot/core/cuda/mandelbrot_set.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 static void Default(benchmark::State& state) {
   constexpr auto kSize = Size{1024, 768};
@@ -16,10 +16,9 @@ static void Default(benchmark::State& state) {
 
   auto image = Image{kSize};
   for (auto _ : state) {
-    MandelbrotSet::Visualize(
-      image.GetData(), image.GetWidth(), image.GetHeight(), kCenter.real,
-      kCenter.imag, kZoom, kMaxIterations,
-      kColoringMode, kSmoothing);
+    cuda::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
+                    kCenter.real, kCenter.imag, kZoom, kMaxIterations,
+                    kColoringMode, kSmoothing);
   }
 }
 BENCHMARK(Default)
@@ -38,10 +37,9 @@ static void DifferentResolution(benchmark::State& state) {
 
   auto image = Image{size};
   for (auto _ : state) {
-    MandelbrotSet::Visualize(
-      image.GetData(), image.GetWidth(), image.GetHeight(), kCenter.real,
-      kCenter.imag, kZoom, kMaxIterations,
-      kColoringMode, kSmoothing);
+    cuda::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
+                    kCenter.real, kCenter.imag, kZoom, kMaxIterations,
+                    kColoringMode, kSmoothing);
   }
 }
 BENCHMARK(DifferentResolution)
@@ -71,10 +69,9 @@ static void DifferentMaxIterations(benchmark::State& state) {
 
   auto image = Image{kSize};
   for (auto _ : state) {
-    MandelbrotSet::Visualize(
-      image.GetData(), image.GetWidth(), image.GetHeight(), kCenter.real,
-      kCenter.imag, kZoom, max_iterations,
-      kColoringMode, kSmoothing);
+    cuda::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
+                    kCenter.real, kCenter.imag, kZoom, max_iterations,
+                    kColoringMode, kSmoothing);
   }
 }
 BENCHMARK(DifferentMaxIterations)

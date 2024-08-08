@@ -2,8 +2,8 @@
 
 #include "mandelbrot/core/cuda/defines.h"
 
-namespace MandelbrotSet {
-namespace Coloring {
+namespace mandelbrot {
+namespace cuda {
 
 __global__ void KenrelDefaultMode(uint32_t* data, uint32_t image_width,
                                   uint32_t image_height,
@@ -24,5 +24,5 @@ __global__ void KenrelMode4(uint32_t* data, uint32_t image_width,
 __global__ void KenrelMode5(uint32_t* data, uint32_t image_width,
                             uint32_t image_height, uint32_t max_iterations);
 
-}  // namespace Coloring
-}  // namespace MandelbrotSet
+}  // namespace cuda
+}  // namespace mandelbrot

@@ -2,7 +2,7 @@
 
 #include <lodepng.h>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 Image ReadImage(const std::filesystem::path& path) {
   auto data = std::vector<uint8_t>{};
@@ -53,4 +53,4 @@ bool CompareImages(const Image& image1, const Image& image2) {
                      image1.GetSizeInBytes()) == 0;
 }
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

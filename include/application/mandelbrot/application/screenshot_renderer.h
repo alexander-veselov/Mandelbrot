@@ -6,7 +6,7 @@
 
 #include "mandelbrot/application/mandelbrot_renderer.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 class ScreenshotRenderer : public MandelbrotRenderer {
  public:

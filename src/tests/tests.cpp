@@ -7,7 +7,7 @@
 #include "mandelbrot/core/utils.h"
 #include "mandelbrot/core/cuda/mandelbrot_set.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 std::filesystem::path GetTestDataPath() {
   return std::filesystem::absolute("images");
@@ -26,11 +26,11 @@ TEST(MandelbrotSet, DefaultView) {
   constexpr auto kWidth = 1920;
   constexpr auto kHeight = 1080;
   auto image = Image{Size{kWidth, kHeight}};
-  MandelbrotSet::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
-                           center.real, center.imag, zoom, max_iterations,
-                           static_cast<int32_t>(coloring_mode), smoothing);
+  cuda::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
+                  center.real, center.imag, zoom, max_iterations,
+                  static_cast<int32_t>(coloring_mode), smoothing);
 
   EXPECT_TRUE(CompareImages(expected_image, image));
 }
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

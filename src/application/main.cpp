@@ -4,7 +4,7 @@
 #include <memory>
 
 int main() {
-  const auto window_size = MandelbrotSet::GetConfig().window_size;
-  auto application = std::make_unique<MandelbrotSet::ApplicationGLFW>(window_size);
+  const auto window_size = mandelbrot::GetConfig().window_size;
+  auto application = std::make_unique<mandelbrot::ApplicationGLFW>(window_size);
   return application->Run();
 }

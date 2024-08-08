@@ -6,7 +6,7 @@
 
 #include <atomic>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 class Explorer {
  public:

@@ -156,8 +156,8 @@ __device__ void HSVToRGB(double h, double s, double v, uint8_t& ROut,
   BOut = B * UINT8_MAX;
 }
 
-namespace MandelbrotSet {
-namespace Coloring {
+namespace mandelbrot {
+namespace cuda {
 
 __device__ uint32_t DefaultMode(uint32_t iterations, uint32_t max_iterations) {
 
@@ -369,5 +369,5 @@ __global__ void KenrelMode5(uint32_t* data, uint32_t image_width,
   SmoothColor(Mode5, data, image_width, image_height, max_iterations);
 }
 
-}  // namespace Coloring
-}  // namespace MandelbrotSet
+}  // namespace cuda
+}  // namespace mandelbrot

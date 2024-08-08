@@ -1,6 +1,6 @@
 #pragma once
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 enum class MouseButton {
   kLeft,
@@ -13,4 +13,4 @@ enum class KeyButton {
   kPrintScreen
 };
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

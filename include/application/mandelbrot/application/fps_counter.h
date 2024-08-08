@@ -2,7 +2,7 @@
 
 #include "mandelbrot/core/typedefs.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 class FPSCounter {
  public:
@@ -17,4 +17,4 @@ class FPSCounter {
   double_t fps_;
 };
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

@@ -2,7 +2,7 @@
 
 #include "mandelbrot/core/image.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 Image::Image(const Size& size)
     : size_{size},
@@ -18,4 +18,4 @@ const RGBA* Image::GetData() const noexcept { return data_.data(); }
 RGBA* Image::GetData() noexcept { return data_.data(); }
 size_t Image::GetSizeInBytes() const noexcept { return data_.size() * sizeof(Type); }
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

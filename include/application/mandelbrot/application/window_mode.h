@@ -1,6 +1,6 @@
 #pragma once
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 enum class WindowMode {
   kWindowed,
@@ -8,4 +8,4 @@ enum class WindowMode {
   kBorderless
 };
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

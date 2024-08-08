@@ -5,7 +5,7 @@
 // Forward declarations
 struct GLFWwindow;
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 class ApplicationGLFW : public Application {
  public:
@@ -22,4 +22,4 @@ class ApplicationGLFW : public Application {
   GLFWwindow* window_;
 };
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

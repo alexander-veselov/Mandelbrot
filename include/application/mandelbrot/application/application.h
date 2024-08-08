@@ -12,7 +12,7 @@
 
 #include <memory>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 class Application {
  public:
@@ -45,4 +45,4 @@ class Application {
   MandelbrotRenderer::RenderOptions render_options_;
 };
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

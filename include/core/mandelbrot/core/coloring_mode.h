@@ -1,6 +1,6 @@
 #pragma once
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 enum class ColoringMode {
   kBlackWhite,
@@ -11,4 +11,4 @@ enum class ColoringMode {
   kWaves
 };
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

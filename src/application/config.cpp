@@ -6,7 +6,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 std::optional<std::filesystem::path> FindConfigFile() {
   constexpr auto kConfigFilename = "config.json";

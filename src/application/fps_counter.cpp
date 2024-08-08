@@ -1,6 +1,6 @@
 #include "mandelbrot/application/fps_counter.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 FPSCounter::FPSCounter(uint32_t update_rate, double_t current_time)
     : update_rate_{update_rate},
@@ -19,4 +19,4 @@ void FPSCounter::Update(double_t current_time) {
 
 double_t FPSCounter::GetFPS() const noexcept { return fps_; }
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

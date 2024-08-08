@@ -2,7 +2,7 @@
 
 #include "mandelbrot/core/cuda/mandelbrot_set.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 MandelbrotRenderer::MandelbrotRenderer(const Size& size)
     : image_{size}, center_{}, zoom_{} {}
@@ -10,11 +10,11 @@ MandelbrotRenderer::MandelbrotRenderer(const Size& size)
 void MandelbrotRenderer::Render(const Complex& center, double_t zoom,
                                 const RenderOptions& render_options) {
   if (IsDirty(center, zoom)) {
-    MandelbrotSet::Visualize(image_.GetData(), image_.GetWidth(),
-                             image_.GetHeight(), center.real, center.imag, zoom,
-                             render_options.max_iterations,
-                             static_cast<int32_t>(render_options.coloring_mode),
-                             render_options.smoothing);
+    cuda::Visualize(image_.GetData(), image_.GetWidth(), image_.GetHeight(),
+                    center.real, center.imag, zoom,
+                    render_options.max_iterations,
+                    static_cast<int32_t>(render_options.coloring_mode),
+                    render_options.smoothing);
 
     center_ = center;
     zoom_ = zoom;
@@ -23,4 +23,4 @@ void MandelbrotRenderer::Render(const Complex& center, double_t zoom,
   RenderImage(image_);
 }
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

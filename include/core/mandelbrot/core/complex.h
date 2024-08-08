@@ -2,11 +2,11 @@
 
 #include "mandelbrot/core/typedefs.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 struct Complex {
   double_t real;
   double_t imag;
 };
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

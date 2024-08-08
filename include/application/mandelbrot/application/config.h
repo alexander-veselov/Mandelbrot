@@ -8,7 +8,7 @@
 
 #include <string>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 struct Config {
   ColoringMode coloring_mode = ColoringMode::kBlue;
@@ -28,4 +28,4 @@ struct Config {
 
 const Config& GetConfig();
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

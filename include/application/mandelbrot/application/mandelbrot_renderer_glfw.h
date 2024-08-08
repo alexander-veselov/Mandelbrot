@@ -5,7 +5,7 @@
 
 #include "mandelbrot/application/mandelbrot_renderer.h"
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 class MandelbrotRendererGLFW : public MandelbrotRenderer {
  public:
@@ -16,4 +16,4 @@ class MandelbrotRendererGLFW : public MandelbrotRenderer {
   void RenderImage(const Image& image) const override;
 };
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot

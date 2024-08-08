@@ -7,7 +7,8 @@
 #include <device_launch_parameters.h>
 #include <stdexcept>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
+namespace cuda {
 
 template <typename T>
 __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
@@ -86,32 +87,32 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
 
   switch (coloring_mode) {
     case 1:
-      Coloring::KenrelMode1<<<kBlocksPerGrid, kThreadsPerBlock>>>(
+      cuda::KenrelMode1<<<kBlocksPerGrid, kThreadsPerBlock>>>(
         reinterpret_cast<uint32_t*>(device_data), image_width,
         image_height, max_iterations);
       break;
     case 2:
-      Coloring::KenrelMode2<<<kBlocksPerGrid, kThreadsPerBlock>>>(
+      cuda::KenrelMode2<<<kBlocksPerGrid, kThreadsPerBlock>>>(
         reinterpret_cast<uint32_t*>(device_data), image_width,
         image_height, max_iterations);
       break;
     case 3:
-      Coloring::KenrelMode3<<<kBlocksPerGrid, kThreadsPerBlock>>>(
+      cuda::KenrelMode3<<<kBlocksPerGrid, kThreadsPerBlock>>>(
         reinterpret_cast<uint32_t*>(device_data), image_width,
         image_height, max_iterations);
       break;
     case 4:
-      Coloring::KenrelMode4<<<kBlocksPerGrid, kThreadsPerBlock>>>(
+      cuda::KenrelMode4<<<kBlocksPerGrid, kThreadsPerBlock>>>(
         reinterpret_cast<uint32_t*>(device_data), image_width,
         image_height, max_iterations);
       break;
     case 5:
-      Coloring::KenrelMode5<<<kBlocksPerGrid, kThreadsPerBlock>>>(
+      cuda::KenrelMode5<<<kBlocksPerGrid, kThreadsPerBlock>>>(
         reinterpret_cast<uint32_t*>(device_data), image_width,
         image_height, max_iterations);
       break;
     default:
-      Coloring::KenrelDefaultMode<<<kBlocksPerGrid, kThreadsPerBlock>>>(
+      cuda::KenrelDefaultMode<<<kBlocksPerGrid, kThreadsPerBlock>>>(
         reinterpret_cast<uint32_t*>(device_data), image_width,
         image_height, max_iterations);
   }
@@ -120,4 +121,5 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
   memory_pool.Free(device_data);
 }
 
-}  // namespace MandelbrotSet
+}  // namespace cuda
+}  // namespace mandelbrot

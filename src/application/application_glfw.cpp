@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 
-namespace MandelbrotSet {
+namespace mandelbrot {
 
 static MouseButton ConvertMouseButton(int32_t button) {
   switch (button) {
@@ -155,4 +155,4 @@ double_t ApplicationGLFW::GetTime() const {
   return glfwGetTime();
 }
 
-}  // namespace MandelbrotSet
+}  // namespace mandelbrot
