@@ -19,6 +19,7 @@ class Image {
   uint32_t GetWidth() const noexcept;
   uint32_t GetHeight() const noexcept;
   const RGBA* GetData() const noexcept;
+  size_t GetSizeInBytes() const noexcept;
   RGBA* GetData() noexcept;
 
  private:

@@ -144,6 +144,7 @@ file(GLOB TESTS_SOURCE_FOLDER ${TESTS_SOURCE_FOLDER}/*.cpp)
 add_executable(Tests ${TESTS_SOURCE_FOLDER})
 target_link_libraries(Tests PRIVATE gtest gtest_main)
 target_link_libraries(Tests PUBLIC MandelbrotSetCore)
+set_property(TARGET Tests PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 include(GoogleTest)
 gtest_discover_tests(Tests)
 

@@ -37,4 +37,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: Benchmarks
-        path: ${{github.workspace}}/benchmarks.txt
+        path: ${{github.workspace}}/build/${{env.BUILD_TYPE}}/benchmarks.txt
