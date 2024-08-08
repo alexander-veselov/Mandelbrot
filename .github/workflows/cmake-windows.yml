@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: cuda-toolkit
+    - name: Install CUDA
       uses: Jimver/cuda-toolkit@v0.2.16
 
     - name: Configure CMake
@@ -27,4 +27,4 @@ jobs:
 
     - name: Benchmark
       working-directory: ${{github.workspace}}/build/${{env.BUILD_TYPE}}
-      run: Benchmarks.exe
+      run: .\Benchmarks.exe
