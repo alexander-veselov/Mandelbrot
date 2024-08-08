@@ -15,8 +15,8 @@ if(NOT DEFINED CMAKE_DEBUG_POSTFIX)
   set(CMAKE_DEBUG_POSTFIX "")
 endif()
 
-# MandelbrotSetExplorer
-project(MandelbrotSetExplorer LANGUAGES CUDA CXX)
+# Mandelbrot
+project(Mandelbrot LANGUAGES CUDA CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -127,15 +127,15 @@ set(CORE_INCLUDE_FOLDER "include/core")
 set(CORE_SOURCE_FOLDER "src/core")
 file(GLOB CORE_HEADERS ${CORE_INCLUDE_FOLDER}/mandelbrot/core/*.h ${CORE_INCLUDE_FOLDER}/mandelbrot/core/cuda/*.h)
 file(GLOB CORE_SOURCES ${CORE_SOURCE_FOLDER}/*.cpp ${CORE_SOURCE_FOLDER}/cuda/*.cu)
-add_library(MandelbrotSetCore STATIC ${CORE_HEADERS} ${CORE_SOURCES})
-target_include_directories(MandelbrotSetCore PUBLIC ${CORE_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotSetCore PRIVATE CUDA::cudart_static LodePNG)
+add_library(MandelbrotCore STATIC ${CORE_HEADERS} ${CORE_SOURCES})
+target_include_directories(MandelbrotCore PUBLIC ${CORE_INCLUDE_FOLDER})
+target_link_libraries(MandelbrotCore PRIVATE CUDA::cudart_static LodePNG)
 
 # Benchmarks
 set(BENCHMARKS_SOURCE_FOLDER "src/benchmarks")
 file(GLOB BENCHMARKS_SOURCES ${BENCHMARKS_SOURCE_FOLDER}/*.cpp)
 add_executable(Benchmarks ${BENCHMARKS_SOURCES})
-target_link_libraries(Benchmarks PRIVATE benchmark benchmark_main MandelbrotSetCore)
+target_link_libraries(Benchmarks PRIVATE benchmark benchmark_main MandelbrotCore)
 
 # Tests
 enable_testing()
@@ -143,7 +143,7 @@ set(TESTS_SOURCE_FOLDER "src/tests")
 file(GLOB TESTS_SOURCE_FOLDER ${TESTS_SOURCE_FOLDER}/*.cpp)
 add_executable(Tests ${TESTS_SOURCE_FOLDER})
 target_link_libraries(Tests PRIVATE gtest gtest_main)
-target_link_libraries(Tests PUBLIC MandelbrotSetCore)
+target_link_libraries(Tests PUBLIC MandelbrotCore)
 set_property(TARGET Tests PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 include(GoogleTest)
 gtest_discover_tests(Tests)
@@ -153,18 +153,18 @@ set(APP_INCLUDE_FOLDER "include/application")
 set(APP_SOURCE_FOLDER "src/application")
 file(GLOB APP_HEADERS ${APP_INCLUDE_FOLDER}/mandelbrot/application/*.h)
 file(GLOB APP_SOURCES ${APP_SOURCE_FOLDER}/*.cpp)
-add_executable(MandelbrotSetExplorer ${APP_HEADERS} ${APP_SOURCES})
-target_include_directories(MandelbrotSetExplorer PUBLIC ${APP_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotSetExplorer PUBLIC MandelbrotSetCore)
-target_link_libraries(MandelbrotSetExplorer PRIVATE GLFW RapidJSON)
-set_property(TARGET MandelbrotSetExplorer PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+add_executable(MandelbrotExplorer ${APP_HEADERS} ${APP_SOURCES})
+target_include_directories(MandelbrotExplorer PUBLIC ${APP_INCLUDE_FOLDER})
+target_link_libraries(MandelbrotExplorer PUBLIC MandelbrotCore)
+target_link_libraries(MandelbrotExplorer PRIVATE GLFW RapidJSON)
+set_property(TARGET MandelbrotExplorer PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 add_custom_command(
-    TARGET MandelbrotSetExplorer POST_BUILD
+    TARGET MandelbrotExplorer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     ${CMAKE_SOURCE_DIR}/data/config.json
-    $<TARGET_FILE_DIR:MandelbrotSetExplorer>/config.json
+    $<TARGET_FILE_DIR:MandelbrotExplorer>/config.json
 )
 
 # Set starup project
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MandelbrotSetExplorer)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MandelbrotExplorer)
