@@ -57,9 +57,24 @@ void Application::ScrollCallback(ScrollAction action) {
 }
 
 void Application::KeyCallback(KeyButton key_button, KeyAction action) {
+  if (action == KeyAction::kRelease) {
+    return;
+  }
+
   if (key_button == KeyButton::kPrintScreen) {
     screenshot_renderer_->Render(explorer_.GetDisplayPosition(),
                                  explorer_.GetZoom(), render_options_);
+  } else if (key_button == KeyButton::kLeft) {
+    const auto& bookmark = bookmarks_.Previous();
+    explorer_.Navigate(bookmark.position, bookmark.zoom);
+  } else if (key_button == KeyButton::kRight) {
+    const auto& bookmark = bookmarks_.Next();
+    explorer_.Navigate(bookmark.position, bookmark.zoom);
+  } else if (key_button == KeyButton::kUp) {
+    const auto& bookmark = bookmarks_.Current();
+    explorer_.Navigate(bookmark.position, bookmark.zoom);
+  } else if (key_button == KeyButton::kDown) {
+    bookmarks_.Add(explorer_.GetDisplayPosition(), explorer_.GetZoom());
   } else if (key_button == KeyButton::kEscape) {
     Close();
   }
@@ -78,6 +93,7 @@ Application::Application(const Size& window_size,
                          std::unique_ptr<MandelbrotRenderer> renderer)
     : window_size_{window_size},
       explorer_{GetConfig().default_position, GetConfig().default_zoom},
+      bookmarks_{},
       screenshot_renderer_{
           std::make_unique<ScreenshotRenderer>(GetConfig().screenshot_size)},
       renderer_{std::move(renderer)},

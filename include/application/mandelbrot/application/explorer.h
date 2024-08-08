@@ -17,6 +17,8 @@ class Explorer {
   void MouseMovedEvent(const Complex& position);
   void MouseScrollEvent(const Complex& position, ScrollAction action);
 
+  void Navigate(const Complex& position, double_t zoom);
+
   Complex GetCenterPosition() const noexcept;
   Complex GetDisplayPosition() const noexcept;
   double_t GetZoom() const noexcept;

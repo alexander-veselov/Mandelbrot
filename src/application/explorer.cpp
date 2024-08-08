@@ -48,6 +48,12 @@ void Explorer::MouseScrollEvent(const Complex& position, ScrollAction action) {
   }
 }
 
+void Explorer::Navigate(const Complex& position, double_t zoom) {
+  center_position_ = position;
+  display_position_ = position;
+  zoom_ = zoom;
+}
+
 Complex Explorer::GetCenterPosition() const noexcept {
   return center_position_;
 }

@@ -5,6 +5,7 @@
 #include "mandelbrot/core/size.h"
 
 #include "mandelbrot/application/actions.h"
+#include "mandelbrot/application/bookmarks.h"
 #include "mandelbrot/application/buttons.h"
 #include "mandelbrot/application/explorer.h"
 #include "mandelbrot/application/mandelbrot_renderer.h"
@@ -40,6 +41,7 @@ class Application {
  protected:
   Size window_size_;
   Explorer explorer_;
+  Bookmarks bookmarks_;
   std::unique_ptr<MandelbrotRenderer> renderer_;
   std::unique_ptr<MandelbrotRenderer> screenshot_renderer_;
   MandelbrotRenderer::RenderOptions render_options_;

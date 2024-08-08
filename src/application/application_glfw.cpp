@@ -15,7 +15,7 @@ static MouseButton ConvertMouseButton(int32_t button) {
     case GLFW_MOUSE_BUTTON_RIGHT:
       return MouseButton::kRight;
     default:
-      throw std::runtime_error{"Unexpected button code"};
+      return MouseButton::kOther;
   }
 }
 
@@ -26,7 +26,7 @@ static MouseAction ConvertMouseAction(int32_t action) {
     case GLFW_RELEASE:
       return MouseAction::kRelease;
     default:
-      throw std::runtime_error{"Unexpected action code"};
+      return MouseAction::kOther;
   }
 }
 
@@ -36,7 +36,7 @@ static ScrollAction ConvertScrollAction(double_t y_offset) {
   } else if (y_offset < 0.) {
     return ScrollAction::kScrollDown;
   } else {
-    throw std::runtime_error{"Unexpected y offset"};
+    return ScrollAction::kOther;
   }
 }
 
@@ -46,6 +46,14 @@ static KeyButton ConvertKeyButton(int32_t button) {
       return KeyButton::kEscape;
     case GLFW_KEY_PRINT_SCREEN:
       return KeyButton::kPrintScreen;
+    case GLFW_KEY_LEFT:
+      return KeyButton::kLeft;
+    case GLFW_KEY_RIGHT:
+      return KeyButton::kRight;
+    case GLFW_KEY_UP:
+      return KeyButton::kUp;
+    case GLFW_KEY_DOWN:
+      return KeyButton::kDown;
     default:
       return KeyButton::kOther;
   }

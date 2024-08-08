@@ -3,6 +3,7 @@
 namespace mandelbrot {
 
 enum class MouseButton {
+  kOther,
   kLeft,
   kRight
 };
@@ -10,7 +11,11 @@ enum class MouseButton {
 enum class KeyButton {
   kOther,
   kEscape,
-  kPrintScreen
+  kPrintScreen,
+  kLeft,
+  kRight,
+  kUp,
+  kDown
 };
 
 }  // namespace mandelbrot

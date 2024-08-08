@@ -3,11 +3,13 @@
 namespace mandelbrot {
 
 enum class MouseAction {
+  kOther,
   kPress,
   kRelease
 };
 
 enum class ScrollAction {
+  kOther,
   kScrollUp,
   kScrollDown
 };

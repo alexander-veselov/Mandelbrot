@@ -1,5 +1,7 @@
 #include "mandelbrot/application/config.h"
 
+#include "mandelbrot/core/utils.h"
+
 #include <filesystem>
 #include <fstream>
 #include <optional>
@@ -8,48 +10,34 @@
 
 namespace mandelbrot {
 
-std::optional<std::filesystem::path> FindConfigFile() {
-  constexpr auto kConfigFilename = "config.json";
-  const auto directory_candidate1 = std::filesystem::current_path();
-  const auto directory_candidate2 = std::filesystem::current_path() / "data";
-  const auto candidate1 = directory_candidate1 / kConfigFilename;
-  if (std::filesystem::exists(candidate1)) {
-    return candidate1;
-  }
-  const auto candidate2 = directory_candidate2 / kConfigFilename;
-  if (std::filesystem::exists(candidate2)) {
-    return candidate2;
-  }
-  return std::nullopt;
-}
-
-void ParseValue(const rapidjson::Value& value, double_t& out) {
+// TODO: improve json parsing, remove code duplication
+static void ParseValue(const rapidjson::Value& value, double_t& out) {
   out = value.GetDouble();
 }
 
-void ParseValue(const rapidjson::Value& value, bool& out) {
+static void ParseValue(const rapidjson::Value& value, bool& out) {
   out = value.GetBool();
 }
 
-void ParseValue(const rapidjson::Value& value, uint32_t& out) {
+static void ParseValue(const rapidjson::Value& value, uint32_t& out) {
   out = value.GetUint();
 }
 
-void ParseValue(const rapidjson::Value& value, std::string& out) {
+static void ParseValue(const rapidjson::Value& value, std::string& out) {
   out = value.GetString();
 }
 
-void ParseValue(const rapidjson::Value& value, Complex& out) {
+static void ParseValue(const rapidjson::Value& value, Complex& out) {
   ParseValue(value["real"], out.real);
   ParseValue(value["imag"], out.imag);
 }
 
-void ParseValue(const rapidjson::Value& value, Size& out) {
+static void ParseValue(const rapidjson::Value& value, Size& out) {
   ParseValue(value["width"], out.width);
   ParseValue(value["height"], out.height);
 }
 
-void ParseValue(const rapidjson::Value& value, WindowMode& out) {
+static void ParseValue(const rapidjson::Value& value, WindowMode& out) {
   auto window_mode = std::string{};
   ParseValue(value, window_mode);
   if (window_mode == "windowed") {
@@ -63,7 +51,7 @@ void ParseValue(const rapidjson::Value& value, WindowMode& out) {
   }
 }
 
-void ParseValue(const rapidjson::Value& value, ColoringMode& out) {
+static void ParseValue(const rapidjson::Value& value, ColoringMode& out) {
   auto window_mode = std::string{};
   ParseValue(value, window_mode);
   if (window_mode == "blackwhite") {
@@ -83,7 +71,11 @@ void ParseValue(const rapidjson::Value& value, ColoringMode& out) {
   }
 }
 
-Config ParseConfig() {
+static auto FindConfigFile() {
+  return FindDataFile("config.json");
+}
+
+static Config ParseConfig() {
   const auto config_file_path = FindConfigFile();
   if (!config_file_path.has_value()) {
     return Config{};
