@@ -2,6 +2,7 @@
 
 #include "mandelbrot/core/complex.h"
 #include "mandelbrot/core/point.h"
+#include "mandelbrot/core/render_options.h"
 #include "mandelbrot/core/size.h"
 
 #include "mandelbrot/application/actions.h"
@@ -44,7 +45,7 @@ class Application {
   Bookmarks bookmarks_;
   std::unique_ptr<MandelbrotRenderer> renderer_;
   std::unique_ptr<MandelbrotRenderer> screenshot_renderer_;
-  MandelbrotRenderer::RenderOptions render_options_;
+  RenderOptions render_options_;
 };
 
 }  // namespace mandelbrot

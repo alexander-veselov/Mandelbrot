@@ -54,6 +54,10 @@ static KeyButton ConvertKeyButton(int32_t button) {
       return KeyButton::kUp;
     case GLFW_KEY_DOWN:
       return KeyButton::kDown;
+    case GLFW_KEY_COMMA:
+      return KeyButton::kComma;
+    case GLFW_KEY_PERIOD:
+      return KeyButton::kPeriod;
     default:
       return KeyButton::kOther;
   }

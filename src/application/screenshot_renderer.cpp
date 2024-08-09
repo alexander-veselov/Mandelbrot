@@ -41,7 +41,8 @@ std::filesystem::path NameScreenshot(const Complex& center, double_t zoom) {
 ScreenshotRenderer::ScreenshotRenderer(const Size& size)
     : MandelbrotRenderer{size} {}
 
-bool ScreenshotRenderer::IsDirty(const Complex& center, double_t zoom) const {
+bool ScreenshotRenderer::IsDirty(const Complex& center, double_t zoom,
+                                 const RenderOptions& render_options) const {
   return true;
 }
 

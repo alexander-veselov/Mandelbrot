@@ -15,7 +15,9 @@ enum class KeyButton {
   kLeft,
   kRight,
   kUp,
-  kDown
+  kDown,
+  kComma,
+  kPeriod
 };
 
 }  // namespace mandelbrot

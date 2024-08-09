@@ -59,15 +59,6 @@ void WriteImage(const Image& image, const std::filesystem::path& path) {
   }
 }
 
-bool CompareImages(const Image& image1, const Image& image2) {
-  if (image1.GetWidth() != image2.GetWidth() ||
-      image1.GetHeight() != image2.GetHeight()) {
-    return false;
-  }
-  return std::memcmp(image1.GetData(), image2.GetData(),
-                     image1.GetSizeInBytes()) == 0;
-}
-
 std::optional<std::filesystem::path> FindDataFile(const std::string& filename) {
   const auto directory_candidate1 = std::filesystem::current_path();
   const auto directory_candidate2 = std::filesystem::current_path() / "data";

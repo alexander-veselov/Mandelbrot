@@ -9,10 +9,10 @@ namespace mandelbrot {
 MandelbrotRendererGLFW::MandelbrotRendererGLFW(const Size& size)
     : MandelbrotRenderer{size} {}
 
-bool MandelbrotRendererGLFW::IsDirty(const Complex& center,
-                                     double_t zoom) const {
-  return center.real != center_.real || center.imag != center_.imag ||
-         zoom != zoom_;
+bool MandelbrotRendererGLFW::IsDirty(
+    const Complex& center, double_t zoom,
+    const RenderOptions& render_options) const {
+  return center != center_ || zoom != zoom_ || render_options != render_options_;
 }
 
 void MandelbrotRendererGLFW::RenderImage(const Image& image) const {

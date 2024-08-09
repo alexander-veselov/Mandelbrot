@@ -9,7 +9,7 @@ MandelbrotRenderer::MandelbrotRenderer(const Size& size)
 
 void MandelbrotRenderer::Render(const Complex& center, double_t zoom,
                                 const RenderOptions& render_options) {
-  if (IsDirty(center, zoom)) {
+  if (IsDirty(center, zoom, render_options)) {
     cuda::Visualize(image_.GetData(), image_.GetWidth(), image_.GetHeight(),
                     center.real, center.imag, zoom,
                     render_options.max_iterations,
@@ -18,6 +18,7 @@ void MandelbrotRenderer::Render(const Complex& center, double_t zoom,
 
     center_ = center;
     zoom_ = zoom;
+    render_options_ = render_options;
   }
 
   RenderImage(image_);

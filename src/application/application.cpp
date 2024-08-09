@@ -61,6 +61,7 @@ void Application::KeyCallback(KeyButton key_button, KeyAction action) {
     return;
   }
 
+  constexpr auto kIterationsStep = 128u;
   if (key_button == KeyButton::kPrintScreen) {
     screenshot_renderer_->Render(explorer_.GetDisplayPosition(),
                                  explorer_.GetZoom(), render_options_);
@@ -75,17 +76,24 @@ void Application::KeyCallback(KeyButton key_button, KeyAction action) {
     explorer_.Navigate(bookmark.position, bookmark.zoom);
   } else if (key_button == KeyButton::kDown) {
     bookmarks_.Add(explorer_.GetDisplayPosition(), explorer_.GetZoom());
+  } else if (key_button == KeyButton::kComma) {
+    auto& max_iterations = render_options_.max_iterations; 
+    max_iterations = std::max(kIterationsStep, max_iterations - kIterationsStep);
+  } else if (key_button == KeyButton::kPeriod) {
+    render_options_.max_iterations += kIterationsStep;
   } else if (key_button == KeyButton::kEscape) {
     Close();
   }
 }
 
 static void LogInformation(const Logger& logger, const Complex& position,
-                           double_t zoom, double_t fps) {
+                           double_t zoom, const RenderOptions& render_options,
+                           double_t fps) {
   logger.ResetCursor();
   logger << logger.SetPrecision(15) << "Center: " << position.real
          << logger.ShowSign(true) << position.imag << logger.ShowSign(false)
          << "i" << logger.NewLine() << "Zoom: " << zoom << logger.NewLine()
+         << "Max iterations: " << render_options.max_iterations << logger.NewLine()
          << "FPS: " << static_cast<int32_t>(fps) << logger.NewLine();
 }
 
@@ -97,9 +105,9 @@ Application::Application(const Size& window_size,
       screenshot_renderer_{
           std::make_unique<ScreenshotRenderer>(GetConfig().screenshot_size)},
       renderer_{std::move(renderer)},
-      render_options_{MandelbrotRenderer::RenderOptions{
-          GetConfig().coloring_mode, GetConfig().max_iterations,
-          GetConfig().smoothing}} {}
+      render_options_{RenderOptions{GetConfig().coloring_mode,
+                                    GetConfig().max_iterations,
+                                    GetConfig().smoothing}} {}
 
 int Application::Run() {
   const auto& logger = Logger::Instance();
@@ -116,7 +124,8 @@ int Application::Run() {
 
     fps_counter.Update(GetTime());
 
-    LogInformation(logger, position, zoom, fps_counter.GetFPS());
+    LogInformation(logger, position, zoom, render_options_,
+                   fps_counter.GetFPS());
   }
 
   return 0;

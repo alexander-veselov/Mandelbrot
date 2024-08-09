@@ -30,7 +30,7 @@ TEST(MandelbrotSet, DefaultView) {
                   center.real, center.imag, zoom, max_iterations,
                   static_cast<int32_t>(coloring_mode), smoothing);
 
-  EXPECT_TRUE(CompareImages(expected_image, image));
+  EXPECT_TRUE(expected_image == image);
 }
 
 }  // namespace mandelbrot

@@ -18,9 +18,12 @@ class Image {
   Image(const RGBA* data, const Size& size);
   uint32_t GetWidth() const noexcept;
   uint32_t GetHeight() const noexcept;
+  Size GetSize() const noexcept;
   const RGBA* GetData() const noexcept;
   size_t GetSizeInBytes() const noexcept;
   RGBA* GetData() noexcept;
+  bool operator==(const Image& image) const;
+  bool operator!=(const Image& image) const;
 
  private:
   ImageBuffer data_;

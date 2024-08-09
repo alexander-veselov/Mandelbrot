@@ -9,4 +9,7 @@ struct Size {
   uint32_t height;
 };
 
+bool operator==(const Size& left, const Size& right);
+bool operator!=(const Size& left, const Size& right);
+
 }  // namespace mandelbrot
