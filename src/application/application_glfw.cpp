@@ -102,6 +102,10 @@ ApplicationGLFW::ApplicationGLFW(const Size& window_size)
   glfwMakeContextCurrent(window_);
   glfwSwapInterval(GetConfig().enable_vsync);
 
+  if (GetConfig().window_mode == WindowMode::kWindowed) {
+    glfwSetWindowAttrib(window_, GLFW_RESIZABLE, GLFW_FALSE);
+  }
+
   glViewport(0, 0, window_size_.width, window_size_.height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
