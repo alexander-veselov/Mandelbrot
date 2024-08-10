@@ -95,6 +95,9 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
       reinterpret_cast<uint32_t*>(device_data), image_width, image_height,
       max_iterations, coloring_mode, palette);
 
+  CUDA_CHECK(cudaPeekAtLastError());
+  CUDA_CHECK(cudaDeviceSynchronize());
+
   CUDA_CHECK(cudaMemcpy(image, device_data, image_size_in_bytes,
                         cudaMemcpyDeviceToHost));
   memory_pool.Free(device_data);
