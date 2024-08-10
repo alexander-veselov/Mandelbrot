@@ -70,10 +70,15 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
                uint32_t max_iterations, uint32_t coloring_mode,
                uint32_t palette, bool smoothing) {
 
-  static auto memory_pool = GPUMemoryPool{ 128 << 20 }; // 128 MB
+  constexpr auto kMemoryPoolSize = 128 << 20;
+  static auto memory_pool = GPUMemoryPool{kMemoryPoolSize};  // 128 MB
 
   const auto image_size = image_width * image_height;
   const auto image_size_in_bytes = image_size * sizeof(uint32_t);
+
+  if (image_size_in_bytes > kMemoryPoolSize) {
+    throw std::runtime_error{"Not enought GPU memory in pool"};
+  }
 
   auto device_data = memory_pool.Alloc(image_size_in_bytes);
   cudaMemcpy(device_data, image, image_size_in_bytes, cudaMemcpyHostToDevice);

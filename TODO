@@ -1,0 +1,62 @@
+TODO list:
+- Create CPU implementation
+  Currently project cannot be properly verified on github.actions because GPU available runners are paid
+  - Fix CI after CPU algorithm is implemented
+  Also, CPU implementation will allow to have a build without CUDA
+  - Create build flag to build the project without CUDA
+- Add more tests
+- Don't show console along with application launch
+  Currently console displays some debug info, but in general it's redundant
+  - Create debug window that can be optionally opened in runtime
+- Implement image debugger
+  Sometimes Image needs to be visualized, but there is no any way except saving to disk
+  - Implement a mechanism that will allow to display image at runtime
+  Idea: debug window with textbox that will accept pointer to Image object
+- Create better serialization mechanism
+  There are several json files that store application config, rendering palettes, etc...
+  Current serialization mechanism needs to be improved to easily serialize all datatypes
+- Implement smooth zoom 
+- Exception window
+  In case of exception, message box with problem details should be displayed
+- Remove extra coloring modes
+  Some of the coloring mode are experimental and don't look pretty
+- Create Carousel class
+  There are several flows that slide between elements, changing:
+  - Coloring mode
+  - Palette
+  - Bookmark
+  Make them use new Carousel class
+- Implement states/event listener mechanisms
+  Currently entire logic is located in application callbacks itself
+  - Create some mechanism to separate parts of the code that are responsible for bookmarks, coloring mode, etc...
+- Improve GPUMemoryPool
+- Improve Logger
+- Create application icon
+- Treat warnings as errors
+- Write documentation
+- Make install script
+
+Ideas to try:
+- Improve performance
+  Current GPU implementation is fast enough even on high resolution
+  But if CPU algorithm will be implemented, performance may be really bad
+  General optimizations:
+  - Calculate fractal at lower resolution first
+  CPU optimizations:
+  - Use AVX2 instructions
+  - Use parallelization
+- Implement arbitrary precision float
+  Although the fractal is infinite, the current zoom's capabilities are not
+  The accuracy of the double ends very quickly and at some point further increase of the fractal becomes impossible
+  - Use some CPU-based arbitrary precision calculations library to increase maximum zoom level at the cost of performance
+- Use precompiled 3rd-party
+  Almost all 3rd-party are built from sources. It doesn't take a lot of time, but using precompiled binaries may be a nit improvement
+- Implement Julia set support
+  At any point of Mandelbrot set you can calculate corresponding Julia set
+- Make rendering on separate thread
+  Currently there is not a lot of sense of it, since there are no any background calculations, but may be useful in the future
+- Create application factory
+  Implement in case of support of different platforms
+- Update bookmarks.json and config.json on application shutdown
+- Add WASM platform support
+- Try Vulkan
