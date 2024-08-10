@@ -52,23 +52,21 @@ static void ParseValue(const rapidjson::Value& value, WindowMode& out) {
 }
 
 static void ParseValue(const rapidjson::Value& value, ColoringMode& out) {
-  auto window_mode = std::string{};
-  ParseValue(value, window_mode);
-  if (window_mode == "blackwhite") {
-    out = ColoringMode::kBlackWhite;
-  } else if (window_mode == "blue") {
-    out = ColoringMode::kBlue;
-  } else if (window_mode == "red") {
-    out = ColoringMode::kRed;
-  } else if (window_mode == "bluegreen") {
-    out = ColoringMode::kBlueGreen;
-  } else if (window_mode == "orange") {
-    out = ColoringMode::kOrange;
-  } else if (window_mode == "waves") {
-    out = ColoringMode::kWaves;
-  } else {
+  auto mode = uint32_t{};
+  ParseValue(value, mode);
+  if (mode >= static_cast<uint32_t>(ColoringMode::kCount)) {
     throw std::runtime_error{"Unexpected ColoringMode"};
   }
+  out = static_cast<ColoringMode>(mode);
+}
+
+static void ParseValue(const rapidjson::Value& value, Palette& out) {
+  auto palette = uint32_t{};
+  ParseValue(value, palette);
+  if (palette >= static_cast<uint32_t>(Palette::kCount)) {
+    throw std::runtime_error{"Unexpected Palette"};
+  }
+  out = static_cast<Palette>(palette);
 }
 
 static auto FindConfigFile() {
@@ -95,6 +93,7 @@ static Config ParseConfig() {
   ParseValue(document["enable_vsync"], config.enable_vsync);
   ParseValue(document["fps_update_rate"], config.fps_update_rate);
   ParseValue(document["max_iterations"], config.max_iterations);
+  ParseValue(document["palette"], config.palette);
   ParseValue(document["screenshot_size"], config.screenshot_size);
   ParseValue(document["screenshots_folder"], config.screenshots_folder);
   ParseValue(document["smoothing"], config.smoothing);

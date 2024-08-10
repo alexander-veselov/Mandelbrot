@@ -81,6 +81,16 @@ void Application::KeyCallback(KeyButton key_button, KeyAction action) {
     max_iterations = std::max(kIterationsStep, max_iterations - kIterationsStep);
   } else if (key_button == KeyButton::kPeriod) {
     render_options_.max_iterations += kIterationsStep;
+  } else if (key_button == KeyButton::kP) {
+    const auto palette = static_cast<uint32_t>(render_options_.palette);
+    const auto palettes = static_cast<uint32_t>(Palette::kCount);
+    const auto new_palette = (palette + 1) % palettes;
+    render_options_.palette = static_cast<Palette>(new_palette);
+  } else if (key_button == KeyButton::kM) {
+    const auto mode = static_cast<uint32_t>(render_options_.coloring_mode);
+    const auto modes = static_cast<uint32_t>(ColoringMode::kCount);
+    const auto new_mode = (mode + 1) % modes;
+    render_options_.coloring_mode = static_cast<ColoringMode>(new_mode);
   } else if (key_button == KeyButton::kEscape) {
     Close();
   }
@@ -94,6 +104,8 @@ static void LogInformation(const Logger& logger, const Complex& position,
          << logger.ShowSign(true) << position.imag << logger.ShowSign(false)
          << "i" << logger.NewLine() << "Zoom: " << zoom << logger.NewLine()
          << "Max iterations: " << render_options.max_iterations << logger.NewLine()
+         << "Coloring mode: " << static_cast<uint32_t>(render_options.coloring_mode) << logger.NewLine()
+         << "Palette: " << static_cast<uint32_t>(render_options.palette) << logger.NewLine()
          << "FPS: " << static_cast<int32_t>(fps) << logger.NewLine();
 }
 
@@ -105,9 +117,9 @@ Application::Application(const Size& window_size,
       screenshot_renderer_{
           std::make_unique<ScreenshotRenderer>(GetConfig().screenshot_size)},
       renderer_{std::move(renderer)},
-      render_options_{RenderOptions{GetConfig().coloring_mode,
-                                    GetConfig().max_iterations,
-                                    GetConfig().smoothing}} {}
+      render_options_{
+          RenderOptions{GetConfig().coloring_mode, GetConfig().palette,
+                        GetConfig().max_iterations, GetConfig().smoothing}} {}
 
 int Application::Run() {
   const auto& logger = Logger::Instance();

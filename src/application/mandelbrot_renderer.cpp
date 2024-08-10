@@ -14,6 +14,7 @@ void MandelbrotRenderer::Render(const Complex& center, double_t zoom,
                     center.real, center.imag, zoom,
                     render_options.max_iterations,
                     static_cast<int32_t>(render_options.coloring_mode),
+                    static_cast<int32_t>(render_options.palette),
                     render_options.smoothing);
 
     center_ = center;

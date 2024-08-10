@@ -1,7 +1,7 @@
 #include "mandelbrot/core/cuda/mandelbrot_set.h"
 
-#include "mandelbrot/core/gpu_memory_pool.h"
 #include "mandelbrot/core/cuda/coloring.h"
+#include "mandelbrot/core/gpu_memory_pool.h"
 
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
@@ -68,7 +68,7 @@ __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
 void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
                double_t center_real, double_t center_imag, double_t zoom_factor,
                uint32_t max_iterations, uint32_t coloring_mode,
-               bool smoothing) {
+               uint32_t palette, bool smoothing) {
 
   static auto memory_pool = GPUMemoryPool{ 128 << 20 }; // 128 MB
 
@@ -85,37 +85,9 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
       reinterpret_cast<float_t*>(device_data), image_width, image_height,
       center_real, center_imag, zoom_factor, max_iterations, smoothing);
 
-  switch (coloring_mode) {
-    case 1:
-      cuda::KenrelMode1<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-        reinterpret_cast<uint32_t*>(device_data), image_width,
-        image_height, max_iterations);
-      break;
-    case 2:
-      cuda::KenrelMode2<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-        reinterpret_cast<uint32_t*>(device_data), image_width,
-        image_height, max_iterations);
-      break;
-    case 3:
-      cuda::KenrelMode3<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-        reinterpret_cast<uint32_t*>(device_data), image_width,
-        image_height, max_iterations);
-      break;
-    case 4:
-      cuda::KenrelMode4<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-        reinterpret_cast<uint32_t*>(device_data), image_width,
-        image_height, max_iterations);
-      break;
-    case 5:
-      cuda::KenrelMode5<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-        reinterpret_cast<uint32_t*>(device_data), image_width,
-        image_height, max_iterations);
-      break;
-    default:
-      cuda::KenrelDefaultMode<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-        reinterpret_cast<uint32_t*>(device_data), image_width,
-        image_height, max_iterations);
-  }
+  cuda::KenrelColor<<<kBlocksPerGrid, kThreadsPerBlock>>>(
+      reinterpret_cast<uint32_t*>(device_data), image_width, image_height,
+      max_iterations, coloring_mode, palette);
 
   cudaMemcpy(image, device_data, image_size_in_bytes, cudaMemcpyDeviceToHost);
   memory_pool.Free(device_data);

@@ -1,8 +1,10 @@
 #include <benchmark/benchmark.h>
 
+#include "mandelbrot/core/coloring_mode.h"
 #include "mandelbrot/core/complex.h"
-#include "mandelbrot/core/image.h"
 #include "mandelbrot/core/cuda/mandelbrot_set.h"
+#include "mandelbrot/core/image.h"
+#include "mandelbrot/core/palette.h"
 
 namespace mandelbrot {
 
@@ -11,14 +13,15 @@ static void Default(benchmark::State& state) {
   constexpr auto kCenter = Complex{-0.5, 0.0};
   constexpr auto kZoom = 1.0;
   constexpr auto kMaxIterations = 1024;
-  constexpr auto kColoringMode = 5;
+  constexpr auto kColoringMode = static_cast<uint32_t>(ColoringMode::kMode1);
+  constexpr auto kPalette = static_cast<uint32_t>(Palette::kBluePalette);
   constexpr auto kSmoothing = true;
 
   auto image = Image{kSize};
   for (auto _ : state) {
     cuda::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
                     kCenter.real, kCenter.imag, kZoom, kMaxIterations,
-                    kColoringMode, kSmoothing);
+                    kColoringMode, kPalette, kSmoothing);
   }
 }
 BENCHMARK(Default)
@@ -32,14 +35,15 @@ static void DifferentResolution(benchmark::State& state) {
   constexpr auto kCenter = Complex{ -0.5, 0.0 };
   constexpr auto kZoom = 1.0;
   constexpr auto kMaxIterations = 1024;
-  constexpr auto kColoringMode = 5;
+  constexpr auto kColoringMode = static_cast<uint32_t>(ColoringMode::kMode1);
+  constexpr auto kPalette = static_cast<uint32_t>(Palette::kBluePalette);
   constexpr auto kSmoothing = true;
 
   auto image = Image{size};
   for (auto _ : state) {
     cuda::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
                     kCenter.real, kCenter.imag, kZoom, kMaxIterations,
-                    kColoringMode, kSmoothing);
+                    kColoringMode, kPalette, kSmoothing);
   }
 }
 BENCHMARK(DifferentResolution)
@@ -64,14 +68,15 @@ static void DifferentMaxIterations(benchmark::State& state) {
   constexpr auto kCenter = Complex{ -0.5, 0.0 };
   constexpr auto kZoom = 1.0;
   const auto max_iterations = static_cast<int32_t>(state.range(0));
-  constexpr auto kColoringMode = 5;
+  constexpr auto kColoringMode = static_cast<uint32_t>(ColoringMode::kMode1);
+  constexpr auto kPalette = static_cast<uint32_t>(Palette::kBluePalette);
   constexpr auto kSmoothing = true;
 
   auto image = Image{kSize};
   for (auto _ : state) {
     cuda::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
                     kCenter.real, kCenter.imag, kZoom, max_iterations,
-                    kColoringMode, kSmoothing);
+                    kColoringMode, kPalette, kSmoothing);
   }
 }
 BENCHMARK(DifferentMaxIterations)
