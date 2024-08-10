@@ -126,18 +126,23 @@ int Application::Run() {
   auto fps_counter = FPSCounter{GetConfig().fps_update_rate, GetTime()};
 
   while (!ShouldClose()) {
-    const auto position = explorer_.GetDisplayPosition();
-    const auto zoom = explorer_.GetZoom();
+    try {
+      const auto position = explorer_.GetDisplayPosition();
+      const auto zoom = explorer_.GetZoom();
 
-    renderer_->Render(position, zoom, render_options_);
+      renderer_->Render(position, zoom, render_options_);
 
-    SwapBuffers();
-    PollEvents();
+      SwapBuffers();
+      PollEvents();
 
-    fps_counter.Update(GetTime());
+      fps_counter.Update(GetTime());
 
-    LogInformation(logger, position, zoom, render_options_,
-                   fps_counter.GetFPS());
+      LogInformation(logger, position, zoom, render_options_,
+                     fps_counter.GetFPS());
+    } catch (const std::exception& e) {
+      logger << e.what();
+      return -1;
+    }
   }
 
   return 0;
