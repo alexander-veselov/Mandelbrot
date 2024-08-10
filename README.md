@@ -18,14 +18,14 @@
   </a>
 </h4>
 
-# Used 3rd-party
+# Dependencies
 
-- GLFW
-- CUDA
-- RapidJSON
-- LodePNG
-- Google Test
-- Google benchmark
+- [CUDA](https://developer.nvidia.com/cuda-toolkit)
+- [GLFW](https://github.com/glfw/glfw)
+- [RapidJSON](https://github.com/Tencent/rapidjson)
+- [LodePNG](https://github.com/lvandeve/lodepng)
+- [Google Test](https://github.com/google/googletest)
+- [Google Benchmark](https://github.com/google/benchmark)
 
 # Images
 <p align="center">
@@ -65,23 +65,22 @@ Benchmark            Time          FPS
 
 # Controls
 Navigation:
-- drag and move mouse to navigate
-- mouse scroll up to zoom in
-- mouse scroll down to zoom out
+- Drag and move mouse to navigate
+- Mouse scroll up to zoom in
+- Mouse scroll down to zoom out
 
 Bookmarks:
-- ←: previous bookmark
-- →: next bookmark
-- ↑: navigate to current bookmark
-- ↓: create a bookmark
+- ← – Previous bookmark
+- → – Next bookmark
+- ↑ – Navigate to current bookmark
+- ↓ – Create a bookmark
 
 Coloring:
-- m: change coloring mode
-- p: change palette
+- M – Change coloring mode
+- P – Change palette
 
 Iterations:
-- comma: decrease iterations count
-- period: increase iterations count
-
+- Сomma – Decrease iterations count
+- Period – Increase iterations count
 Application:
-- escape: close application
+- Escape – Close application
