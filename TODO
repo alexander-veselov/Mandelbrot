@@ -33,6 +33,7 @@ TODO list:
 - Improve Logger
 - Create application icon
 - Treat warnings as errors
+- Prohibit window resize in windowed more or make work properly
 - Write documentation
 - Make install script
 

@@ -61,7 +61,7 @@ void Application::KeyCallback(KeyButton key_button, KeyAction action) {
     return;
   }
 
-  constexpr auto kIterationsStep = 128u;
+  constexpr auto kIterationsStep = 32u;
   if (key_button == KeyButton::kPrintScreen) {
     screenshot_renderer_->Render(explorer_.GetDisplayPosition(),
                                  explorer_.GetZoom(), render_options_);

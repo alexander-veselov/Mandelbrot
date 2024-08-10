@@ -1,7 +1,7 @@
 {
   "coloring_mode": 1,
   "default_position": {"real": -0.5, "imag": 0.0},
-  "default_zoom": 1.0,
+  "default_zoom": 0.9,
   "directional_zoom": true,
   "enable_vsync": true,
   "fps_update_rate": 10,
