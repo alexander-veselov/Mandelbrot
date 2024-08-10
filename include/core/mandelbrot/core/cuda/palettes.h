@@ -24,6 +24,11 @@ __device__ static constexpr uint32_t pretty_palette[] = {
     MakeRGB(254, 173, 122), MakeRGB(243, 112, 95),  MakeRGB(205, 53, 82),
     MakeRGB(128, 18, 70)};
 
+__device__ static constexpr uint32_t gradient_palette[] = {
+    MakeRGB(15, 32, 80),    MakeRGB(69, 117, 180),  MakeRGB(116, 173, 209),
+    MakeRGB(171, 217, 233), MakeRGB(224, 243, 248), MakeRGB(253, 219, 199),
+    MakeRGB(244, 165, 130), MakeRGB(214, 96, 77),   MakeRGB(178, 24, 43)};
+
 __device__ static constexpr uint32_t artistic_palette[] = {
     MakeRGB(5, 4, 32),      MakeRGB(36, 5, 91),     MakeRGB(142, 13, 172),
     MakeRGB(203, 32, 198),  MakeRGB(251, 78, 168),  MakeRGB(255, 127, 127),
@@ -39,11 +44,6 @@ __device__ static constexpr uint32_t natural_palette[] = {
     MakeRGB(232, 232, 207), MakeRGB(210, 229, 186), MakeRGB(169, 213, 150),
     MakeRGB(106, 191, 139), MakeRGB(53, 158, 118),  MakeRGB(29, 105, 78),
     MakeRGB(18, 63, 52)};
-
-__device__ static constexpr uint32_t gradient_palette[] = {
-    MakeRGB(15, 32, 80),    MakeRGB(69, 117, 180),  MakeRGB(116, 173, 209),
-    MakeRGB(171, 217, 233), MakeRGB(224, 243, 248), MakeRGB(253, 219, 199),
-    MakeRGB(244, 165, 130), MakeRGB(214, 96, 77),   MakeRGB(178, 24, 43)};
 
 __device__ static constexpr uint32_t cosmic_palette[] = {
     MakeRGB(12, 12, 35),    MakeRGB(23, 23, 50),    MakeRGB(45, 45, 90),
@@ -66,14 +66,14 @@ __device__ static constexpr size_t blue_palette_size =
 __device__ static constexpr size_t pretty_palette_size =
     sizeof(pretty_palette) / sizeof(uint32_t);
 
+__device__ static constexpr size_t gradient_palette_size =
+    sizeof(gradient_palette) / sizeof(uint32_t);
+
 __device__ static constexpr size_t artistic_palette_size =
     sizeof(artistic_palette) / sizeof(uint32_t);
 
 __device__ static constexpr size_t natural_palette_size =
     sizeof(natural_palette) / sizeof(uint32_t);
-
-__device__ static constexpr size_t gradient_palette_size =
-    sizeof(gradient_palette) / sizeof(uint32_t);
 
 __device__ static constexpr size_t cosmic_palette_size =
     sizeof(cosmic_palette) / sizeof(uint32_t);

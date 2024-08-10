@@ -202,12 +202,12 @@ __global__ void KenrelColor(uint32_t* data, uint32_t image_width,
                                    Mode4, Mode5, Mode6, Mode7};
 
   const uint32_t* palettes[] = {
-      blue_palette,     pretty_palette, artistic_palette,   natural_palette,
-      gradient_palette, cosmic_palette, black_white_palette};
+      blue_palette,    pretty_palette, gradient_palette,   artistic_palette,
+      natural_palette, cosmic_palette, black_white_palette};
 
   size_t palettes_size[] = {blue_palette_size,       pretty_palette_size,
-                            artistic_palette_size,   natural_palette_size,
-                            gradient_palette_size,   cosmic_palette_size,
+                            gradient_palette_size,   artistic_palette_size,
+                            natural_palette_size,    cosmic_palette_size,
                             black_white_palette_size};
 
   constexpr auto kModes = sizeof(mode_functions) / sizeof(ModeFunction);
