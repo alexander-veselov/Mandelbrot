@@ -81,8 +81,6 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
   }
 
   auto device_data = memory_pool.Alloc(image_size_in_bytes);
-  CUDA_CHECK(cudaMemcpy(device_data, image, image_size_in_bytes,
-                        cudaMemcpyHostToDevice));
 
   constexpr auto kThreadsPerBlock = 512;
   const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;

@@ -36,6 +36,7 @@ TODO list:
 - Allow to resize window in windowed mode
 - Write documentation
 - Make install script
+- Add precision switch (to use floats instead of doubles)
 
 Ideas to try:
 - Improve performance

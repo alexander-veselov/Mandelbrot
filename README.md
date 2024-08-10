@@ -48,39 +48,17 @@
 <p>Application supports different coloring modes. You can find more images <a href="https://github.com/alexander-veselov/Mandelbrot/tree/master/images">here</a>.</p> 
 
 # Benchmarks
-
 ```
---------------------------------------
-Benchmark            Time          FPS
---------------------------------------
-640 x 360         2.48 ms          560
-960 x 540         4.82 ms          299
-1280 x 720        8.77 ms          176
-1366 x 768        8.92 ms          157
-1920 x 1080       16.6 ms           81
-2560 x 1440       28.5 ms           47
-3840 x 2160       62.6 ms           22
-7680 x 4320        243 ms            6
+----------------------------------------    ----------------------------------------
+Double Precision    Time          FPS       Single Precision    Time          FPS
+----------------------------------------    ----------------------------------------
+640 x 360           2.36 ms          597    640 x 360          0.253 ms         5600
+960 x 540           4.67 ms          299    960 x 540          0.440 ms         3200
+1280 x 720          7.86 ms          179    1280 x 720         0.706 ms         1948
+1366 x 768          8.70 ms          160    1366 x 768         0.800 ms         1757
+1920 x 1080         16.3 ms           81    1920 x 1080         1.57 ms          815
+2560 x 1440         27.8 ms           50    2560 x 1440         2.78 ms          527
+3840 x 2160         61.2 ms           23    3840 x 2160         5.80 ms          242
+7680 x 4320          239 ms            6    7680 x 4320         23.6 ms           64
 ```
-
-# Controls
-Navigation:
-- Drag and move mouse to navigate
-- Mouse scroll up to zoom in
-- Mouse scroll down to zoom out
-
-Bookmarks:
-- ← – Previous bookmark
-- → – Next bookmark
-- ↑ – Navigate to current bookmark
-- ↓ – Create a bookmark
-
-Coloring:
-- M – Change coloring mode
-- P – Change palette
-
-Iterations:
-- Сomma – Decrease iterations count
-- Period – Increase iterations count
-Application:
-- Escape – Close application
+GPU: GeForce RTX 4070 Ti
