@@ -8,7 +8,7 @@ set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-  set(CMAKE_CUDA_ARCHITECTURES 75)
+  set(CMAKE_CUDA_ARCHITECTURES "50;89")
 endif()
 
 if(NOT DEFINED CMAKE_DEBUG_POSTFIX)
@@ -122,14 +122,24 @@ target_include_directories(LodePNG PUBLIC
 )
 set_target_properties(LodePNG PROPERTIES FOLDER "External")
 
+# CUDA core library
+set(CUDA_CORE_INCLUDE_FOLDER "include/core")
+set(CUDA_CORE_SOURCE_FOLDER "src/core/cuda")
+file(GLOB CUDA_CORE_HEADERS ${CUDA_CORE_INCLUDE_FOLDER}/mandelbrot/core/cuda/*.h)
+file(GLOB CUDA_CORE_SOURCES ${CUDA_CORE_SOURCE_FOLDER}/*.cpp ${CUDA_CORE_SOURCE_FOLDER}/*.cu)
+add_library(MandelbrotCUDACore STATIC ${CUDA_CORE_HEADERS} ${CUDA_CORE_SOURCES})
+set_target_properties(MandelbrotCUDACore PROPERTIES LINKER_LANGUAGE CUDA)
+target_include_directories(MandelbrotCUDACore PUBLIC ${CUDA_CORE_INCLUDE_FOLDER})
+target_link_libraries(MandelbrotCUDACore PRIVATE CUDA::cudart_static)
+
 # Core library
 set(CORE_INCLUDE_FOLDER "include/core")
 set(CORE_SOURCE_FOLDER "src/core")
-file(GLOB CORE_HEADERS ${CORE_INCLUDE_FOLDER}/mandelbrot/core/*.h ${CORE_INCLUDE_FOLDER}/mandelbrot/core/cuda/*.h)
-file(GLOB CORE_SOURCES ${CORE_SOURCE_FOLDER}/*.cpp ${CORE_SOURCE_FOLDER}/cuda/*.cu)
+file(GLOB CORE_HEADERS ${CORE_INCLUDE_FOLDER}/mandelbrot/core/*.h)
+file(GLOB CORE_SOURCES ${CORE_SOURCE_FOLDER}/*.cpp)
 add_library(MandelbrotCore STATIC ${CORE_HEADERS} ${CORE_SOURCES})
 target_include_directories(MandelbrotCore PUBLIC ${CORE_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotCore PRIVATE CUDA::cudart_static LodePNG)
+target_link_libraries(MandelbrotCore PRIVATE MandelbrotCUDACore LodePNG)
 
 # Benchmarks
 set(BENCHMARKS_SOURCE_FOLDER "src/benchmarks")

@@ -1,7 +1,7 @@
 #include "mandelbrot/core/cuda/mandelbrot_set.h"
 
 #include "mandelbrot/core/cuda/coloring.h"
-#include "mandelbrot/core/gpu_memory_pool.h"
+#include "mandelbrot/core/cuda/gpu_memory_pool.h"
 
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
@@ -81,7 +81,8 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
   }
 
   auto device_data = memory_pool.Alloc(image_size_in_bytes);
-  cudaMemcpy(device_data, image, image_size_in_bytes, cudaMemcpyHostToDevice);
+  CUDA_CHECK(cudaMemcpy(device_data, image, image_size_in_bytes,
+                        cudaMemcpyHostToDevice));
 
   constexpr auto kThreadsPerBlock = 512;
   const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;
@@ -94,7 +95,8 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
       reinterpret_cast<uint32_t*>(device_data), image_width, image_height,
       max_iterations, coloring_mode, palette);
 
-  cudaMemcpy(image, device_data, image_size_in_bytes, cudaMemcpyDeviceToHost);
+  CUDA_CHECK(cudaMemcpy(image, device_data, image_size_in_bytes,
+                        cudaMemcpyDeviceToHost));
   memory_pool.Free(device_data);
 }
 
