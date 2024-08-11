@@ -11,7 +11,7 @@
 namespace mandelbrot {
 
 std::filesystem::path GetTestDataPath() {
-  return std::filesystem::absolute("images");
+  return std::filesystem::absolute("data/images");
 }
 
 TEST(MandelbrotSet, DefaultView) {
