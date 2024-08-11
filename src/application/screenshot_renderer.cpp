@@ -35,7 +35,11 @@ std::filesystem::path NameScreenshot(const Complex& center, double_t zoom) {
   filename += kSeparator;
   filename += ToString(zoom);
   filename += kExtension;
-  return std::filesystem::path{GetConfig().screenshots_folder} / filename;
+  const auto screenshots_path = std::filesystem::path{GetConfig().screenshots_folder};
+  if (!std::filesystem::exists(screenshots_path.parent_path())) {
+    std::filesystem::create_directory(screenshots_path.parent_path());
+  }
+  return screenshots_path / filename;
 }
 
 ScreenshotRenderer::ScreenshotRenderer(const Size& size)

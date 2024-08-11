@@ -8,7 +8,7 @@
   "max_iterations": 1024,
   "palette": 0,
   "screenshot_size": {"width": 1920, "height": 1080},
-  "screenshots_folder": "images",
+  "screenshots_folder": "data/images",
   "smoothing": true,
   "window_mode": "windowed",
   "window_size": {"width": 1024, "height": 768},

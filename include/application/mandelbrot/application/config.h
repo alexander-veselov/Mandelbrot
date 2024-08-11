@@ -21,7 +21,7 @@ struct Config {
   uint32_t max_iterations = 1024;
   Palette palette = Palette::kBluePalette;
   Size screenshot_size = Size{1920, 1080};
-  std::string screenshots_folder = "images";
+  std::string screenshots_folder = "data/images";
   bool smoothing = true;
   WindowMode window_mode = WindowMode::kWindowed;
   Size window_size = Size{1024, 768};

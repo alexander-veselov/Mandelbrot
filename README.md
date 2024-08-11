@@ -1,4 +1,4 @@
-<h3 align="center"><img src="https://github.com/alexander-veselov/Mandelbrot/blob/master/images/logo.png" alt="logo" height="200px"></h3>
+<h3 align="center"><img src="https://github.com/alexander-veselov/Mandelbrot/blob/master/data/images/logo.png" alt="logo" height="200px"></h3>
 
 <div align="center">
   
@@ -29,21 +29,21 @@
 
 # Gallery
 <p align="center">
-    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/images/m0.106750445_m0.88282584799999997_200000.png"/>
+    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/data/images/m0.106750445_m0.88282584799999997_200000.png"/>
 &nbsp;
-    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/images/0.28893504399999997_0.012374825000000001_4000.png"/>
+    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/data/images/0.28893504399999997_0.012374825000000001_4000.png"/>
 </p>
 
 <p align="center">
-    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/images/0.28601675599999998_m0.011559813_500.png"/>
+    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/data/images/0.28601675599999998_m0.011559813_500.png"/>
 &nbsp;
-    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/images/m1.396216643_0.0042737729999999998_1000.png"/>
+    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/data/images/m1.396216643_0.0042737729999999998_1000.png"/>
 </p> 
     
 <p align="center">
-    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/images/m1.3944205750000001_0.0018272119999999999_5000.png"/>
+    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/data/images/m1.3944205750000001_0.0018272119999999999_5000.png"/>
 &nbsp;
-    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/images/0.23533695499999999_m0.51526230500000003_1500.png"/>
+    <img width="49%" src="https://github.com/alexander-veselov/Mandelbrot/blob/master/data/images/0.23533695499999999_m0.51526230500000003_1500.png"/>
 </p>
 <p>Application supports different coloring modes. You can find more images <a href="https://github.com/alexander-veselov/Mandelbrot/tree/master/images">here</a>.</p> 
 
