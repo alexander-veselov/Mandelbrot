@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.5)
+
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
 include(FindCUDAToolkit)
 include(FetchContent)
@@ -8,7 +10,7 @@ set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-  set(CMAKE_CUDA_ARCHITECTURES "50;89")
+  set(CMAKE_CUDA_ARCHITECTURES native)
 endif()
 
 if(NOT DEFINED CMAKE_DEBUG_POSTFIX)
@@ -19,6 +21,8 @@ endif()
 project(Mandelbrot LANGUAGES CUDA CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(CUDAToolkit REQUIRED)
 
 # glfw-external
 FetchContent_Declare(glfw-external
@@ -130,7 +134,7 @@ file(GLOB CUDA_CORE_SOURCES ${CUDA_CORE_SOURCE_FOLDER}/*.cpp ${CUDA_CORE_SOURCE_
 add_library(MandelbrotCUDACore STATIC ${CUDA_CORE_HEADERS} ${CUDA_CORE_SOURCES})
 set_target_properties(MandelbrotCUDACore PROPERTIES LINKER_LANGUAGE CUDA)
 target_include_directories(MandelbrotCUDACore PUBLIC ${CUDA_CORE_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotCUDACore PRIVATE CUDA::cudart_static)
+target_link_libraries(MandelbrotCUDACore PRIVATE CUDA::cudart)
 
 # Core library
 set(CORE_INCLUDE_FOLDER "include/core")
