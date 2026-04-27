@@ -1,15 +1,30 @@
 #pragma once
 
 #include "mandelbrot/core/typedefs.h"
+#include "mandelbrot/core/double_double.h"
 
 namespace mandelbrot {
 
-struct Complex {
-  double_t real;
-  double_t imag;
+template <typename T>
+struct ComplexT {
+  using value_type = T;
+
+  T real;
+  T imag;
 };
 
-bool operator==(const Complex& left, const Complex& right);
-bool operator!=(const Complex& left, const Complex& right);
+template <typename T>
+bool operator==(const ComplexT<T>& left, const ComplexT<T>& right) {
+  return left.real == right.real && left.imag == right.imag;
+}
+
+template <typename T>
+bool operator!=(const ComplexT<T>& left, const ComplexT<T>& right) {
+  return !(left == right);
+}
+
+using ComplexD = ComplexT<double_t>;
+using ComplexDD = ComplexT<DoubleDouble>;
+using Complex = ComplexDD;
 
 }  // namespace mandelbrot

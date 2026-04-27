@@ -67,8 +67,16 @@ static void ParseValue(const rapidjson::Value& value, double_t& out) {
 }
 
 static void ParseValue(const rapidjson::Value& value, Complex& out) {
-  ParseValue(value["real"], out.real);
-  ParseValue(value["imag"], out.imag);
+  auto real = double_t{};
+  auto imag = double_t{};
+  ParseValue(value["real"], real);
+  ParseValue(value["imag"], imag);
+  out.real = real;
+  out.imag = imag;
+}
+
+static void ParseValue(const rapidjson::Value& value, DoubleDouble& out) {
+  out = DoubleDouble{ value.GetDouble() };
 }
 
 static void ParseBookmark(const rapidjson::Value& value,

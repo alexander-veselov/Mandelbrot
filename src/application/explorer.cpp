@@ -42,8 +42,8 @@ void Explorer::MouseScrollEvent(const Complex& position, ScrollAction action) {
   zoom_ *= zoom_change;
 
   if (GetConfig().directional_zoom) {
-    center_position_.real = position.real + (center_position_.real - position.real) / zoom_change;
-    center_position_.imag = position.imag + (center_position_.imag - position.imag) / zoom_change;
+    center_position_.real = position.real + (center_position_.real - position.real) / Complex::value_type{ zoom_change };
+    center_position_.imag = position.imag + (center_position_.imag - position.imag) / Complex::value_type{ zoom_change };
     display_position_ = center_position_;
   }
 }

@@ -18,10 +18,10 @@ static Complex ScreenToComplex(const Point& cursor_position,
   const auto scale = 1. / std::min(screen_size.width / kMandelbrotSetWidth,
                                    screen_size.height / kMandelbrotSetHeight);
 
-  const auto real = (cursor_position.x - screen_size.width / 2.) * scale;
-  const auto imag = (cursor_position.y - screen_size.height / 2.) * scale;
+  const auto real = (cursor_position.x - Point::value_type{ screen_size.width / 2.  }) * Point::value_type{ scale };
+  const auto imag = (cursor_position.y - Point::value_type{ screen_size.height / 2. }) * Point::value_type{ scale };
 
-  return {center.real + real / zoom_factor, center.imag - imag / zoom_factor};
+  return { center.real + real / Point::value_type{ zoom_factor }, center.imag - imag / Point::value_type{ zoom_factor } };
 }
 
 Complex Application::GetCurrentCursorComplex(const Size& screen_size,

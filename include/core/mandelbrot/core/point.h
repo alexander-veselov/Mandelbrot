@@ -4,12 +4,26 @@
 
 namespace mandelbrot {
 
-struct Point {
-  double_t x;
-  double_t y;
+template <typename T>
+struct PointT {
+  using value_type = T;
+
+  T x;
+  T y;
 };
 
-bool operator==(const Point& left, const Point& right);
-bool operator!=(const Point& left, const Point& right);
+template <typename T>
+bool operator==(const PointT<T>& left, const PointT<T>& right) {
+  return left.x == right.x && left.y == right.y;
+}
+
+template <typename T>
+bool operator!=(const PointT<T>& left, const PointT<T>& right) {
+  return !(left == right);
+}
+
+using PointD = PointT<double_t>;
+using PointDD = PointT<DoubleDouble>;
+using Point = PointDD;
 
 }  // namespace mandelbrot
