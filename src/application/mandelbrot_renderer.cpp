@@ -10,12 +10,16 @@ MandelbrotRenderer::MandelbrotRenderer(const Size& size)
 void MandelbrotRenderer::Render(const Complex& center, double_t zoom,
                                 const RenderOptions& render_options) {
   if (IsDirty(center, zoom, render_options)) {
+
+    std::vector<cuda::ComplexDD> orbit;
+    cuda::ComputeReferenceOrbit(orbit, center.real, center.imag, render_options.max_iterations);
+
     cuda::Visualize(image_.GetData(), image_.GetWidth(), image_.GetHeight(),
                     center.real, center.imag, zoom,
                     render_options.max_iterations,
                     static_cast<int32_t>(render_options.coloring_mode),
                     static_cast<int32_t>(render_options.palette),
-                    render_options.smoothing);
+                    orbit);
 
     center_ = center;
     zoom_ = zoom;

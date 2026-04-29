@@ -160,7 +160,7 @@ __device__ void SmoothColor(ColoringFunction coloring_function, uint32_t* data,
                             size_t palette_size) {
   const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
   if (pixel_index < image_width * image_height) {
-    const auto iterations_f = reinterpret_cast<float_t*>(data)[pixel_index];
+    const auto iterations_f = (float)data[pixel_index];
     const auto iterations = static_cast<uint32_t>(floorf(iterations_f));
     if (iterations >= max_iterations) {
       data[pixel_index] = MakeRGB(0, 0, 0);

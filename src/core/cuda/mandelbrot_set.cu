@@ -6,69 +6,77 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 #include <stdexcept>
+#include <vector>
 
 namespace mandelbrot {
 namespace cuda {
 
-template <typename T>
-__global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
-                                    uint32_t height, T center_real,
-                                    T center_imag, T zoom_factor,
-                                    uint32_t max_iterations,
-                                    bool smoothing_step = false) {
+  struct Complex {
+    double real;
+    double imag;
+  };
 
-  const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
+  __global__ void KernelMandelbrotSet(uint32_t* data,
+    uint32_t width,
+    uint32_t height,
+    double center_real,
+    double center_imag,
+    double zoom_factor,
+    uint32_t max_iterations,
+    const Complex* __restrict__ ref_orbit,
+    const Complex* __restrict__ delta_c) {
 
-  if (pixel_index < width * height) {
-    // Mandelbrot set parameters
-    constexpr static auto kMandelbrotSetWidth  = T{3};  // [-2, 1]
-    constexpr static auto kMandelbrotSetHeight = T{2};  // [-1, 1]
+    const auto idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= width * height) return;
 
-    const auto scale =
-        T{1} / fmin(width / kMandelbrotSetWidth, height / kMandelbrotSetHeight);
+    constexpr double kWidth = 3.0;
+    constexpr double kHeight = 2.0;
 
-    const auto x = (pixel_index % width - width  / T{2}) * scale;
-    const auto y = (pixel_index / width - height / T{2}) * scale;
+    const double scale =
+      1.0 / fmin(width / kWidth, height / kHeight);
 
-    const auto real0 = center_real + x / zoom_factor;
-    const auto imag0 = center_imag + y / zoom_factor;
+    const double x = (idx % width - width / 2.0) * scale;
+    const double y = (idx / width - height / 2.0) * scale;
 
-    auto real = real0;
-    auto imag = imag0;
-    auto iterations = max_iterations;
+    const double dc_real = delta_c[idx].real;
+    const double dc_imag = delta_c[idx].imag;
 
-    auto limit = T{4};
-    if (smoothing_step) {
-      limit = T{16};
-    }
+    double dr = 0.0;
+    double di = 0.0;
 
-    for (auto i = uint32_t{0}; i < max_iterations; ++i) {
-      const auto real_squared = real * real;
-      const auto imag_squared = imag * imag;
+    uint32_t iter = max_iterations;
 
-      if (real_squared + imag_squared > limit) {
-        iterations = i;
+    for (uint32_t i = 0; i < max_iterations; ++i) {
+      const double Zr = ref_orbit[i].real;
+      const double Zi = ref_orbit[i].imag;
+
+      const double dr2 = dr * dr - di * di;
+      const double di2 = 2.0 * dr * di;
+
+      const double tdr = 2.0 * (Zr * dr - Zi * di);
+      const double tdi = 2.0 * (Zr * di + Zi * dr);
+
+      dr = tdr + dr2 + dc_real;
+      di = tdi + di2 + dc_imag;
+
+      const double zr = Zr + dr;
+      const double zi = Zi + di;
+
+      if (zr * zr + zi * zi > 4.0) {
+        iter = i;
         break;
       }
-
-      imag = T{2} * real * imag + imag0;
-      real = real_squared - imag_squared + real0;
     }
 
-    if (smoothing_step && iterations < max_iterations) {
-      const auto log_zn = logf(real * real + imag * imag) / 2.;
-      const auto nu = static_cast<float_t>(logf(log_zn / logf(2)) / logf(2));
-      data[pixel_index] = static_cast<float_t>(iterations) + 1.f - nu;
-    } else {
-      data[pixel_index] = static_cast<float_t>(iterations);
-    }
+    data[idx] = iter;
   }
-}
+
+
 
 void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
                double_t center_real, double_t center_imag, double_t zoom_factor,
                uint32_t max_iterations, uint32_t coloring_mode,
-               uint32_t palette, bool smoothing) {
+               uint32_t palette, const std::vector<ComplexDD>& orbit) {
 
   constexpr auto kMemoryPoolSize = 128 << 20;
   static auto memory_pool = GPUMemoryPool{kMemoryPoolSize};  // 128 MB
@@ -80,14 +88,60 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
     throw std::runtime_error{"Not enought GPU memory in pool"};
   }
 
+  std::vector<Complex> orbit_gpu(max_iterations);
+
+  for (uint32_t i = 0; i < max_iterations; ++i) {
+    orbit_gpu[i].real = static_cast<double_t>(orbit[i].real);
+    orbit_gpu[i].imag = static_cast<double_t>(orbit[i].imag);
+  }
+
+  Complex* device_orbit;
+  cudaMalloc(&device_orbit, max_iterations * sizeof(Complex));
+
+  cudaMemcpy(device_orbit, orbit_gpu.data(),
+    max_iterations * sizeof(Complex),
+    cudaMemcpyHostToDevice);
+
+  std::vector<Complex> delta_c(image_size);
+
+  DoubleDouble dd_center_real(center_real);
+  DoubleDouble dd_center_imag(center_imag);
+  DoubleDouble dd_zoom(zoom_factor);
+
+  constexpr double kWidth = 3.0;
+  constexpr double kHeight = 2.0;
+
+  const double scale =
+    1.0 / fmin(image_width / kWidth, image_height / kHeight);
+
+  for (uint32_t idx = 0; idx < image_size; ++idx) {
+    const double x = (idx % image_width - image_width / 2.0) * scale;
+    const double y = (idx / image_width - image_height / 2.0) * scale;
+
+    // high precision division
+    DoubleDouble dd_dx = DoubleDouble(x) / dd_zoom;
+    DoubleDouble dd_dy = DoubleDouble(y) / dd_zoom;
+
+    delta_c[idx].real = static_cast<double>(dd_dx);
+    delta_c[idx].imag = static_cast<double>(dd_dy);
+  }
+
+  Complex* device_delta_c;
+  cudaMalloc(&device_delta_c, image_size * sizeof(Complex));
+
+  cudaMemcpy(device_delta_c,
+    delta_c.data(),
+    image_size * sizeof(Complex),
+    cudaMemcpyHostToDevice);
+
   auto device_data = memory_pool.Alloc(image_size_in_bytes);
 
   constexpr auto kThreadsPerBlock = 512;
   const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;
 
-  KernelMandelbrotSet<double_t><<<kBlocksPerGrid, kThreadsPerBlock>>>(
-      reinterpret_cast<float_t*>(device_data), image_width, image_height,
-      center_real, center_imag, zoom_factor, max_iterations, smoothing);
+  KernelMandelbrotSet<<<kBlocksPerGrid, kThreadsPerBlock>>>(
+      reinterpret_cast<uint32_t*>(device_data), image_width, image_height,
+      center_real, center_imag, zoom_factor, max_iterations, device_orbit, device_delta_c);
 
   cuda::KenrelColor<<<kBlocksPerGrid, kThreadsPerBlock>>>(
       reinterpret_cast<uint32_t*>(device_data), image_width, image_height,
@@ -95,6 +149,9 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
 
   CUDA_CHECK(cudaPeekAtLastError());
   CUDA_CHECK(cudaDeviceSynchronize());
+
+  cudaFree(device_delta_c);
+  cudaFree(device_orbit);
 
   CUDA_CHECK(cudaMemcpy(image, device_data, image_size_in_bytes,
                         cudaMemcpyDeviceToHost));
