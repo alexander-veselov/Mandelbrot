@@ -26,14 +26,13 @@ inline void ComputeReferenceOrbit(std::vector<ComplexDD>& orbit,
   DoubleDouble c_real,
   DoubleDouble c_imag,
   uint32_t max_iterations) {
-  orbit.resize(max_iterations);
+  orbit.reserve(max_iterations);
 
   ComplexDD z{ 0.0, 0.0 };
 
-  for (uint32_t i = 0; i < max_iterations; ++i) {
-    orbit[i] = z;
+  orbit.push_back(z);
 
-    // z = z^2 + c
+  for (uint32_t i = 0; i < max_iterations; ++i) {
     auto real2 = z.real * z.real;
     auto imag2 = z.imag * z.imag;
 
@@ -42,6 +41,16 @@ inline void ComputeReferenceOrbit(std::vector<ComplexDD>& orbit,
 
     z.real = new_real;
     z.imag = new_imag;
+
+    orbit.push_back(z);
+
+    if (z.real * z.real + z.imag * z.imag > 4)
+    {
+      return;
+    }
+
+    // z = z^2 + c
+
   }
 }
 

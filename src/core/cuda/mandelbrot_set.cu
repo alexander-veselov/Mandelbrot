@@ -24,7 +24,7 @@ namespace cuda {
     double zoom_factor,
     uint32_t max_iterations,
     const Complex* __restrict__ ref_orbit,
-    const Complex* __restrict__ delta_c) {
+    const Complex* __restrict__ delta_c, int ref_max_iterations) {
 
     const auto idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= width * height) return;
@@ -46,9 +46,12 @@ namespace cuda {
 
     uint32_t iter = max_iterations;
 
+    int ref = 0;
     for (uint32_t i = 0; i < max_iterations; ++i) {
-      const double Zr = ref_orbit[i].real;
-      const double Zi = ref_orbit[i].imag;
+      double Zr = ref_orbit[ref].real;
+      double Zi = ref_orbit[ref].imag;
+
+      ref++;
 
       const double dr2 = dr * dr - di * di;
       const double di2 = 2.0 * dr * di;
@@ -59,12 +62,24 @@ namespace cuda {
       dr = tdr + dr2 + dc_real;
       di = tdi + di2 + dc_imag;
 
+      Zr = ref_orbit[ref].real;
+      Zi = ref_orbit[ref].imag;
+
       const double zr = Zr + dr;
       const double zi = Zi + di;
 
       if (zr * zr + zi * zi > 4.0) {
         iter = i;
         break;
+      }
+
+      const double dz2 = dr * dr + di * di;
+      const double Z2 = Zr * Zr + Zi * Zi;
+
+      if (dz2 > Z2 || ref == ref_max_iterations) {
+        dr = zr;
+        di = zi;
+        ref = 0;
       }
     }
 
@@ -88,9 +103,9 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
     throw std::runtime_error{"Not enought GPU memory in pool"};
   }
 
-  std::vector<Complex> orbit_gpu(max_iterations);
+  std::vector<Complex> orbit_gpu(orbit.size());
 
-  for (uint32_t i = 0; i < max_iterations; ++i) {
+  for (uint32_t i = 0; i < orbit.size(); ++i) {
     orbit_gpu[i].real = static_cast<double_t>(orbit[i].real);
     orbit_gpu[i].imag = static_cast<double_t>(orbit[i].imag);
   }
@@ -141,7 +156,7 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
 
   KernelMandelbrotSet<<<kBlocksPerGrid, kThreadsPerBlock>>>(
       reinterpret_cast<uint32_t*>(device_data), image_width, image_height,
-      center_real, center_imag, zoom_factor, max_iterations, device_orbit, device_delta_c);
+      center_real, center_imag, zoom_factor, max_iterations, device_orbit, device_delta_c, orbit.size() -1);
 
   cuda::KenrelColor<<<kBlocksPerGrid, kThreadsPerBlock>>>(
       reinterpret_cast<uint32_t*>(device_data), image_width, image_height,
