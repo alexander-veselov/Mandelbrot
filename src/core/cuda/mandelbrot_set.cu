@@ -89,7 +89,9 @@ namespace cuda {
 
 
 void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
-               double_t center_real, double_t center_imag, double_t zoom_factor,
+  DoubleDouble ref_real, DoubleDouble ref_imag,
+  DoubleDouble dc_real, DoubleDouble dc_imag,
+  DoubleDouble zoom_factor,
                uint32_t max_iterations, uint32_t coloring_mode,
                uint32_t palette, const std::vector<ComplexDD>& orbit) {
 
@@ -111,23 +113,21 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
   }
 
   Complex* device_orbit;
-  cudaMalloc(&device_orbit, max_iterations * sizeof(Complex));
+  cudaMalloc(&device_orbit, orbit.size() * sizeof(Complex));
 
   cudaMemcpy(device_orbit, orbit_gpu.data(),
-    max_iterations * sizeof(Complex),
+    orbit.size() * sizeof(Complex),
     cudaMemcpyHostToDevice);
 
   std::vector<Complex> delta_c(image_size);
 
-  DoubleDouble dd_center_real(center_real);
-  DoubleDouble dd_center_imag(center_imag);
   DoubleDouble dd_zoom(zoom_factor);
 
   constexpr double kWidth = 3.0;
   constexpr double kHeight = 2.0;
 
   const double scale =
-    1.0 / fmin(image_width / kWidth, image_height / kHeight);
+    DoubleDouble(1.0) / DoubleDouble(fmin(image_width / kWidth, image_height / kHeight));
 
   for (uint32_t idx = 0; idx < image_size; ++idx) {
     const double x = (idx % image_width - image_width / 2.0) * scale;
@@ -137,8 +137,8 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
     DoubleDouble dd_dx = DoubleDouble(x) / dd_zoom;
     DoubleDouble dd_dy = DoubleDouble(y) / dd_zoom;
 
-    delta_c[idx].real = static_cast<double>(dd_dx);
-    delta_c[idx].imag = static_cast<double>(dd_dy);
+    delta_c[idx].real = static_cast<double>(dd_dx) + dc_real;
+    delta_c[idx].imag = static_cast<double>(dd_dy) + dc_imag;
   }
 
   Complex* device_delta_c;
@@ -156,7 +156,7 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
 
   KernelMandelbrotSet<<<kBlocksPerGrid, kThreadsPerBlock>>>(
       reinterpret_cast<uint32_t*>(device_data), image_width, image_height,
-      center_real, center_imag, zoom_factor, max_iterations, device_orbit, device_delta_c, orbit.size() -1);
+      ref_real, ref_imag, zoom_factor, max_iterations, device_orbit, device_delta_c, orbit.size() -1);
 
   cuda::KenrelColor<<<kBlocksPerGrid, kThreadsPerBlock>>>(
       reinterpret_cast<uint32_t*>(device_data), image_width, image_height,

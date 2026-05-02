@@ -10,9 +10,9 @@ MandelbrotRendererGLFW::MandelbrotRendererGLFW(const Size& size)
     : MandelbrotRenderer{size} {}
 
 bool MandelbrotRendererGLFW::IsDirty(
-    const Complex& center, double_t zoom,
+    const Complex& ref, const Complex& dc, DoubleDouble zoom,
     const RenderOptions& render_options) const {
-  return center != center_ || zoom != zoom_ || render_options != render_options_;
+  return ref != ref_ || dc != dc_ || zoom != zoom_ || render_options != render_options_;
 }
 
 void MandelbrotRendererGLFW::RenderImage(const Image& image) const {

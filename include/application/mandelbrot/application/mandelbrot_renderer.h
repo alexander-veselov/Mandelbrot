@@ -12,18 +12,19 @@ class MandelbrotRenderer {
  public:
   MandelbrotRenderer(const Size& size);
 
-  void Render(const Complex& center, double_t zoom,
+  void Render(const Complex& ref, const Complex& dc, DoubleDouble zoom,
               const RenderOptions& render_options);
 
  protected:
-  virtual bool IsDirty(const Complex& center, double_t zoom,
+  virtual bool IsDirty(const Complex& ref, const Complex& dc, DoubleDouble zoom,
                        const RenderOptions& render_options) const = 0;
   virtual void RenderImage(const Image& image) const = 0;
 
  protected:
   Image image_;
-  Complex center_;
-  double_t zoom_;
+  Complex ref_;
+  Complex dc_;
+  DoubleDouble zoom_;
   RenderOptions render_options_;
 };
 

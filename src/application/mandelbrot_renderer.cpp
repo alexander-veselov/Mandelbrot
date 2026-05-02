@@ -5,23 +5,26 @@
 namespace mandelbrot {
 
 MandelbrotRenderer::MandelbrotRenderer(const Size& size)
-    : image_{size}, center_{}, zoom_{} {}
+    : image_{size}, ref_{}, dc_{}, zoom_{} {}
 
-void MandelbrotRenderer::Render(const Complex& center, double_t zoom,
+void MandelbrotRenderer::Render(const Complex& ref, const Complex& dc, DoubleDouble zoom,
                                 const RenderOptions& render_options) {
-  if (IsDirty(center, zoom, render_options)) {
+  if (IsDirty(ref, dc, zoom, render_options)) {
 
     std::vector<cuda::ComplexDD> orbit;
-    cuda::ComputeReferenceOrbit(orbit, center.real, center.imag, render_options.max_iterations);
+    cuda::ComputeReferenceOrbit(orbit, ref.real, ref.imag, dc.real, dc.imag, render_options.max_iterations);
 
     cuda::Visualize(image_.GetData(), image_.GetWidth(), image_.GetHeight(),
-                    center.real, center.imag, zoom,
+                    ref.real, ref.imag,
+                    dc.real, dc.imag,
+                    zoom,
                     render_options.max_iterations,
                     static_cast<int32_t>(render_options.coloring_mode),
                     static_cast<int32_t>(render_options.palette),
                     orbit);
 
-    center_ = center;
+    ref_ = ref;
+    dc_ = dc;
     zoom_ = zoom;
     render_options_ = render_options;
   }

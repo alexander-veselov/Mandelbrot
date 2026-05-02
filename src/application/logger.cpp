@@ -43,7 +43,7 @@ void Logger::ResetCursor() const {
 
 std::string Logger::NewLine() const {
   auto newline = std::string{};
-  constexpr auto kSpacesCount = 30;
+  constexpr auto kSpacesCount = 200;
   for (auto i = 0; i < kSpacesCount; ++i) {
     newline += ' ';
   }

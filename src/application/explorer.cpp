@@ -4,66 +4,103 @@
 
 namespace mandelbrot {
 
-Explorer::Explorer(const Complex& position, double_t zoom)
-    : center_position_{position},
-      display_position_{position},
-      click_position_{},
-      zoom_{zoom},
-      moving_{false} {}
-
-void Explorer::MouseClickedEvent(const Complex& position) {
-  moving_ = true;
-  click_position_ = position;
-}
-
-void Explorer::MouseReleasedEvent(const Complex& position) {
-  moving_ = false;
-  center_position_ = display_position_;
-}
-
-void Explorer::MouseMovedEvent(const Complex& position) {
-  if (moving_) {
-    display_position_.real =
-        center_position_.real + (click_position_.real - position.real);
-    display_position_.imag =
-        center_position_.imag + (click_position_.imag - position.imag);
-  }
-}
-
-void Explorer::MouseScrollEvent(const Complex& position, ScrollAction action) {
-  auto zoom_change = zoom_;
-  const auto zoom_factor = GetConfig().zoom_factor;
-  if (action == ScrollAction::kScrollUp) {
-    zoom_change = zoom_factor;
-  } else if (action == ScrollAction::kScrollDown) {
-    zoom_change = 1. / zoom_factor;
+  namespace {
+    constexpr double kWidth = 3.0;
+    constexpr double kHeight = 2.0;
   }
 
-  zoom_ *= zoom_change;
-
-  if (GetConfig().directional_zoom) {
-    center_position_.real = position.real + (center_position_.real - position.real) / Complex::value_type{ zoom_change };
-    center_position_.imag = position.imag + (center_position_.imag - position.imag) / Complex::value_type{ zoom_change };
-    display_position_ = center_position_;
+  Explorer::Explorer(const Complex& position, double_t zoom)
+    : reference_center_{ position },
+    dc_{},
+    click_position_{},
+    drag_start_dc_{},
+    zoom_{ zoom },
+    moving_{ false } {
   }
-}
 
-void Explorer::Navigate(const Complex& position, double_t zoom) {
-  center_position_ = position;
-  display_position_ = position;
-  zoom_ = zoom;
-}
+  Complex Explorer::ScreenToWorld(const Point& p) const noexcept {
+    const auto scale = 1. / std::min(screen_size_.width / kWidth,
+      screen_size_.height / kHeight);
 
-Complex Explorer::GetCenterPosition() const noexcept {
-  return center_position_;
-}
+    const auto real = (p.x - Point::value_type{ screen_size_.width / 2. }) * Point::value_type{ scale };
+    const auto imag = (p.y - Point::value_type{ screen_size_.height / 2. }) * Point::value_type{ scale };
 
-Complex Explorer::GetDisplayPosition() const noexcept {
-  return display_position_;
-}
+    Complex out;
+    out.real = real / Complex::value_type{ zoom_ };
+    out.imag = imag / Complex::value_type{ zoom_ };
+    return out;
+  }
 
-double_t Explorer::GetZoom() const noexcept {
-  return zoom_;
-}
+  void Explorer::MouseClickedEvent(const Point& position) {
+    moving_ = true;
+    click_position_ = position;
+    drag_start_dc_ = dc_;
+  }
+
+  void Explorer::MouseReleasedEvent(const Point&) {
+    moving_ = false;
+
+    const auto threshold = Complex::value_type{ 1e-6 };
+
+    if (abs(dc_.real) > threshold || abs(dc_.imag) > threshold) {
+      reference_center_.real = reference_center_.real + dc_.real;
+      reference_center_.imag = reference_center_.imag + dc_.imag;
+      dc_ = {};
+    }
+  }
+
+  void Explorer::Chop() {
+      dc_.real =dc_.real / Complex::value_type{2.0};
+      dc_.imag =dc_.imag / Complex::value_type{2.0};
+      reference_center_.real = reference_center_.real + dc_.real;
+      reference_center_.imag = reference_center_.imag + dc_.imag;
+  }
+
+  void Explorer::MouseMovedEvent(const Point& position) {
+    if (!moving_) return;
+
+    const auto start = ScreenToWorld(click_position_);
+    const auto current = ScreenToWorld(position);
+
+    dc_.real = drag_start_dc_.real + (start.real - current.real);
+    dc_.imag = drag_start_dc_.imag - (start.imag - current.imag);
+  }
+
+  void Explorer::MouseScrollEvent(const Point& position, ScrollAction action) {
+    const auto zoom_factor = GetConfig().zoom_factor;
+
+    double_t factor = 1.0;
+    if (action == ScrollAction::kScrollUp) {
+      factor = zoom_factor;
+    }
+    else if (action == ScrollAction::kScrollDown) {
+      factor = 1.0 / zoom_factor;
+    }
+
+    zoom_ *= factor;
+  }
+
+  void Explorer::Navigate(const Complex& position, double_t zoom) {
+    reference_center_ = position;
+    dc_ = {};
+    zoom_ = zoom;
+  }
+
+  Complex Explorer::GetReferenceCenter() const noexcept {
+    return reference_center_;
+  }
+
+  Complex Explorer::GetOffset() const noexcept {
+    return dc_;
+  }
+
+  Complex Explorer::GetCenterPosition() const noexcept {
+    return { reference_center_.real + dc_.real,
+            reference_center_.imag + dc_.imag };
+  }
+
+  double_t Explorer::GetZoom() const noexcept {
+    return zoom_;
+  }
 
 }  // namespace mandelbrot

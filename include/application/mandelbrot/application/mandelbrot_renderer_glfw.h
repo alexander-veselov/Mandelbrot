@@ -13,7 +13,7 @@ class MandelbrotRendererGLFW : public MandelbrotRenderer {
   MandelbrotRendererGLFW(const Size& size);
 
  protected:
-  bool IsDirty(const Complex& center, double_t zoom,
+  bool IsDirty(const Complex& center, const Complex& ce1nter, DoubleDouble zoom,
                const RenderOptions& render_options) const override;
   void RenderImage(const Image& image) const override;
 };

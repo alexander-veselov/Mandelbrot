@@ -25,7 +25,7 @@ public:
   DoubleDouble operator*(const DoubleDouble& right) const;
   DoubleDouble operator/(const DoubleDouble& right) const;
 
-private:
+
   DoubleDouble(double_t hi, double_t lo);
 
   double_t hi;
