@@ -1,7 +1,7 @@
 #pragma once
 
 #include "mandelbrot/core/typedefs.h"
-
+#include "D:\Projects\Mandelbrot\include\core\boost/multiprecision/cpp_bin_float.hpp"
 #include <string>
 
 namespace mandelbrot {
@@ -32,4 +32,6 @@ public:
   double_t lo;
 };
 
+using SuperDouble = boost::multiprecision::number<
+  boost::multiprecision::cpp_bin_float<200>>;
 }  // namespace mandelbrot

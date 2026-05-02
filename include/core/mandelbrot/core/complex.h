@@ -25,6 +25,7 @@ bool operator!=(const ComplexT<T>& left, const ComplexT<T>& right) {
 
 using ComplexD = ComplexT<double_t>;
 using ComplexDD = ComplexT<DoubleDouble>;
-using Complex = ComplexDD;
+using ComplexSD = ComplexT<SuperDouble>;
+using Complex = ComplexSD;
 
 }  // namespace mandelbrot

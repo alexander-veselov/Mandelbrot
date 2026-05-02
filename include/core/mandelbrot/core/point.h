@@ -24,6 +24,7 @@ bool operator!=(const PointT<T>& left, const PointT<T>& right) {
 
 using PointD = PointT<double_t>;
 using PointDD = PointT<DoubleDouble>;
-using Point = PointDD;
 
+using PointSD = PointT<SuperDouble>;
+using Point = PointSD;
 }  // namespace mandelbrot

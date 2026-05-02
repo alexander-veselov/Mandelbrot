@@ -127,15 +127,15 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
   constexpr double kHeight = 2.0;
 
   const double scale =
-    DoubleDouble(1.0) / DoubleDouble(fmin(image_width / kWidth, image_height / kHeight));
+    double(1.0) / double(fmin(image_width / kWidth, image_height / kHeight));
 
   for (uint32_t idx = 0; idx < image_size; ++idx) {
     const double x = (idx % image_width - image_width / 2.0) * scale;
     const double y = (idx / image_width - image_height / 2.0) * scale;
 
     // high precision division
-    DoubleDouble dd_dx = DoubleDouble(x) / dd_zoom;
-    DoubleDouble dd_dy = DoubleDouble(y) / dd_zoom;
+    double dd_dx = double(x) / dd_zoom;
+    double dd_dy = double(y) / dd_zoom;
 
     delta_c[idx].real = static_cast<double>(dd_dx) + dc_real;
     delta_c[idx].imag = static_cast<double>(dd_dy) + dc_imag;

@@ -42,11 +42,9 @@ namespace mandelbrot {
 
     const auto threshold = Complex::value_type{ 1e-6 };
 
-    if (abs(dc_.real) > threshold || abs(dc_.imag) > threshold) {
-      reference_center_.real = reference_center_.real + dc_.real;
-      reference_center_.imag = reference_center_.imag + dc_.imag;
-      dc_ = {};
-    }
+    //reference_center_.real = reference_center_.real + dc_.real;
+    //reference_center_.imag = reference_center_.imag + dc_.imag;
+    //dc_ = {};
   }
 
   void Explorer::Chop() {
@@ -87,11 +85,11 @@ namespace mandelbrot {
   }
 
   Complex Explorer::GetReferenceCenter() const noexcept {
-    return reference_center_;
+    return GetCenterPosition();
   }
 
   Complex Explorer::GetOffset() const noexcept {
-    return dc_;
+    return {};
   }
 
   Complex Explorer::GetCenterPosition() const noexcept {

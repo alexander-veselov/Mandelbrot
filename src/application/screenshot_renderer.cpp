@@ -29,9 +29,9 @@ std::string ToString(double_t value) {
 std::filesystem::path NameScreenshot(const Complex& center, double_t zoom) {
   constexpr auto kExtension = ".png";
   constexpr auto kSeparator = "_";
-  auto filename = ToString(center.real);
+  auto filename = ToString((double)center.real);
   filename += kSeparator;
-  filename += ToString(center.imag);
+  filename += ToString((double)center.imag);
   filename += kSeparator;
   filename += ToString(zoom);
   filename += kExtension;

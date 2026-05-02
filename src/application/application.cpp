@@ -97,10 +97,10 @@ static void LogInformation(const Logger& logger, const Complex& ref, const Compl
                            double_t zoom, const RenderOptions& render_options,
                            double_t fps) {
   logger.ResetCursor();
-  logger << logger.SetPrecision(30) << "Ref: " << ref.real.hi << " " << ref.real.lo
-         << logger.ShowSign(true) << ref.imag.hi << " " << ref.imag.lo << logger.ShowSign(false)
-         << "dc: " << dc.real.hi << " " << dc.real.lo
-         << logger.ShowSign(true) << dc.imag.hi << " " << dc.imag.lo << logger.ShowSign(false)
+  logger << logger.SetPrecision(15) << "Ref: " << (double)ref.real
+         << logger.ShowSign(true) << (double)ref.imag << logger.ShowSign(false)
+         << "dc: " << (double)dc.real
+         << logger.ShowSign(true) << (double)dc.imag << logger.ShowSign(false)
          << "i" << logger.NewLine() << "Zoom: " << zoom << logger.NewLine()
          << "Max iterations: " << render_options.max_iterations << logger.NewLine()
          << "Coloring mode: " << static_cast<uint32_t>(render_options.coloring_mode) << logger.NewLine()
