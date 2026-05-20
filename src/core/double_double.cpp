@@ -26,14 +26,6 @@ void TwoProd(double_t a, double_t b, double_t& p, double_t& e) {
 
 namespace mandelbrot {
 
-DoubleDouble::DoubleDouble()
-  : hi{ 0.0 }, lo{ 0.0 }
-{}
-
-DoubleDouble::DoubleDouble(double_t x)
-  : hi{ x }, lo{ 0.0 }
-{}
-
 DoubleDouble::DoubleDouble(double_t hi, double_t lo)
   : hi{ hi }, lo{ lo }
 {}
