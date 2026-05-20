@@ -13,25 +13,18 @@ namespace cuda {
 template <typename T>
 __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
                                     uint32_t height, T center_real,
-                                    T center_imag, T zoom_factor,
+                                    T center_imag, T scale,
                                     uint32_t max_iterations,
                                     bool smoothing_step = false) {
 
   const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (pixel_index < width * height) {
-    // Mandelbrot set parameters
-    constexpr static auto kMandelbrotSetWidth  = T{3};  // [-2, 1]
-    constexpr static auto kMandelbrotSetHeight = T{2};  // [-1, 1]
+    const auto x = pixel_index % width - width  / T{2};
+    const auto y = pixel_index / width - height / T{2};
 
-    const auto scale =
-        T{1} / fmin(width / kMandelbrotSetWidth, height / kMandelbrotSetHeight);
-
-    const auto x = (pixel_index % width - width  / T{2}) * scale;
-    const auto y = (pixel_index / width - height / T{2}) * scale;
-
-    const auto real0 = center_real + x / zoom_factor;
-    const auto imag0 = center_imag + y / zoom_factor;
+    const auto real0 = center_real + x * scale;
+    const auto imag0 = center_imag + y * scale;
 
     auto real = real0;
     auto imag = imag0;
@@ -85,9 +78,15 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
   constexpr auto kThreadsPerBlock = 512;
   const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;
 
+  constexpr static auto kMandelbrotSetWidth  = 3.0;  // [-2, 1]
+  constexpr static auto kMandelbrotSetHeight = 2.0;  // [-1, 1]
+  const auto scale =
+    1.0 / std::fmin(image_width  * zoom_factor / kMandelbrotSetWidth,
+                    image_height * zoom_factor / kMandelbrotSetHeight);
+
   KernelMandelbrotSet<double_t><<<kBlocksPerGrid, kThreadsPerBlock>>>(
       reinterpret_cast<float_t*>(device_data), image_width, image_height,
-      center_real, center_imag, zoom_factor, max_iterations, smoothing);
+      center_real, center_imag, scale, max_iterations, smoothing);
 
   cuda::KenrelColor<<<kBlocksPerGrid, kThreadsPerBlock>>>(
       reinterpret_cast<uint32_t*>(device_data), image_width, image_height,
