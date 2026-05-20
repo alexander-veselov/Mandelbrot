@@ -63,17 +63,17 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
                uint32_t max_iterations, uint32_t coloring_mode,
                uint32_t palette, bool smoothing) {
 
-  constexpr auto kMemoryPoolSize = 128 << 20;
-  static auto memory_pool = GPUMemoryPool{kMemoryPoolSize};  // 128 MB
+  constexpr auto kMemoryPoolSize = 256 << 20;
+  static auto memory_pool = GPUMemoryPool{kMemoryPoolSize}; // 256 MB
+  memory_pool.Reset();
 
   const auto image_size = image_width * image_height;
-  const auto image_size_in_bytes = image_size * sizeof(uint32_t);
 
-  if (image_size_in_bytes > kMemoryPoolSize) {
-    throw std::runtime_error{"Not enought GPU memory in pool"};
-  }
+  const auto data_bytes = image_size * sizeof(float_t);
+  const auto color_bytes = image_size * sizeof(uint32_t);
 
-  auto device_data = memory_pool.Alloc(image_size_in_bytes);
+  auto device_data = static_cast<float_t*>(memory_pool.Alloc(data_bytes));
+  auto device_color = static_cast<uint32_t*>(memory_pool.Alloc(color_bytes));
 
   constexpr auto kThreadsPerBlock = 512;
   const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;
@@ -85,19 +85,18 @@ void Visualize(uint32_t* image, uint32_t image_width, uint32_t image_height,
                     image_height * zoom_factor / kMandelbrotSetHeight);
 
   KernelMandelbrotSet<double_t><<<kBlocksPerGrid, kThreadsPerBlock>>>(
-      reinterpret_cast<float_t*>(device_data), image_width, image_height,
+      device_data, image_width, image_height,
       center_real, center_imag, scale, max_iterations, smoothing);
 
   cuda::KenrelColor<<<kBlocksPerGrid, kThreadsPerBlock>>>(
-      reinterpret_cast<uint32_t*>(device_data), image_width, image_height,
+      device_data, device_color, image_width, image_height,
       max_iterations, coloring_mode, palette);
 
   CUDA_CHECK(cudaPeekAtLastError());
   CUDA_CHECK(cudaDeviceSynchronize());
 
-  CUDA_CHECK(cudaMemcpy(image, device_data, image_size_in_bytes,
+  CUDA_CHECK(cudaMemcpy(image, device_color, color_bytes,
                         cudaMemcpyDeviceToHost));
-  memory_pool.Free(device_data);
 }
 
 }  // namespace cuda

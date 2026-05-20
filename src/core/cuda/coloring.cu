@@ -154,48 +154,50 @@ __device__ uint32_t Mode7(uint32_t iterations, uint32_t max_iterations,
 }
 
 template <typename ColoringFunction>
-__device__ void SmoothColor(ColoringFunction coloring_function, uint32_t* data,
+__device__ void SmoothColor(ColoringFunction coloring_function,
+                            float_t* data, uint32_t* output,
                             uint32_t image_width, uint32_t image_height,
                             uint32_t max_iterations, const uint32_t* palette,
                             size_t palette_size) {
   const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
   if (pixel_index < image_width * image_height) {
-    const auto iterations_f = reinterpret_cast<float_t*>(data)[pixel_index];
-    const auto iterations = static_cast<uint32_t>(floorf(iterations_f));
-    if (iterations >= max_iterations) {
-      data[pixel_index] = MakeRGB(0, 0, 0);
+    const auto iterations = data[pixel_index];
+    const auto iterations_truncated = static_cast<uint32_t>(floorf(iterations));
+    if (iterations_truncated >= max_iterations) {
+      output[pixel_index] = MakeRGB(0, 0, 0);
       return;
     }
 
-    const auto color1 = coloring_function(iterations, max_iterations, palette, palette_size);
-    const auto color2 = coloring_function(iterations + 1, max_iterations, palette, palette_size);
-    const auto fraction = fmod(iterations_f, 1.f);
+    const auto color1 = coloring_function(iterations_truncated, max_iterations, palette, palette_size);
+    const auto color2 = coloring_function(iterations_truncated + 1, max_iterations, palette, palette_size);
+    const auto fraction = fmod(iterations, 1.f);
 
-    data[pixel_index] = InterpolateColor(color1, color2, fraction);
+    output[pixel_index] = InterpolateColor(color1, color2, fraction);
   }
 }
 
 template <typename ColoringFunction>
-__device__ void NativeColor(ColoringFunction coloring_function, uint32_t* data,
+__device__ void NativeColor(ColoringFunction coloring_function,
+                            float_t* data, uint32_t* output,
                             uint32_t image_width, uint32_t image_height,
                             uint32_t max_iterations, const uint32_t* palette,
                             size_t palette_size) {
   const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
   if (pixel_index < image_width * image_height) {
-    const auto iterations_f = reinterpret_cast<float_t*>(data)[pixel_index];
-    const auto iterations = static_cast<uint32_t>(floorf(iterations_f));
-    if (iterations >= max_iterations) {
-      data[pixel_index] = MakeRGB(0, 0, 0);
+    const auto iterations = data[pixel_index];
+    const auto iterations_truncated = static_cast<uint32_t>(floorf(iterations));
+    if (iterations_truncated >= max_iterations) {
+      output[pixel_index] = MakeRGB(0, 0, 0);
       return;
     }
 
-    data[pixel_index] = coloring_function(iterations, max_iterations, palette, palette_size);
+    output[pixel_index] = coloring_function(iterations_truncated, max_iterations, palette, palette_size);
   }
 }
 
-__global__ void KenrelColor(uint32_t* data, uint32_t image_width,
-                            uint32_t image_height, uint32_t max_iterations,
-                            uint32_t mode, uint32_t palette) {
+__global__ void KenrelColor(float_t* data, uint32_t* output,
+                            uint32_t image_width, uint32_t image_height,
+                            uint32_t max_iterations, uint32_t mode, uint32_t palette) {
 
   typedef uint32_t (*ModeFunction)(uint32_t, uint32_t, const uint32_t*, size_t);
   ModeFunction mode_functions[] = {Mode0, Mode1, Mode2, Mode3,
@@ -215,7 +217,7 @@ __global__ void KenrelColor(uint32_t* data, uint32_t image_width,
     mode = 0;
   }
 
-  SmoothColor(mode_functions[mode], data, image_width, image_height,
+  SmoothColor(mode_functions[mode], data, output, image_width, image_height,
               max_iterations, palettes[palette], palettes_size[palette]);
 }
 
