@@ -49,8 +49,8 @@ __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
     }
 
     if (smoothing_step && iterations < max_iterations) {
-      const auto log_zn = logf(real * real + imag * imag) / 2.;
-      const auto nu = static_cast<float_t>(logf(log_zn / logf(2)) / logf(2));
+      const auto log_zn = logf(real * real + imag * imag) * 0.5f;
+      const auto nu = log2f(log_zn);
       data[pixel_index] = static_cast<float_t>(iterations) + 1.f - nu;
     } else {
       data[pixel_index] = static_cast<float_t>(iterations);
