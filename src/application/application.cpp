@@ -7,6 +7,24 @@
 
 namespace mandelbrot {
 
+static Complex ScreenToComplex_(const Point& cursor_position,
+                               const Size& screen_size,
+                               const Complex& center,
+                               double_t zoom_factor) {
+  // Mandelbrot set parameters
+  constexpr static auto kMandelbrotSetWidth = 3.;   // [-2, 1]
+  constexpr static auto kMandelbrotSetHeight = 2.;  // [-1, 1]
+
+  const auto scale =
+    Float{ std::min(kMandelbrotSetWidth / screen_size.width,
+                    kMandelbrotSetHeight / screen_size.height) };
+
+  const auto x = (cursor_position.x - Float{static_cast<double_t>(screen_size.width) } * Float{0.5}) * scale;
+  const auto y = (cursor_position.y - Float{static_cast<double_t>(screen_size.height)} * Float{0.5}) * scale;
+
+  return {center.real + x / Float{zoom_factor}, center.imag + y / Float{zoom_factor}};
+}
+
 static Complex ScreenToComplex(const Point& cursor_position,
                                const Size& screen_size,
                                const Complex& center,
@@ -18,10 +36,10 @@ static Complex ScreenToComplex(const Point& cursor_position,
   const auto scale = 1. / std::min(screen_size.width / kMandelbrotSetWidth,
                                    screen_size.height / kMandelbrotSetHeight);
 
-  const auto real = (cursor_position.x - Point::value_type{ screen_size.width / 2.  }) * Point::value_type{ scale };
-  const auto imag = (cursor_position.y - Point::value_type{ screen_size.height / 2. }) * Point::value_type{ scale };
+  const auto real = (cursor_position.x - Float{screen_size.width  / 2.}) * Float{scale};
+  const auto imag = (cursor_position.y - Float{screen_size.height / 2.}) * Float{scale};
 
-  return { center.real + real / Point::value_type{ zoom_factor }, center.imag - imag / Point::value_type{ zoom_factor } };
+  return {center.real + real / Float{zoom_factor}, center.imag - imag / Float{zoom_factor}};
 }
 
 Complex Application::GetCurrentCursorComplex(const Size& screen_size,

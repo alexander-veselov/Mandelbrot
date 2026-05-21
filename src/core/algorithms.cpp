@@ -26,7 +26,7 @@ std::vector<Complex> ComputeReferenceOrbit(
     const auto imag = z.imag;
 
     z.real = real * real - imag * imag + c_real;
-    z.imag = Complex::value_type{ 2.0 } * real * imag + c_imag;
+    z.imag = Float{2.0} * real * imag + c_imag;
 
     orbit.push_back(z);
 

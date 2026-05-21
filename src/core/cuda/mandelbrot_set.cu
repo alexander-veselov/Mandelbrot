@@ -182,7 +182,7 @@ __global__ void KernelMandelbrotSetPerturbation(
 
 void VisualizePerturbation(
   uint32_t* image, uint32_t image_width, uint32_t image_height,
-  double_t center_real, double_t center_imag, double_t zoom_factor,
+  Float center_real, Float center_imag, Float zoom_factor,
   uint32_t max_iterations, uint32_t coloring_mode,
   uint32_t palette, bool smoothing) {
 
@@ -221,7 +221,7 @@ void VisualizePerturbation(
 
   KernelMandelbrotSetPerturbation<ComplexGPU::value_type><<<kBlocksPerGrid, kThreadsPerBlock>>>(
     device_data, image_width, image_height,
-    device_orbit, orbit.size() - 1,
+    device_orbit, static_cast<uint32_t>(orbit.size()) - 1,
     center_real, center_imag,
     scale, max_iterations, smoothing
   );

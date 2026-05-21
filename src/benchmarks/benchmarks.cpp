@@ -19,9 +19,9 @@ static void Default(benchmark::State& state) {
 
   auto image = Image{kSize};
   for (auto _ : state) {
-    cuda::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
-                    kCenter.real, kCenter.imag, kZoom, kMaxIterations,
-                    kColoringMode, kPalette, kSmoothing);
+    cuda::VisualizeNaive(image.GetData(), image.GetWidth(), image.GetHeight(),
+                         kCenter.real, kCenter.imag, kZoom, kMaxIterations,
+                         kColoringMode, kPalette, kSmoothing);
   }
 }
 BENCHMARK(Default)
@@ -41,9 +41,9 @@ static void DifferentResolution(benchmark::State& state) {
 
   auto image = Image{size};
   for (auto _ : state) {
-    cuda::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
-                    kCenter.real, kCenter.imag, kZoom, kMaxIterations,
-                    kColoringMode, kPalette, kSmoothing);
+    cuda::VisualizeNaive(image.GetData(), image.GetWidth(), image.GetHeight(),
+                         kCenter.real, kCenter.imag, kZoom, kMaxIterations,
+                         kColoringMode, kPalette, kSmoothing);
   }
 }
 BENCHMARK(DifferentResolution)
@@ -74,9 +74,9 @@ static void DifferentMaxIterations(benchmark::State& state) {
 
   auto image = Image{kSize};
   for (auto _ : state) {
-    cuda::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
-                    kCenter.real, kCenter.imag, kZoom, max_iterations,
-                    kColoringMode, kPalette, kSmoothing);
+    cuda::VisualizeNaive(image.GetData(), image.GetWidth(), image.GetHeight(),
+                         kCenter.real, kCenter.imag, kZoom, max_iterations,
+                         kColoringMode, kPalette, kSmoothing);
   }
 }
 BENCHMARK(DifferentMaxIterations)

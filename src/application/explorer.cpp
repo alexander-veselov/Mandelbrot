@@ -4,7 +4,7 @@
 
 namespace mandelbrot {
 
-Explorer::Explorer(const Complex& position, double_t zoom)
+Explorer::Explorer(const Complex& position, Float zoom)
     : center_position_{position},
       display_position_{position},
       click_position_{},
@@ -39,16 +39,16 @@ void Explorer::MouseScrollEvent(const Complex& position, ScrollAction action) {
     zoom_change = 1. / zoom_factor;
   }
 
-  zoom_ *= zoom_change;
+  zoom_ = zoom_ * zoom_change;
 
   if (GetConfig().directional_zoom) {
-    center_position_.real = position.real + (center_position_.real - position.real) / Complex::value_type{ zoom_change };
-    center_position_.imag = position.imag + (center_position_.imag - position.imag) / Complex::value_type{ zoom_change };
+    center_position_.real = position.real + (center_position_.real - position.real) / Float{zoom_change};
+    center_position_.imag = position.imag + (center_position_.imag - position.imag) / Float{zoom_change};
     display_position_ = center_position_;
   }
 }
 
-void Explorer::Navigate(const Complex& position, double_t zoom) {
+void Explorer::Navigate(const Complex& position, Float zoom) {
   center_position_ = position;
   display_position_ = position;
   zoom_ = zoom;
@@ -62,7 +62,7 @@ Complex Explorer::GetDisplayPosition() const noexcept {
   return display_position_;
 }
 
-double_t Explorer::GetZoom() const noexcept {
+Float Explorer::GetZoom() const noexcept {
   return zoom_;
 }
 

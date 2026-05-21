@@ -28,10 +28,10 @@ TEST(MandelbrotSet, DefaultView) {
   constexpr auto kWidth = 1920;
   constexpr auto kHeight = 1080;
   auto image = Image{Size{kWidth, kHeight}};
-  cuda::Visualize(image.GetData(), image.GetWidth(), image.GetHeight(),
-                  center.real, center.imag, zoom, max_iterations,
-                  static_cast<int32_t>(coloring_mode),
-                  static_cast<int32_t>(palette), smoothing);
+  cuda::VisualizeNaive(image.GetData(), image.GetWidth(), image.GetHeight(),
+                       center.real, center.imag, zoom, max_iterations,
+                       static_cast<int32_t>(coloring_mode),
+                       static_cast<int32_t>(palette), smoothing);
 
   EXPECT_TRUE(expected_image == image);
 }

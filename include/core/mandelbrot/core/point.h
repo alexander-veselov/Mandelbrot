@@ -1,13 +1,11 @@
 #pragma once
 
-#include "mandelbrot/core/typedefs.h"
+#include "mandelbrot/core/float.h"
 
 namespace mandelbrot {
 
 template <typename T>
 struct PointT {
-  using value_type = T;
-
   T x;
   T y;
 };
@@ -22,8 +20,6 @@ bool operator!=(const PointT<T>& left, const PointT<T>& right) {
   return !(left == right);
 }
 
-using PointD = PointT<double_t>;
-using PointDD = PointT<DoubleDouble>;
-using Point = PointDD;
+using Point = PointT<Float>;
 
 }  // namespace mandelbrot
