@@ -30,7 +30,7 @@ class Logger {
    const Logger& operator<<(uint8_t) const;
    const Logger& operator<<(double_t) const;
    const Logger& operator<<(float_t) const;
-   const Logger& operator<<(Float) const;
+   const Logger& operator<<(BoostFloat) const;
  private:
    Logger();
 };

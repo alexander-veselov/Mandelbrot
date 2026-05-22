@@ -7,6 +7,7 @@
 
 namespace mandelbrot {
 
-using Float = boost::multiprecision::number<boost::multiprecision::cpp_bin_float<128>>;
+using BoostFloat = boost::multiprecision::number<boost::multiprecision::cpp_bin_float<128>>;
+using Float = BoostFloat;
 
 }
