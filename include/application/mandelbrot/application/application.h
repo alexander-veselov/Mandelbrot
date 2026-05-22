@@ -37,7 +37,7 @@ class Application {
 
  protected:
   Complex GetCurrentCursorComplex(const Size& screen_size,
-                                  const Complex& center, double_t zoom_factor);
+                                  const Complex& center, Float zoom_factor);
 
  protected:
   Size window_size_;

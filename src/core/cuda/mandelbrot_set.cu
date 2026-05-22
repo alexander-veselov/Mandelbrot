@@ -60,7 +60,7 @@ __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
 }
 
 void VisualizeNaive(uint32_t* image, uint32_t image_width, uint32_t image_height,
-                    double_t center_real, double_t center_imag, double_t zoom_factor,
+                    Float center_real, Float center_imag, Float zoom_factor,
                     uint32_t max_iterations, uint32_t coloring_mode,
                     uint32_t palette, bool smoothing) {
 
@@ -82,12 +82,13 @@ void VisualizeNaive(uint32_t* image, uint32_t image_width, uint32_t image_height
   constexpr static auto kMandelbrotSetWidth  = 3.0;  // [-2, 1]
   constexpr static auto kMandelbrotSetHeight = 2.0;  // [-1, 1]
   const auto scale =
-    1.0 / std::fmin(image_width  * zoom_factor / kMandelbrotSetWidth,
-                    image_height * zoom_factor / kMandelbrotSetHeight);
+    1.0 / std::fmin(image_width  * static_cast<double_t>(zoom_factor) / kMandelbrotSetWidth,
+                    image_height * static_cast<double_t>(zoom_factor) / kMandelbrotSetHeight);
 
   KernelMandelbrotSet<double_t><<<kBlocksPerGrid, kThreadsPerBlock>>>(
       device_data, image_width, image_height,
-      center_real, center_imag, scale, max_iterations, smoothing);
+      static_cast<double_t>(center_real), static_cast<double_t>(center_imag),
+      scale, max_iterations, smoothing);
 
   cuda::KenrelColor<<<kBlocksPerGrid, kThreadsPerBlock>>>(
       device_data, device_color, image_width, image_height,
@@ -216,13 +217,13 @@ void VisualizePerturbation(
   constexpr static auto kMandelbrotSetWidth  = 3.0;  // [-2, 1]
   constexpr static auto kMandelbrotSetHeight = 2.0;  // [-1, 1]
   const auto scale =
-    1.0 / std::fmin(image_width  * zoom_factor / kMandelbrotSetWidth,
-                    image_height * zoom_factor / kMandelbrotSetHeight);
+    1.0 / std::fmin(image_width  * static_cast<double_t>(zoom_factor) / kMandelbrotSetWidth,
+                    image_height * static_cast<double_t>(zoom_factor) / kMandelbrotSetHeight);
 
   KernelMandelbrotSetPerturbation<ComplexGPU::value_type><<<kBlocksPerGrid, kThreadsPerBlock>>>(
     device_data, image_width, image_height,
     device_orbit, static_cast<uint32_t>(orbit.size()) - 1,
-    center_real, center_imag,
+    static_cast<double_t>(center_real), static_cast<double_t>(center_imag),
     scale, max_iterations, smoothing
   );
 

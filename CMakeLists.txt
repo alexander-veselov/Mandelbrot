@@ -74,12 +74,26 @@ FetchContent_Declare(lodepng-external
   DOWNLOAD_EXTRACT_TIMESTAMP true
 )
 
+# boost-config-external
+FetchContent_Declare(boost-config-external
+  GIT_REPOSITORY https://github.com/boostorg/config.git
+  GIT_TAG boost-1.79.0
+)
+
+# boost-multiprecision-external
+FetchContent_Declare(boost-multiprecision-external
+  GIT_REPOSITORY https://github.com/boostorg/multiprecision.git
+  GIT_TAG boost-1.89.0
+)
+
 FetchContent_MakeAvailable(
   glfw-external
   googlebenchmark-external
   googletest-external
   rapidjson-external
   lodepng-external
+  boost-config-external
+  boost-multiprecision-external
 )
 
 FetchContent_GetProperties(
@@ -126,16 +140,6 @@ target_include_directories(LodePNG PUBLIC
 )
 set_target_properties(LodePNG PROPERTIES FOLDER "External")
 
-# CUDA core library
-set(CUDA_CORE_INCLUDE_FOLDER "include/core")
-set(CUDA_CORE_SOURCE_FOLDER "src/core/cuda")
-file(GLOB CUDA_CORE_HEADERS ${CUDA_CORE_INCLUDE_FOLDER}/mandelbrot/core/cuda/*.h)
-file(GLOB CUDA_CORE_SOURCES ${CUDA_CORE_SOURCE_FOLDER}/*.cpp ${CUDA_CORE_SOURCE_FOLDER}/*.cu)
-add_library(MandelbrotCUDACore STATIC ${CUDA_CORE_HEADERS} ${CUDA_CORE_SOURCES})
-set_target_properties(MandelbrotCUDACore PROPERTIES LINKER_LANGUAGE CUDA)
-target_include_directories(MandelbrotCUDACore PUBLIC ${CUDA_CORE_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotCUDACore PRIVATE CUDA::cudart)
-
 # Core library
 set(CORE_INCLUDE_FOLDER "include/core")
 set(CORE_SOURCE_FOLDER "src/core")
@@ -143,13 +147,23 @@ file(GLOB CORE_HEADERS ${CORE_INCLUDE_FOLDER}/mandelbrot/core/*.h)
 file(GLOB CORE_SOURCES ${CORE_SOURCE_FOLDER}/*.cpp)
 add_library(MandelbrotCore STATIC ${CORE_HEADERS} ${CORE_SOURCES})
 target_include_directories(MandelbrotCore PUBLIC ${CORE_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotCore PRIVATE MandelbrotCUDACore LodePNG)
+target_link_libraries(MandelbrotCore PUBLIC LodePNG Boost::config Boost::multiprecision)
+
+# CUDA core library
+set(CUDA_CORE_INCLUDE_FOLDER "include/core/cuda")
+set(CUDA_CORE_SOURCE_FOLDER "src/core/cuda")
+file(GLOB CUDA_CORE_HEADERS ${CUDA_CORE_INCLUDE_FOLDER}/mandelbrot/core/cuda/*.h)
+file(GLOB CUDA_CORE_SOURCES ${CUDA_CORE_SOURCE_FOLDER}/*.cpp ${CUDA_CORE_SOURCE_FOLDER}/*.cu)
+add_library(MandelbrotCUDACore STATIC ${CUDA_CORE_HEADERS} ${CUDA_CORE_SOURCES})
+set_target_properties(MandelbrotCUDACore PROPERTIES LINKER_LANGUAGE CUDA)
+target_include_directories(MandelbrotCUDACore PUBLIC ${CUDA_CORE_INCLUDE_FOLDER})
+target_link_libraries(MandelbrotCUDACore PRIVATE MandelbrotCore CUDA::cudart)
 
 # Benchmarks
 set(BENCHMARKS_SOURCE_FOLDER "src/benchmarks")
 file(GLOB BENCHMARKS_SOURCES ${BENCHMARKS_SOURCE_FOLDER}/*.cpp)
 add_executable(Benchmarks ${BENCHMARKS_SOURCES})
-target_link_libraries(Benchmarks PRIVATE benchmark benchmark_main MandelbrotCore)
+target_link_libraries(Benchmarks PRIVATE benchmark benchmark_main MandelbrotCore MandelbrotCUDACore)
 
 # Tests
 enable_testing()
@@ -157,7 +171,7 @@ set(TESTS_SOURCE_FOLDER "src/tests")
 file(GLOB TESTS_SOURCE_FOLDER ${TESTS_SOURCE_FOLDER}/*.cpp)
 add_executable(Tests ${TESTS_SOURCE_FOLDER})
 target_link_libraries(Tests PRIVATE gtest gtest_main)
-target_link_libraries(Tests PUBLIC MandelbrotCore)
+target_link_libraries(Tests PUBLIC MandelbrotCore MandelbrotCUDACore)
 set_property(TARGET Tests PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 include(GoogleTest)
 gtest_discover_tests(Tests)
@@ -169,7 +183,7 @@ file(GLOB APP_HEADERS ${APP_INCLUDE_FOLDER}/mandelbrot/application/*.h)
 file(GLOB APP_SOURCES ${APP_SOURCE_FOLDER}/*.cpp)
 add_executable(MandelbrotExplorer ${APP_HEADERS} ${APP_SOURCES})
 target_include_directories(MandelbrotExplorer PUBLIC ${APP_INCLUDE_FOLDER})
-target_link_libraries(MandelbrotExplorer PUBLIC MandelbrotCore)
+target_link_libraries(MandelbrotExplorer PUBLIC MandelbrotCore MandelbrotCUDACore)
 target_link_libraries(MandelbrotExplorer PRIVATE GLFW RapidJSON)
 set_property(TARGET MandelbrotExplorer PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 

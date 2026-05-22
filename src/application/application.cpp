@@ -28,7 +28,7 @@ static Complex ScreenToComplex_(const Point& cursor_position,
 static Complex ScreenToComplex(const Point& cursor_position,
                                const Size& screen_size,
                                const Complex& center,
-                               double_t zoom_factor) {
+                               Float zoom_factor) {
   // Mandelbrot set parameters
   constexpr static auto kMandelbrotSetWidth = 3.;   // [-2, 1]
   constexpr static auto kMandelbrotSetHeight = 2.;  // [-1, 1]
@@ -39,12 +39,12 @@ static Complex ScreenToComplex(const Point& cursor_position,
   const auto real = (cursor_position.x - Float{screen_size.width  / 2.}) * Float{scale};
   const auto imag = (cursor_position.y - Float{screen_size.height / 2.}) * Float{scale};
 
-  return {center.real + real / Float{zoom_factor}, center.imag - imag / Float{zoom_factor}};
+  return {center.real + real / zoom_factor, center.imag - imag / zoom_factor};
 }
 
 Complex Application::GetCurrentCursorComplex(const Size& screen_size,
                                              const Complex& center,
-                                             double_t zoom_factor) {
+                                             Float zoom_factor) {
   const auto& cursor_position = GetCursorPosition();
   return ScreenToComplex(cursor_position, screen_size, center, zoom_factor);
 }
@@ -93,7 +93,8 @@ void Application::KeyCallback(KeyButton key_button, KeyAction action) {
     const auto& bookmark = bookmarks_.Current();
     explorer_.Navigate(bookmark.position, bookmark.zoom);
   } else if (key_button == KeyButton::kDown) {
-    bookmarks_.Add(explorer_.GetDisplayPosition(), explorer_.GetZoom());
+    // TODO: don't use static_cast
+    bookmarks_.Add(explorer_.GetDisplayPosition(), static_cast<double_t>(explorer_.GetZoom()));
   } else if (key_button == KeyButton::kComma) {
     auto& max_iterations = render_options_.max_iterations; 
     max_iterations = std::max(kIterationsStep, max_iterations - kIterationsStep);
@@ -115,7 +116,7 @@ void Application::KeyCallback(KeyButton key_button, KeyAction action) {
 }
 
 static void LogInformation(const Logger& logger, const Complex& position,
-                           double_t zoom, const RenderOptions& render_options,
+                           Float zoom, const RenderOptions& render_options,
                            double_t fps) {
   logger.ResetCursor();
   logger << logger.SetPrecision(15) << "Center: " << position.real

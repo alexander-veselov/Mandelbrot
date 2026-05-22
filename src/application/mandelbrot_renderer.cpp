@@ -7,7 +7,7 @@ namespace mandelbrot {
 MandelbrotRenderer::MandelbrotRenderer(const Size& size)
     : image_{size}, center_{}, zoom_{} {}
 
-void MandelbrotRenderer::Render(const Complex& center, double_t zoom,
+void MandelbrotRenderer::Render(const Complex& center, Float zoom,
                                 const RenderOptions& render_options) {
   if (IsDirty(center, zoom, render_options)) {
     cuda::VisualizePerturbation(image_.GetData(), image_.GetWidth(), image_.GetHeight(),

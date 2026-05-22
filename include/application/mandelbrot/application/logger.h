@@ -1,5 +1,7 @@
 #pragma once
 
+#include "mandelbrot/core/float.h"
+
 #include <string>
 
 namespace mandelbrot {
@@ -28,6 +30,7 @@ class Logger {
    const Logger& operator<<(uint8_t) const;
    const Logger& operator<<(double_t) const;
    const Logger& operator<<(float_t) const;
+   const Logger& operator<<(Float) const;
  private:
    Logger();
 };

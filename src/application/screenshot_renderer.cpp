@@ -11,8 +11,9 @@
 
 namespace mandelbrot {
 
-std::string ToString(double_t value) {
+static std::string ToString(Float value) {
   auto stream = std::ostringstream{};
+  // TODO: handle high precision Float naming properly
   stream.precision(std::numeric_limits<double_t>::max_digits10);
   stream << value;
   auto string = stream.str();
@@ -26,7 +27,7 @@ std::string ToString(double_t value) {
   return string;
 }
 
-std::filesystem::path NameScreenshot(const Complex& center, double_t zoom) {
+static std::filesystem::path NameScreenshot(const Complex& center, Float zoom) {
   constexpr auto kExtension = ".png";
   constexpr auto kSeparator = "_";
   auto filename = ToString(center.real);
@@ -45,7 +46,7 @@ std::filesystem::path NameScreenshot(const Complex& center, double_t zoom) {
 ScreenshotRenderer::ScreenshotRenderer(const Size& size)
     : MandelbrotRenderer{size} {}
 
-bool ScreenshotRenderer::IsDirty(const Complex& center, double_t zoom,
+bool ScreenshotRenderer::IsDirty(const Complex& center, Float zoom,
                                  const RenderOptions& render_options) const {
   return true;
 }

@@ -3,10 +3,10 @@
 #include <cmath>
 #include <stdint.h>
 
-#include "mandelbrot/core/double_double.h"
+#include <boost/multiprecision/cpp_bin_float.hpp>
 
 namespace mandelbrot {
 
-using Float = DoubleDouble;
+using Float = boost::multiprecision::number<boost::multiprecision::cpp_bin_float<128>>;
 
 }

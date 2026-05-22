@@ -129,6 +129,11 @@ const Logger& Logger::operator<<(float_t data) const {
   return *this;
 }
 
+const Logger& Logger::operator<<(Float data) const {
+  std::cout << data;
+  return *this;
+}
+
 const Logger& Logger::Instance() {
   static auto instance = Logger{};
   return instance;

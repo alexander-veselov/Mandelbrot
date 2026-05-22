@@ -10,7 +10,7 @@ MandelbrotRendererGLFW::MandelbrotRendererGLFW(const Size& size)
     : MandelbrotRenderer{size} {}
 
 bool MandelbrotRendererGLFW::IsDirty(
-    const Complex& center, double_t zoom,
+    const Complex& center, Float zoom,
     const RenderOptions& render_options) const {
   return center != center_ || zoom != zoom_ || render_options != render_options_;
 }
