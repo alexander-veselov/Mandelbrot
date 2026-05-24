@@ -1,7 +1,7 @@
 #include "mandelbrot/application/application.h"
 
 #include "mandelbrot/application/config.h"
-#include "mandelbrot/application/fps_counter.h"
+#include "mandelbrot/application/frame_timer.h"
 #include "mandelbrot/application/logger.h"
 #include "mandelbrot/application/screenshot_renderer.h"
 
@@ -131,6 +131,7 @@ static void LogInformation(const Logger& logger, const Complex& position,
 Application::Application(const Size& window_size,
                          std::unique_ptr<MandelbrotRenderer> renderer)
     : window_size_{window_size},
+      camera_{GetConfig().default_position, GetConfig().default_zoom},
       explorer_{GetConfig().default_position, GetConfig().default_zoom},
       bookmarks_{},
       screenshot_renderer_{
@@ -142,22 +143,27 @@ Application::Application(const Size& window_size,
 
 int Application::Run() {
   const auto& logger = Logger::Instance();
-  auto fps_counter = FPSCounter{GetConfig().fps_update_rate, GetTime()};
+  auto frame_timer = FrameTimer{GetConfig().fps_update_rate, GetTime()};
 
   while (!ShouldClose()) {
     try {
       const auto position = explorer_.GetDisplayPosition();
       const auto zoom = explorer_.GetZoom();
+      const auto dt = frame_timer.GetDeltaTime();
 
-      renderer_->Render(position, zoom, render_options_);
+      camera_.Update(position, zoom, dt);
+
+      const auto camera_position = camera_.GetPosition();
+      const auto camera_zoom = camera_.GetZoom();
+      renderer_->Render(camera_position, camera_zoom, render_options_);
 
       SwapBuffers();
       PollEvents();
 
-      fps_counter.Update(GetTime());
+      frame_timer.Update(GetTime());
 
       LogInformation(logger, position, zoom, render_options_,
-                     fps_counter.GetFPS());
+                     frame_timer.GetFPS());
     } catch (const std::exception& e) {
       logger << e.what();
       return -1;
