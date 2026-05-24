@@ -12,6 +12,25 @@ namespace mandelbrot {
 namespace cuda {
 
 template <typename T>
+__device__ __forceinline__
+static bool CardioidCheck(T x, T y) {
+  const T y2 = y * y;
+
+  if ((x + T{1}) * (x + T{1}) + y2 <= T{0.0625}) {
+    return true;
+  }
+
+  const T q = (x - T{ 0.25 }) * (x - T{0.25}) + y2;
+  const T q_test = q * (q + (x - T{0.25}));
+
+  if (q_test <= T{0.25} * y2) {
+    return true;
+  }
+
+  return false;
+}
+
+template <typename T>
 __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
                                     uint32_t height, T center_real,
                                     T center_imag, T scale,
@@ -26,6 +45,11 @@ __global__ void KernelMandelbrotSet(float_t* data, uint32_t width,
 
     const auto real0 = center_real + x * scale;
     const auto imag0 = center_imag + y * scale;
+
+    if (CardioidCheck(real0, imag0)) {
+      data[pixel_index] = static_cast<float_t>(max_iterations);
+      return;
+    }
 
     auto real = real0;
     auto imag = imag0;
@@ -122,6 +146,11 @@ __global__ void KernelMandelbrotSetPerturbation(
   if (pixel_index < width * height) {
     const auto real0 = (pixel_index % width - width  / T{2}) * scale;
     const auto imag0 = (pixel_index / width - height / T{2}) * scale;
+
+    if (CardioidCheck(center_real + real0, center_imag + imag0)) {
+      data[pixel_index] = static_cast<float_t>(max_iterations);
+      return;
+    }
 
     auto real = T{0};
     auto imag = T{0};
