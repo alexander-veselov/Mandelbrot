@@ -141,72 +141,77 @@ __global__ void KernelMandelbrotSetPerturbation(
   T center_real, T center_imag, T scale,
   uint32_t max_iterations, bool smoothing_step = false) {
 
-  const auto pixel_index = blockIdx.x * blockDim.x + threadIdx.x;
+  const auto x = blockIdx.x * blockDim.x + threadIdx.x;
+  const auto y = blockIdx.y * blockDim.y + threadIdx.y;
 
-  if (pixel_index < width * height) {
-    const auto real0 = (pixel_index % width - width  / T{2}) * scale;
-    const auto imag0 = (pixel_index / width - height / T{2}) * scale;
+  if (x >= width || y >= height) {
+    return;
+  }
 
-    if (CardioidCheck(center_real + real0, center_imag + imag0)) {
-      data[pixel_index] = static_cast<float_t>(max_iterations);
-      return;
+  const auto pixel_index = y * width + x;
+
+  const auto real0 = (pixel_index % width - width  / T{2}) * scale;
+  const auto imag0 = (pixel_index / width - height / T{2}) * scale;
+
+  if (CardioidCheck(center_real + real0, center_imag + imag0)) {
+    data[pixel_index] = static_cast<float_t>(max_iterations);
+    return;
+  }
+
+  auto real = T{0};
+  auto imag = T{0};
+  auto iterations = max_iterations;
+
+  auto limit = T{4};
+  if (smoothing_step) {
+    limit = T{16};
+  }
+
+  auto orbit_index = uint32_t{0};
+  for (auto i = uint32_t{0}; i < max_iterations; ++i) {
+    auto Zr = orbit[orbit_index].real;
+    auto Zi = orbit[orbit_index].imag;
+
+    ++orbit_index;
+
+    const auto dr2 = real * real - imag * imag;
+    const auto di2 = 2.0 * real * imag;
+
+    const auto tdr = 2.0 * (Zr * real - Zi * imag);
+    const auto tdi = 2.0 * (Zr * imag + Zi * real);
+
+    real = tdr + dr2 + real0;
+    imag = tdi + di2 + imag0;
+
+    Zr = orbit[orbit_index].real;
+    Zi = orbit[orbit_index].imag;
+
+    const auto zr = Zr + real;
+    const auto zi = Zi + imag;
+
+    if (zr * zr + zi * zi > limit) {
+      iterations = i;
+      break;
     }
 
-    auto real = T{0};
-    auto imag = T{0};
-    auto iterations = max_iterations;
+    const auto dz2 = real * real + imag * imag;
+    const auto Z2 = Zr * Zr + Zi * Zi;
 
-    auto limit = T{4};
-    if (smoothing_step) {
-      limit = T{16};
+    if (dz2 > Z2 || orbit_index == orbit_size) {
+      real = zr;
+      imag = zi;
+      orbit_index = 0;
     }
+  }
 
-    auto orbit_index = uint32_t{0};
-    for (auto i = uint32_t{0}; i < max_iterations; ++i) {
-      auto Zr = orbit[orbit_index].real;
-      auto Zi = orbit[orbit_index].imag;
-
-      ++orbit_index;
-
-      const auto dr2 = real * real - imag * imag;
-      const auto di2 = 2.0 * real * imag;
-
-      const auto tdr = 2.0 * (Zr * real - Zi * imag);
-      const auto tdi = 2.0 * (Zr * imag + Zi * real);
-
-      real = tdr + dr2 + real0;
-      imag = tdi + di2 + imag0;
-
-      Zr = orbit[orbit_index].real;
-      Zi = orbit[orbit_index].imag;
-
-      const auto zr = Zr + real;
-      const auto zi = Zi + imag;
-
-      if (zr * zr + zi * zi > limit) {
-        iterations = i;
-        break;
-      }
-
-      const auto dz2 = real * real + imag * imag;
-      const auto Z2 = Zr * Zr + Zi * Zi;
-
-      if (dz2 > Z2 || orbit_index == orbit_size) {
-        real = zr;
-        imag = zi;
-        orbit_index = 0;
-      }
-    }
-
-    if (smoothing_step && iterations < max_iterations) {
-      const auto zr = orbit[orbit_index].real + real;
-      const auto zi = orbit[orbit_index].imag + imag;
-      const auto log_zn = log(zr * zr + zi * zi) * T{0.5};
-      const auto nu = log2(log_zn);
-      data[pixel_index] = static_cast<float_t>(iterations) + 1.f - nu;
-    } else {
-      data[pixel_index] = static_cast<float_t>(iterations);
-    }
+  if (smoothing_step && iterations < max_iterations) {
+    const auto zr = orbit[orbit_index].real + real;
+    const auto zi = orbit[orbit_index].imag + imag;
+    const auto log_zn = log(zr * zr + zi * zi) * T{0.5};
+    const auto nu = log2(log_zn);
+    data[pixel_index] = static_cast<float_t>(iterations) + 1.f - nu;
+  } else {
+    data[pixel_index] = static_cast<float_t>(iterations);
   }
 }
 
@@ -240,8 +245,11 @@ void VisualizePerturbation(
 
   cudaMemcpy(device_orbit, orbit_gpu.data(), orbit_bytes, cudaMemcpyHostToDevice);
 
-  constexpr auto kThreadsPerBlock = 512;
-  const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;
+  constexpr auto kBlockSize = dim3(8, 8);
+  const auto kGridSize = dim3(
+    (image_width + kBlockSize.x - 1) / kBlockSize.x,
+    (image_height + kBlockSize.y - 1) / kBlockSize.y
+  );
 
   constexpr static auto kMandelbrotSetWidth  = 3.0;  // [-2, 1]
   constexpr static auto kMandelbrotSetHeight = 2.0;  // [-1, 1]
@@ -249,12 +257,15 @@ void VisualizePerturbation(
     1.0 / std::fmin(image_width  * static_cast<double_t>(zoom_factor) / kMandelbrotSetWidth,
                     image_height * static_cast<double_t>(zoom_factor) / kMandelbrotSetHeight);
 
-  KernelMandelbrotSetPerturbation<ComplexGPU::value_type><<<kBlocksPerGrid, kThreadsPerBlock>>>(
+  KernelMandelbrotSetPerturbation<ComplexGPU::value_type><<<kGridSize, kBlockSize>>>(
     device_data, image_width, image_height,
     device_orbit, static_cast<uint32_t>(orbit.size()) - 1,
     static_cast<double_t>(center_real), static_cast<double_t>(center_imag),
     scale, max_iterations, smoothing
   );
+
+  constexpr auto kThreadsPerBlock = 512;
+  const auto kBlocksPerGrid = (image_size - 1) / kThreadsPerBlock + 1;
 
   cuda::KenrelColor<<<kBlocksPerGrid, kThreadsPerBlock>>>(
       device_data, device_color, image_width, image_height,
